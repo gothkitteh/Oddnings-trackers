@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Black Death" />
+  <meta name="theme-color" content="#0d0d0d" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Black Death Tracker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #1a1a1a;
+      --surface2: #242424;
+      --accent: #c8a96e;
+      --accent2: #7c5c8a;
+      --text: #f0ece4;
+      --muted: #888;
+      --danger: #c0392b;
+      --safe: #2ecc71;
+      --radius: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 20px 20px 12px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .brand {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    main {
+      flex: 1;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      border: 1px solid #2a2a2a;
+    }
+
+    .step-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .step-number {
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--accent);
+      letter-spacing: -0.04em;
+    }
+
+    .step-detail {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .step-detail span {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .stop-alert {
+      background: #1e1520;
+      border: 1px solid var(--accent2);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--accent2);
+      display: none;
+      text-align: center;
+    }
+
+    .stop-alert.visible { display: block; }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      padding: 18px 12px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:active { transform: scale(0.97); opacity: 0.85; }
+
+    .btn-prev {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 24px;
+    }
+
+    .btn-next {
+      background: var(--accent);
+      color: #0d0d0d;
+      font-size: 24px;
+      grid-column: 2;
+    }
+
+    .btn-wide {
+      grid-column: 1 / -1;
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 14px;
+      padding: 14px;
+    }
+
+    .section-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      border: 1px solid #2a2a2a;
+    }
+
+    .section-name {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .section-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .progress-wrap {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      border: 1px solid #2a2a2a;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-bg {
+      background: #2a2a2a;
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
+    .reset-btn {
+      background: none;
+      border: 1px solid #333;
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-size: 12px;
+      padding: 10px;
+      cursor: pointer;
+      width: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .reset-btn:active { opacity: 0.6; }
+
+    .size-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .size-btn {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 10px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.15s;
+    }
+
+    .size-btn.active {
+      background: var(--accent2);
+      border-color: var(--accent2);
+      color: white;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Oddnings Trackers</div>
+  <h1>Black Death</h1>
+  <div class="subtitle">Hoxton Handmade · Caron Macchiato Cakes · US 10.5</div>
+</header>
+
+<main>
+
+  <div class="size-toggle">
+    <button class="size-btn" id="btn-small" onclick="setSize('small')">Small (stop 75)</button>
+    <button class="size-btn" id="btn-large" onclick="setSize('large')">Large (stop 91)</button>
+  </div>
+
+  <div class="step-card">
+    <div class="step-label">Current Step</div>
+    <div class="step-number" id="step-display">1</div>
+    <div class="step-detail" id="step-detail">Loading…</div>
+  </div>
+
+  <div class="stop-alert" id="stop-alert"></div>
+
+  <div class="controls">
+    <button class="btn btn-prev" onclick="changeStep(-1)">←</button>
+    <button class="btn btn-next" onclick="changeStep(1)">→</button>
+    <button class="btn btn-wide" onclick="jumpToStep()">Jump to step…</button>
+  </div>
+
+  <div class="section-card">
+    <div class="section-name" id="section-name">Section</div>
+    <div class="section-desc" id="section-desc">—</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span>Progress</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="confirmReset()">Reset to Step 1</button>
+
+</main>
+
+<script>
+var SECTIONS = [
+  { start: 1,  end: 6,   name: 'Setup',          desc: 'Cast on and establish shawl shape. Garter edge + YO increases each row.' },
+  { start: 7,  end: 90,  name: 'Eyelet Section', desc: 'Odd rows: RS eyelet pattern. Even rows: WS purl. 4 sts inc every RS row, 2 sts every WS row.' },
+  { start: 91, end: 100, name: 'Lace Edging',    desc: 'k2, (yo, k2, skp, k2, yo, k1) repeat. Work 8 rows then final bind-off row.' },
+];
+
+var STOP_SMALL = 75;
+var STOP_LARGE = 91;
+var KEY = 'black-death-step';
+var KEY_SIZE = 'black-death-size';
+var currentStep = 1;
+var currentSize = 'large';
+
+function loadState() {
+  var saved = localStorage.getItem(KEY);
+  if (saved) currentStep = parseInt(saved, 10);
+  var savedSize = localStorage.getItem(KEY_SIZE);
+  if (savedSize) currentSize = savedSize;
+}
+
+function saveState() {
+  localStorage.setItem(KEY, currentStep);
+  localStorage.setItem(KEY_SIZE, currentSize);
+}
+
+function getSection(step) {
+  for (var i = 0; i < SECTIONS.length; i++) {
+    if (step >= SECTIONS[i].start && step <= SECTIONS[i].end) return SECTIONS[i];
+  }
+  return SECTIONS[SECTIONS.length - 1];
+}
+
+function getStopPoint() {
+  return currentSize === 'small' ? STOP_SMALL : STOP_LARGE;
+}
+
+function getTotalSteps() {
+  return currentSize === 'small' ? 82 : 100;
+}
+
+function getRowLabel(step) {
+  if (step <= 6) return 'Setup Row ' + step;
+  if (step <= 90) {
+    if (step % 2 === 0) return 'Row ' + step + ' (WS — purl)';
+    return 'Row ' + step + ' (RS — eyelet)';
+  }
+  var laceRow = step - 90;
+  if (laceRow <= 8) return 'Lace Row ' + laceRow;
+  if (laceRow === 9) return 'Lace Row 9 — yo, k7, yo, k1 repeat';
+  return 'Bind Off Row';
+}
+
+function getStitchCount(step) {
+  if (step <= 1) return '5 sts';
+  if (step <= 2) return '5 sts';
+  if (step <= 3) return '7 sts';
+  if (step <= 4) return '9 sts';
+  if (step <= 5) return '13 sts';
+  if (step <= 6) return '15 sts';
+  if (step >= 7 && step <= 90) {
+    var pairsFromStart = Math.floor((step - 7) / 2);
+    var inPair = (step - 7) % 2;
+    var base = 19 + (pairsFromStart * 6);
+    if (inPair === 1) base += 2;
+    return base + ' sts';
+  }
+  if (step === 91) return '219 sts (small) / 267 sts (large)';
+  return '—';
+}
+
+function render() {
+  var stopAt = getStopPoint();
+  var total = getTotalSteps();
+
+  document.getElementById('step-display').textContent = currentStep;
+  document.getElementById('step-detail').innerHTML =
+    getRowLabel(currentStep) + ' &nbsp;·&nbsp; <span>' + getStitchCount(currentStep) + '</span>';
+
+  var sec = getSection(currentStep);
+  document.getElementById('section-name').textContent = sec.name;
+  document.getElementById('section-desc').textContent = sec.desc;
+
+  var alert = document.getElementById('stop-alert');
+  if (currentStep === stopAt) {
+    alert.textContent = '🛑 STOP POINT for ' + (currentSize === 'small' ? 'small' : 'large') + ' shawl — begin lace edging!';
+    alert.classList.add('visible');
+  } else if (currentStep === stopAt - 1) {
+    alert.textContent = '⚠️ Next step is your stop point for the ' + (currentSize === 'small' ? 'small' : 'large') + ' shawl.';
+    alert.classList.add('visible');
+  } else {
+    alert.classList.remove('visible');
+  }
+
+  var pct = Math.min(Math.round((currentStep / total) * 100), 100);
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  document.getElementById('btn-small').classList.toggle('active', currentSize === 'small');
+  document.getElementById('btn-large').classList.toggle('active', currentSize === 'large');
+}
+
+function changeStep(delta) {
+  var total = getTotalSteps();
+  currentStep = Math.max(1, Math.min(total, currentStep + delta));
+  saveState();
+  render();
+}
+
+function setSize(size) {
+  currentSize = size;
+  saveState();
+  render();
+}
+
+function jumpToStep() {
+  var input = prompt('Jump to step (1–' + getTotalSteps() + '):');
+  if (!input) return;
+  var n = parseInt(input, 10);
+  if (!isNaN(n) && n >= 1 && n <= getTotalSteps()) {
+    currentStep = n;
+    saveState();
+    render();
+  } else {
+    alert('Please enter a number between 1 and ' + getTotalSteps());
+  }
+}
+
+function confirmReset() {
+  if (confirm('Reset to Step 1? Your progress will be lost.')) {
+    currentStep = 1;
+    saveState();
+    render();
+  }
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(e) {
+    console.log('SW registration failed:', e);
+  });
+}
+
+loadState();
+render();
+</script>
+</body>
+</html>
