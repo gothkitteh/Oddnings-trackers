@@ -6,24 +6,28 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Black Death" />
-  <meta name="theme-color" content="#0d0d0d" />
+  <meta name="theme-color" content="#0a0a0a" />
   <link rel="manifest" href="manifest.json" />
   <title>Black Death Tracker</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d0d0d;
-      --surface: #1a1a1a;
-      --surface2: #242424;
-      --accent: #c8a96e;
-      --accent2: #7c5c8a;
-      --text: #f0ece4;
-      --muted: #888;
-      --danger: #c0392b;
-      --safe: #2ecc71;
-      --radius: 12px;
+      --bg: #0a0a0a;
+      --surface: #131313;
+      --surface2: #1c1c1c;
+      --bone: #e8e0d0;
+      --blood: #b85c00;
+      --blood-bright: #e8740a;
+      --purple: #4a1942;
+      --purple-mid: #7b2d8b;
+      --purple-bright: #b15dcc;
+      --muted: #666;
+      --text: #d4cfc8;
+      --radius: 10px;
     }
+
+    @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
 
     body {
       background: var(--bg);
@@ -36,88 +40,205 @@
       flex-direction: column;
     }
 
+    /* ── HEADER ── */
     header {
-      padding: 20px 20px 12px;
-      border-bottom: 1px solid #2a2a2a;
+      padding: 16px 18px 14px;
+      border-bottom: 1px solid #222;
+      background: linear-gradient(180deg, #1a0d00 0%, #0a0a0a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-bats {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 18px;
+      opacity: 0.4;
+      letter-spacing: 4px;
     }
 
     .brand {
-      font-size: 11px;
-      letter-spacing: 0.15em;
+      font-size: 10px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--accent2);
-      margin-bottom: 4px;
+      color: var(--purple-bright);
+      margin-bottom: 2px;
     }
 
     h1 {
-      font-size: 26px;
-      font-weight: 700;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--bone);
       letter-spacing: -0.02em;
-      color: var(--accent);
+      line-height: 1;
     }
+
+    h1 .skull { font-size: 22px; margin-right: 4px; }
 
     .subtitle {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
-      margin-top: 2px;
+      margin-top: 4px;
     }
 
+    /* ── MAIN ── */
     main {
       flex: 1;
-      padding: 16px 20px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
 
+    /* ── SIZE TOGGLE ── */
+    .size-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .size-btn {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.15s;
+    }
+
+    .size-btn.active {
+      background: var(--purple);
+      border-color: var(--purple-bright);
+      color: var(--purple-bright);
+      font-weight: 700;
+    }
+
+    /* ── STEP CARD ── */
     .step-card {
       background: var(--surface);
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 18px;
       text-align: center;
-      border: 1px solid #2a2a2a;
+      border: 1px solid #222;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blood), var(--purple-bright), var(--blood));
     }
 
     .step-label {
-      font-size: 11px;
-      letter-spacing: 0.12em;
+      font-size: 10px;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .step-number {
-      font-size: 72px;
-      font-weight: 800;
+      font-size: 80px;
+      font-weight: 900;
       line-height: 1;
-      color: var(--accent);
+      color: var(--bone);
       letter-spacing: -0.04em;
     }
 
-    .step-detail {
-      font-size: 13px;
+    .step-meta {
+      font-size: 12px;
       color: var(--muted);
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
-    .step-detail span {
+    .step-meta .rs { color: var(--blood-bright); font-weight: 600; }
+    .step-meta .ws { color: var(--purple-bright); font-weight: 600; }
+    .step-meta .sts { color: var(--bone); font-weight: 600; }
+
+    /* ── INSTRUCTION CARD ── */
+    .instruction-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid #222;
+      overflow: hidden;
+    }
+
+    .instruction-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid #222;
+      background: var(--surface2);
+    }
+
+    .section-badge {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      background: var(--purple);
+      padding: 3px 8px;
+      border-radius: 99px;
+    }
+
+    .row-side {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .row-side.rs { color: var(--blood-bright); }
+    .row-side.ws { color: var(--purple-bright); }
+    .row-side.setup { color: var(--bone); }
+
+    .instruction-body {
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.65;
       color: var(--text);
-      font-weight: 500;
+      font-family: 'Courier New', monospace;
     }
 
+    .instruction-body .abbr {
+      color: var(--bone);
+      font-weight: 700;
+    }
+
+    .stitch-count {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #222;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: -apple-system, sans-serif;
+    }
+
+    .stitch-count strong { color: var(--bone); }
+
+    /* ── STOP ALERT ── */
     .stop-alert {
-      background: #1e1520;
-      border: 1px solid var(--accent2);
+      background: #1a0800;
+      border: 1px solid var(--blood);
       border-radius: var(--radius);
       padding: 12px 16px;
       font-size: 13px;
-      color: var(--accent2);
+      color: var(--blood-bright);
       display: none;
       text-align: center;
+      font-weight: 600;
     }
-
     .stop-alert.visible { display: block; }
 
+    /* ── CONTROLS ── */
     .controls {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -127,90 +248,70 @@
     .btn {
       border: none;
       border-radius: var(--radius);
-      font-size: 16px;
-      font-weight: 600;
-      padding: 18px 12px;
+      font-weight: 700;
+      padding: 20px 12px;
       cursor: pointer;
       transition: opacity 0.15s, transform 0.1s;
       -webkit-tap-highlight-color: transparent;
+      font-size: 22px;
     }
 
-    .btn:active { transform: scale(0.97); opacity: 0.85; }
+    .btn:active { transform: scale(0.96); opacity: 0.8; }
 
     .btn-prev {
       background: var(--surface2);
       color: var(--muted);
-      font-size: 24px;
+      border: 1px solid #2a2a2a;
     }
 
     .btn-next {
-      background: var(--accent);
-      color: #0d0d0d;
-      font-size: 24px;
-      grid-column: 2;
+      background: var(--blood);
+      color: var(--bone);
     }
 
     .btn-wide {
       grid-column: 1 / -1;
       background: var(--surface2);
       color: var(--text);
-      font-size: 14px;
-      padding: 14px;
-    }
-
-    .section-card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 14px 16px;
+      font-size: 13px;
+      padding: 13px;
       border: 1px solid #2a2a2a;
     }
 
-    .section-name {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 4px;
-    }
-
-    .section-desc {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
+    /* ── PROGRESS ── */
     .progress-wrap {
       background: var(--surface);
       border-radius: var(--radius);
-      padding: 14px 16px;
-      border: 1px solid #2a2a2a;
+      padding: 12px 14px;
+      border: 1px solid #222;
     }
 
     .progress-header {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .progress-bar-bg {
-      background: #2a2a2a;
+      background: #222;
       border-radius: 99px;
-      height: 8px;
+      height: 6px;
       overflow: hidden;
     }
 
     .progress-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      background: linear-gradient(90deg, var(--blood), var(--purple-bright));
       border-radius: 99px;
-      transition: width 0.3s ease;
+      transition: width 0.4s ease;
     }
 
+    /* ── RESET ── */
     .reset-btn {
       background: none;
-      border: 1px solid #333;
+      border: 1px solid #222;
       border-radius: var(--radius);
       color: var(--muted);
       font-size: 12px;
@@ -219,72 +320,59 @@
       width: 100%;
       -webkit-tap-highlight-color: transparent;
     }
+    .reset-btn:active { opacity: 0.5; }
 
-    .reset-btn:active { opacity: 0.6; }
-
-    .size-toggle {
-      display: flex;
-      gap: 8px;
-    }
-
-    .size-btn {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      padding: 10px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: all 0.15s;
-    }
-
-    .size-btn.active {
-      background: var(--accent2);
-      border-color: var(--accent2);
-      color: white;
-      font-weight: 600;
+    /* ── DECORATIVE FOOTER ── */
+    .deco {
+      text-align: center;
+      font-size: 16px;
+      opacity: 0.2;
+      padding: 4px 0 8px;
+      letter-spacing: 8px;
     }
   </style>
 </head>
 <body>
 
 <header>
+  <div class="header-bats">🦇 🦇 🦇</div>
   <div class="brand">Oddnings Trackers</div>
-  <h1>Black Death</h1>
-  <div class="subtitle">Hoxton Handmade · Caron Macchiato Cakes · US 10.5</div>
+  <h1><span class="skull">💀</span>Black Death</h1>
+  <div class="subtitle">Hoxton Handmade · Caron Macchiato Cakes Lovely · US 10.5 Chiaogoo</div>
 </header>
 
 <main>
 
   <div class="size-toggle">
-    <button class="size-btn" id="btn-small" onclick="setSize('small')">Small (stop 75)</button>
-    <button class="size-btn" id="btn-large" onclick="setSize('large')">Large (stop 91)</button>
+    <button class="size-btn" id="btn-small" onclick="setSize('small')">🕸️ Small (stop 75)</button>
+    <button class="size-btn" id="btn-large" onclick="setSize('large')">🦇 Large (stop 91)</button>
   </div>
 
   <div class="step-card">
     <div class="step-label">Current Step</div>
     <div class="step-number" id="step-display">1</div>
-    <div class="step-detail" id="step-detail">Loading…</div>
+    <div class="step-meta" id="step-meta">—</div>
   </div>
 
   <div class="stop-alert" id="stop-alert"></div>
 
+  <div class="instruction-card">
+    <div class="instruction-header">
+      <span class="section-badge" id="section-badge">Setup</span>
+      <span class="row-side" id="row-side">—</span>
+    </div>
+    <div class="instruction-body" id="instruction-body">—</div>
+  </div>
+
   <div class="controls">
     <button class="btn btn-prev" onclick="changeStep(-1)">←</button>
     <button class="btn btn-next" onclick="changeStep(1)">→</button>
-    <button class="btn btn-wide" onclick="jumpToStep()">Jump to step…</button>
-  </div>
-
-  <div class="section-card">
-    <div class="section-name" id="section-name">Section</div>
-    <div class="section-desc" id="section-desc">—</div>
+    <button class="btn btn-wide" onclick="jumpToStep()">💀 Jump to step…</button>
   </div>
 
   <div class="progress-wrap">
     <div class="progress-header">
-      <span>Progress</span>
+      <span>🦇 Progress</span>
       <span id="progress-pct">0%</span>
     </div>
     <div class="progress-bar-bg">
@@ -292,23 +380,651 @@
     </div>
   </div>
 
-  <button class="reset-btn" onclick="confirmReset()">Reset to Step 1</button>
+  <button class="reset-btn" onclick="confirmReset()">🕸️ Reset to Step 1</button>
+
+  <div class="deco">💀 🦇 💀 🦇 💀</div>
 
 </main>
 
 <script>
-var SECTIONS = [
-  { start: 1,  end: 6,   name: 'Setup',          desc: 'Cast on and establish shawl shape. Garter edge + YO increases each row.' },
-  { start: 7,  end: 90,  name: 'Eyelet Section', desc: 'Odd rows: RS eyelet pattern. Even rows: WS purl. 4 sts inc every RS row, 2 sts every WS row.' },
-  { start: 91, end: 100, name: 'Lace Edging',    desc: 'k2, (yo, k2, skp, k2, yo, k1) repeat. Work 8 rows then final bind-off row.' },
+// ── FULL ROW DATA ──
+// Each entry: { side, section, instruction, stitches }
+// side: 'RS' | 'WS' | 'SETUP'
+// stitches: stitch count AFTER this row
+
+var ROWS = [
+  // ── SETUP ──
+  {
+    side: 'SETUP', section: 'Setup',
+    instruction: 'Cast on 3 sts.',
+    stitches: '3 sts'
+  },
+  {
+    side: 'RS', section: 'Setup',
+    instruction: 'k1, yo, k1, yo, k1',
+    stitches: '5 sts'
+  },
+  {
+    side: 'WS', section: 'Setup',
+    instruction: 'Knit.',
+    stitches: '5 sts'
+  },
+  {
+    side: 'RS', section: 'Setup',
+    instruction: 'k2, yo, pm, k1 (centre stitch), pm, yo, k2',
+    stitches: '7 sts'
+  },
+  {
+    side: 'WS', section: 'Setup',
+    instruction: 'k2, yo, purl to last 2 sts, yo, k2',
+    stitches: '9 sts'
+  },
+  {
+    side: 'RS', section: 'Setup',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '13 sts'
+  },
+  {
+    side: 'WS', section: 'Setup',
+    instruction: 'k2, yo, purl to last 2 sts, yo, k2',
+    stitches: '15 sts'
+  },
+
+  // ── EYELET SECTION (rows 7–90) ──
+  // Row 7
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k1, ssk, yo, k2, yo, sm, k1, sm, yo, k2, yo, k2tog, k1, yo, k2',
+    stitches: '19 sts'
+  },
+  // Row 8 (and all even rows in eyelet section = WS purl)
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '21 sts'
+  },
+  // Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '25 sts'
+  },
+  // Row 10
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '27 sts'
+  },
+  // Row 11
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k2, ssk, yo, k4, ssk, yo, k1, yo, k1, yo, k1, yo, k2tog, k4, yo, k2tog, k2, yo, k2',
+    stitches: '31 sts'
+  },
+  // Row 12
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '33 sts'
+  },
+  // Row 13 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '37 sts'
+  },
+  // Row 14
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '39 sts'
+  },
+  // Row 15
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k3, ssk, yo, k4, ssk, yo, k6, yo, k1, yo, k6, yo, k2tog, k4, yo, k2tog, k3, yo, k2',
+    stitches: '43 sts'
+  },
+  // Row 16
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '45 sts'
+  },
+  // Row 17 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '49 sts'
+  },
+  // Row 18
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '51 sts'
+  },
+  // Row 19
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k4, (ssk, yo, k4) x3, k1, yo, k1, yo, k1, (k4, yo, k2tog) x3, k4, yo, k2',
+    stitches: '55 sts'
+  },
+  // Row 20
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '57 sts'
+  },
+  // Row 21 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '61 sts'
+  },
+  // Row 22
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '63 sts'
+  },
+  // Row 23
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k5, (ssk, yo, k4) x4, yo, k1, yo, (k4, yo, k2tog) x4, k5, yo, k2',
+    stitches: '67 sts'
+  },
+  // Row 24
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '69 sts'
+  },
+  // Row 25 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '73 sts'
+  },
+  // Row 26
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '75 sts'
+  },
+  // Row 27
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k6, (ssk, yo, k4) x4, ssk, yo, k3, yo, k1, yo, k3, yo, k2tog, (k4, yo, k2tog) x4, k6, yo, k2',
+    stitches: '79 sts'
+  },
+  // Row 28
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '81 sts'
+  },
+  // Row 29 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '85 sts'
+  },
+  // Row 30
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '87 sts'
+  },
+  // Row 31
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k1, (ssk, yo, k4) x6, ssk, yo, k2, yo, k1, yo, k2, yo, k2tog, (k4, yo, k2tog) x6, k1, yo, k2',
+    stitches: '91 sts'
+  },
+  // Row 32
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '93 sts'
+  },
+  // Row 33 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '97 sts'
+  },
+  // Row 34
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '99 sts'
+  },
+  // Row 35
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k2, (ssk, yo, k4) x7, ssk, yo, k1, yo, k1, yo, k1, yo, k2tog, (k4, yo, k2tog) x7, k2, yo, k2',
+    stitches: '103 sts'
+  },
+  // Row 36
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '105 sts'
+  },
+  // Row 37 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '109 sts'
+  },
+  // Row 38
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '111 sts'
+  },
+  // Row 39
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k3, (ssk, yo, k4) x8, k2, yo, k1, yo, k2, (k4, yo, k2tog) x8, k3, yo, k2',
+    stitches: '115 sts'
+  },
+  // Row 40
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '117 sts'
+  },
+  // Row 41 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '121 sts'
+  },
+  // Row 42
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '123 sts'
+  },
+  // Row 43
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k4, (ssk, yo, k4) x9, k1, yo, k1, yo, k1, (k4, yo, k2tog) x9, k4, yo, k2',
+    stitches: '127 sts'
+  },
+  // Row 44
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '129 sts'
+  },
+  // Row 45 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '133 sts'
+  },
+  // Row 46
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '135 sts'
+  },
+  // Row 47
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k5, (ssk, yo, k4) x10, yo, k1, yo, (k4, yo, k2tog) x10, k5, yo, k2',
+    stitches: '139 sts'
+  },
+  // Row 48
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '141 sts'
+  },
+  // Row 49 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '145 sts'
+  },
+  // Row 50
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '147 sts'
+  },
+  // Row 51
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k6, (ssk, yo, k4) x10, ssk, yo, k3, yo, k1, yo, k3, yo, k2tog, (k4, yo, k2tog) x10, k6, yo, k2',
+    stitches: '151 sts'
+  },
+  // Row 52
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '153 sts'
+  },
+  // Row 53 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '157 sts'
+  },
+  // Row 54
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '159 sts'
+  },
+  // Row 55
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k1, (ssk, yo, k4) x12, ssk, yo, k2, yo, k1, yo, k2, yo, k2tog, (k4, yo, k2tog) x12, k1, yo, k2',
+    stitches: '163 sts'
+  },
+  // Row 56
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '165 sts'
+  },
+  // Row 57 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '169 sts'
+  },
+  // Row 58
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '171 sts'
+  },
+  // Row 59
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k2, (ssk, yo, k4) x13, ssk, yo, k1, yo, k1, yo, k1, yo, k2tog, (k4, yo, k2tog) x13, k2, yo, k2',
+    stitches: '175 sts'
+  },
+  // Row 60
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '177 sts'
+  },
+  // Row 61 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '181 sts'
+  },
+  // Row 62
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '183 sts'
+  },
+  // Row 63
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k3, (ssk, yo, k4) x14, k2, yo, k1, yo, k2, (k4, yo, k2tog) x14, k3, yo, k2',
+    stitches: '187 sts'
+  },
+  // Row 64
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '189 sts'
+  },
+  // Row 65 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '193 sts'
+  },
+  // Row 66
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '195 sts'
+  },
+  // Row 67
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k4, (ssk, yo, k4) x15, k1, yo, k1, yo, k1, (k4, yo, k2tog) x15, k4, yo, k2',
+    stitches: '199 sts'
+  },
+  // Row 68
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '201 sts'
+  },
+  // Row 69 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '205 sts'
+  },
+  // Row 70
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '207 sts'
+  },
+  // Row 71
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k5, (ssk, yo, k4) x16, yo, k1, yo, (k4, yo, k2tog) x16, k5, yo, k2',
+    stitches: '211 sts'
+  },
+  // Row 72
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '213 sts'
+  },
+  // Row 73 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '217 sts'
+  },
+  // Row 74 — SMALL SHAWL STOPS HERE
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2\n\n⚠️ SMALL SHAWL: Stop here (219 sts after this row) and proceed to Lace Edging.',
+    stitches: '219 sts — small stop!'
+  },
+  // Row 75 — large shawl continues
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k6, (ssk, yo, k4) x16, ssk, yo, k3, yo, k1, yo, k3, yo, k2tog, (k4, yo, k2tog) x16, k6, yo, k2',
+    stitches: '223 sts'
+  },
+  // Row 76
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '225 sts'
+  },
+  // Row 77 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '229 sts'
+  },
+  // Row 78
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '231 sts'
+  },
+  // Row 79
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k1, (ssk, yo, k4) x18, ssk, yo, k2, yo, k1, yo, k2, yo, k2tog, (k4, yo, k2tog) x18, k1, yo, k2',
+    stitches: '235 sts'
+  },
+  // Row 80
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '237 sts'
+  },
+  // Row 81 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '241 sts'
+  },
+  // Row 82
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '243 sts'
+  },
+  // Row 83
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k2, (ssk, yo, k4) x19, ssk, yo, k1, yo, k1, yo, k1, yo, k2tog, (k4, yo, k2tog) x19, k2, yo, k2',
+    stitches: '247 sts'
+  },
+  // Row 84
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '249 sts'
+  },
+  // Row 85 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '253 sts'
+  },
+  // Row 86
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '255 sts'
+  },
+  // Row 87
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, k3, (ssk, yo, k4) x20, k2, yo, k1, yo, k2, (k4, yo, k2tog) x20, k3, yo, k2',
+    stitches: '259 sts'
+  },
+  // Row 88
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2',
+    stitches: '261 sts'
+  },
+  // Row 89 = as Row 9
+  {
+    side: 'RS', section: 'Eyelet Section',
+    instruction: 'k2, yo, knit to marker, yo, sm, k1, sm, yo, knit to last 2 sts, yo, k2',
+    stitches: '265 sts'
+  },
+  // Row 90 — LARGE SHAWL STOPS HERE, proceed to lace
+  {
+    side: 'WS', section: 'Eyelet Section',
+    instruction: 'k2, yo, purl to last 2 sts (sm as you come to them), yo, k2\n\n🛑 LARGE SHAWL: Stop here (267 sts after this row). Proceed to Lace Edging.',
+    stitches: '267 sts — large stop!'
+  },
+
+  // ── LACE EDGING ──
+  // Set-up rows
+  {
+    side: 'RS', section: 'Lace Edging',
+    instruction: 'SET-UP ROW 1: k to marker, remove marker, k2tog, k to next marker, remove marker, k1, remove marker, k to 2 sts before last marker, k2tog, remove marker, k3.\n\nSmall: 217 sts · Large: 265 sts',
+    stitches: '217 / 265 sts'
+  },
+  {
+    side: 'WS', section: 'Lace Edging',
+    instruction: 'SET-UP ROW 2: Knit.\n\n(Full Shawl Chart ends here. Bell Edging Chart begins here.)\n\nSmall: 219 sts · Large: 267 sts → these become 343 sts after setup',
+    stitches: '219 / 267 sts'
+  },
+  // Lace Row 1
+  {
+    side: 'RS', section: 'Lace Edging',
+    instruction: 'Lace Row 1: k2, (yo, k2, skp, k2, yo, k1) repeat to last stitch, k1',
+    stitches: 'same'
+  },
+  // Lace Row 2
+  {
+    side: 'WS', section: 'Lace Edging',
+    instruction: 'Lace Row 2: k2, purl to last 2 sts, k2',
+    stitches: 'same'
+  },
+  // Lace Row 3
+  {
+    side: 'RS', section: 'Lace Edging',
+    instruction: 'Lace Row 3: k2, (yo, k2, skp, k2, yo, k1) repeat to last stitch, k1',
+    stitches: 'same'
+  },
+  // Lace Row 4
+  {
+    side: 'WS', section: 'Lace Edging',
+    instruction: 'Lace Row 4: k2, purl to last 2 sts, k2',
+    stitches: 'same'
+  },
+  // Lace Row 5
+  {
+    side: 'RS', section: 'Lace Edging',
+    instruction: 'Lace Row 5: k2, (yo, k2, skp, k2, yo, k1) repeat to last stitch, k1',
+    stitches: 'same'
+  },
+  // Lace Row 6
+  {
+    side: 'WS', section: 'Lace Edging',
+    instruction: 'Lace Row 6: k2, purl to last 2 sts, k2',
+    stitches: 'same'
+  },
+  // Lace Row 7
+  {
+    side: 'RS', section: 'Lace Edging',
+    instruction: 'Lace Row 7: k2, (yo, k2, skp, k2, yo, k1) repeat to last stitch, k1',
+    stitches: 'same'
+  },
+  // Lace Row 8
+  {
+    side: 'WS', section: 'Lace Edging',
+    instruction: 'Lace Row 8: k2, purl to last 2 sts, k2',
+    stitches: 'same'
+  },
+  // Lace Row 9
+  {
+    side: 'RS', section: 'Lace Edging',
+    instruction: 'Lace Row 9: k2, (yo, k7, yo, k1) to last stitch, k1',
+    stitches: 'increases!'
+  },
+  // Lace Row 10
+  {
+    side: 'WS', section: 'Lace Edging',
+    instruction: 'Lace Row 10: k2, purl to last 2 sts, k2',
+    stitches: 'same'
+  },
+  // Bind off
+  {
+    side: 'RS', section: 'Lace Edging',
+    instruction: '🎉 BIND OFF: Cast off very loosely using a larger needle.\n\nSuggested method: k1, *k1, slip 2 sts back to left needle, k2tog through back loop* repeat to end.\n\nWet block aggressively — pin points along lace border.',
+    stitches: 'DONE! 🦇💀🦇'
+  }
 ];
 
-var STOP_SMALL = 75;
-var STOP_LARGE = 91;
+// ── STATE ──
 var KEY = 'black-death-step';
 var KEY_SIZE = 'black-death-size';
 var currentStep = 1;
 var currentSize = 'large';
+
+var STOP_SMALL = 74; // row index (1-based step)
+var STOP_LARGE = 90;
+var TOTAL_STEPS = ROWS.length;
 
 function loadState() {
   var saved = localStorage.getItem(KEY);
@@ -322,85 +1038,65 @@ function saveState() {
   localStorage.setItem(KEY_SIZE, currentSize);
 }
 
-function getSection(step) {
-  for (var i = 0; i < SECTIONS.length; i++) {
-    if (step >= SECTIONS[i].start && step <= SECTIONS[i].end) return SECTIONS[i];
-  }
-  return SECTIONS[SECTIONS.length - 1];
+function getRow() {
+  return ROWS[currentStep - 1] || ROWS[0];
 }
 
-function getStopPoint() {
+function getStopStep() {
   return currentSize === 'small' ? STOP_SMALL : STOP_LARGE;
 }
 
-function getTotalSteps() {
-  return currentSize === 'small' ? 82 : 100;
-}
-
-function getRowLabel(step) {
-  if (step <= 6) return 'Setup Row ' + step;
-  if (step <= 90) {
-    if (step % 2 === 0) return 'Row ' + step + ' (WS — purl)';
-    return 'Row ' + step + ' (RS — eyelet)';
-  }
-  var laceRow = step - 90;
-  if (laceRow <= 8) return 'Lace Row ' + laceRow;
-  if (laceRow === 9) return 'Lace Row 9 — yo, k7, yo, k1 repeat';
-  return 'Bind Off Row';
-}
-
-function getStitchCount(step) {
-  if (step <= 1) return '5 sts';
-  if (step <= 2) return '5 sts';
-  if (step <= 3) return '7 sts';
-  if (step <= 4) return '9 sts';
-  if (step <= 5) return '13 sts';
-  if (step <= 6) return '15 sts';
-  if (step >= 7 && step <= 90) {
-    var pairsFromStart = Math.floor((step - 7) / 2);
-    var inPair = (step - 7) % 2;
-    var base = 19 + (pairsFromStart * 6);
-    if (inPair === 1) base += 2;
-    return base + ' sts';
-  }
-  if (step === 91) return '219 sts (small) / 267 sts (large)';
-  return '—';
-}
-
 function render() {
-  var stopAt = getStopPoint();
-  var total = getTotalSteps();
+  var row = getRow();
+  var stopAt = getStopStep();
 
+  // Step number
   document.getElementById('step-display').textContent = currentStep;
-  document.getElementById('step-detail').innerHTML =
-    getRowLabel(currentStep) + ' &nbsp;·&nbsp; <span>' + getStitchCount(currentStep) + '</span>';
 
-  var sec = getSection(currentStep);
-  document.getElementById('section-name').textContent = sec.name;
-  document.getElementById('section-desc').textContent = sec.desc;
+  // Meta line
+  var patternRow = currentStep <= 6 ? 'Setup Row ' + currentStep : 'Pattern Row ' + (currentStep - 1);
+  document.getElementById('step-meta').innerHTML =
+    '<span class="' + row.side.toLowerCase() + '">' + row.side + '</span>' +
+    ' &nbsp;·&nbsp; ' + patternRow +
+    ' &nbsp;·&nbsp; <span class="sts">' + row.stitches + '</span>';
 
+  // Section badge
+  document.getElementById('section-badge').textContent = row.section;
+
+  // Row side label
+  var sideEl = document.getElementById('row-side');
+  sideEl.textContent = row.side === 'RS' ? '→ Right Side' : row.side === 'WS' ? '← Wrong Side' : '⚙ Setup';
+  sideEl.className = 'row-side ' + row.side.toLowerCase();
+
+  // Instruction
+  document.getElementById('instruction-body').innerHTML =
+    '<div>' + row.instruction.replace(/\n\n/g, '<br><br>') + '</div>' +
+    '<div class="stitch-count">After this row: <strong>' + row.stitches + '</strong></div>';
+
+  // Stop alert
   var alert = document.getElementById('stop-alert');
   if (currentStep === stopAt) {
-    alert.textContent = '🛑 STOP POINT for ' + (currentSize === 'small' ? 'small' : 'large') + ' shawl — begin lace edging!';
+    alert.textContent = '🛑 ' + (currentSize === 'small' ? 'SMALL' : 'LARGE') + ' SHAWL STOP POINT — begin lace edging after this row!';
     alert.classList.add('visible');
   } else if (currentStep === stopAt - 1) {
-    alert.textContent = '⚠️ Next step is your stop point for the ' + (currentSize === 'small' ? 'small' : 'large') + ' shawl.';
+    alert.textContent = '⚠️ Next row is your stop point for the ' + (currentSize === 'small' ? 'small' : 'large') + ' shawl.';
     alert.classList.add('visible');
   } else {
     alert.classList.remove('visible');
   }
 
-  var pct = Math.min(Math.round((currentStep / total) * 100), 100);
+  // Progress
+  var pct = Math.min(Math.round((currentStep / TOTAL_STEPS) * 100), 100);
   document.getElementById('progress-pct').textContent = pct + '%';
   document.getElementById('progress-fill').style.width = pct + '%';
 
+  // Size buttons
   document.getElementById('btn-small').classList.toggle('active', currentSize === 'small');
   document.getElementById('btn-large').classList.toggle('active', currentSize === 'large');
 }
 
 function changeStep(delta) {
-  var total = getTotalSteps();
-  currentStep = Math.max(1, Math.min(total, currentStep + delta));
+  currentStep = Math.max(1, Math.min(TOTAL_STEPS, currentStep + delta));
   saveState();
   render();
 }
@@ -412,15 +1108,15 @@ function setSize(size) {
 }
 
 function jumpToStep() {
-  var input = prompt('Jump to step (1–' + getTotalSteps() + '):');
+  var input = prompt('Jump to step (1–' + TOTAL_STEPS + '):');
   if (!input) return;
   var n = parseInt(input, 10);
-  if (!isNaN(n) && n >= 1 && n <= getTotalSteps()) {
+  if (!isNaN(n) && n >= 1 && n <= TOTAL_STEPS) {
     currentStep = n;
     saveState();
     render();
   } else {
-    alert('Please enter a number between 1 and ' + getTotalSteps());
+    alert('Please enter a number between 1 and ' + TOTAL_STEPS);
   }
 }
 
