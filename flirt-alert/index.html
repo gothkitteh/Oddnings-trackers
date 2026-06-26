@@ -1,1 +1,830 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Flirt Alert" />
+  <meta name="theme-color" content="#1a0020" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>Flirt Alert Tracker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #111118;
+      --surface: #1c1c26;
+      --surface2: #26263a;
+      --pink: #ff3d9a;
+      --pink-dark: #c0006a;
+      --pink-light: #ff80c0;
+      --purple: #9b59b6;
+      --purple-light: #c084fc;
+      --purple-dark: #6a0080;
+      --gold: #ffd700;
+      --text: #f0e8ff;
+      --muted: #9080b0;
+      --radius: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 18px 18px 14px;
+      text-align: center;
+      border-bottom: 1px solid #2a2a40;
+      background: linear-gradient(180deg, #200028 0%, #111118 100%);
+    }
+
+    .brand {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--pink);
+      letter-spacing: -0.01em;
+    }
+
+    h1 .sparkle { font-size: 22px; }
+
+    .tagline {
+      font-size: 12px;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    main {
+      flex: 1;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ── VERSION TOGGLE ── */
+    .version-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .ver-btn {
+      flex: 1;
+      background: var(--surface2);
+      border: 2px solid #3a3a50;
+      border-radius: 99px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 8px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .ver-btn.active {
+      background: transparent;
+      border-color: var(--pink);
+      color: var(--pink);
+    }
+
+    /* ── SECTION PILLS ── */
+    .section-nav {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .section-nav::-webkit-scrollbar { display: none; }
+
+    .sec-pill {
+      flex-shrink: 0;
+      background: var(--surface2);
+      border: 1px solid #3a3a50;
+      border-radius: 99px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .sec-pill.active {
+      background: var(--purple-dark);
+      border-color: var(--purple-light);
+      color: var(--purple-light);
+    }
+
+    /* ── JUMP INPUT ── */
+    .jump-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .jump-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid #3a3a50;
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 15px;
+      padding: 10px 14px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .jump-input:focus {
+      border-color: var(--pink);
+    }
+
+    .jump-input::placeholder { color: var(--muted); }
+
+    .jump-btn {
+      background: var(--purple-dark);
+      border: none;
+      border-radius: var(--radius);
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 16px;
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .jump-btn:active { opacity: 0.8; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .progress-bar-bg {
+      background: #2a2a40;
+      border-radius: 99px;
+      height: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--pink-dark), var(--purple-light));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── ROW CARD ── */
+    .row-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid #2a2a40;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .row-card-header {
+      padding: 10px 14px 8px;
+      border-bottom: 1px solid #2a2a40;
+    }
+
+    .row-section-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .row-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .row-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .side-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 99px;
+      letter-spacing: 0.05em;
+    }
+
+    .side-badge.rs {
+      background: var(--pink-dark);
+      color: white;
+    }
+
+    .side-badge.ws {
+      background: var(--purple-dark);
+      color: white;
+    }
+
+    .side-badge.setup {
+      background: #2a3a00;
+      color: #aaee00;
+    }
+
+    .row-card-body {
+      padding: 14px;
+    }
+
+    .row-instruction {
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .row-count {
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--pink);
+    }
+
+    .row-note {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #200030;
+      border-left: 3px solid var(--purple);
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .rep-badge {
+      display: inline-block;
+      background: var(--purple-dark);
+      color: var(--purple-light);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 8px;
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-back {
+      background: var(--surface2);
+      border: 1px solid #3a3a50;
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 16px 20px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .btn-back:active { opacity: 0.7; }
+
+    .btn-next {
+      flex: 1;
+      background: var(--pink);
+      border: none;
+      border-radius: var(--radius);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 16px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-next:active { opacity: 0.85; transform: scale(0.98); }
+
+    /* ── REP COUNTER ── */
+    .rep-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid #2a2a40;
+      padding: 10px 14px;
+    }
+
+    .rep-row.hidden { display: none; }
+
+    .rep-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .rep-label strong {
+      display: block;
+      font-size: 14px;
+      color: var(--purple-light);
+    }
+
+    .rep-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rep-btn {
+      background: var(--surface2);
+      border: 1px solid #3a3a50;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 20px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rep-val {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--pink);
+      min-width: 50px;
+      text-align: center;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 8px 16px 12px;
+      font-size: 10px;
+      color: #444460;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Oddnings Trackers</div>
+  <h1><span class="sparkle">✨</span> Flirt Alert <span class="sparkle">✨</span></h1>
+  <div class="tagline">Knit Shawl by Marly Bird — Row Tracker</div>
+</header>
+
+<main>
+
+  <!-- Version toggle -->
+  <div class="version-toggle">
+    <button class="ver-btn" id="btn-twilight" onclick="setVersion('twilight')">🌊 Twilight Surf</button>
+    <button class="ver-btn" id="btn-rainbow" onclick="setVersion('rainbow')">🌈 Rainbow Glow</button>
+  </div>
+
+  <!-- Section nav pills -->
+  <div class="section-nav" id="section-nav">
+    <button class="sec-pill" onclick="jumpToSection(0)">Start</button>
+    <button class="sec-pill" onclick="jumpToSection(1)">Slip Columns</button>
+    <button class="sec-pill" onclick="jumpToSection(2)">Slip Windows</button>
+    <button class="sec-pill" onclick="jumpToSection(3)">Garter Weave</button>
+    <button class="sec-pill" onclick="jumpToSection(4)">Bell Edging</button>
+  </div>
+
+  <!-- Jump input -->
+  <div class="jump-row">
+    <input class="jump-input" id="jump-input" type="number" placeholder="Step #" min="1" />
+    <button class="jump-btn" onclick="doJump()">Go to step</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="progress-label">Step 1 of 146 · 0%</div>
+  </div>
+
+  <!-- Rep counter (shown only during Slip Columns reps) -->
+  <div class="rep-row hidden" id="rep-row">
+    <div class="rep-label">
+      Slip Columns Repeat
+      <strong>Rows 7–10 cycle</strong>
+    </div>
+    <div class="rep-controls">
+      <button class="rep-btn" onclick="changeRep(-1)">−</button>
+      <div class="rep-val" id="rep-val">1/8</div>
+      <button class="rep-btn" onclick="changeRep(1)">+</button>
+    </div>
+  </div>
+
+  <!-- Row card -->
+  <div class="row-card">
+    <div class="row-card-header">
+      <div class="row-section-label" id="section-label">—</div>
+      <div class="row-title-row">
+        <div class="row-title" id="row-title">—</div>
+        <div class="side-badge" id="side-badge">—</div>
+      </div>
+    </div>
+    <div class="row-card-body">
+      <div id="rep-badge-wrap"></div>
+      <div class="row-instruction" id="row-instruction">—</div>
+      <div class="row-count" id="row-count">—</div>
+      <div class="row-note" id="row-note" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn-back" onclick="changeStep(-1)">← Back</button>
+    <button class="btn-next" onclick="changeStep(1)" id="btn-next">Done — Next Row →</button>
+  </div>
+
+</main>
+
+<footer>Progress saves automatically · Pattern © Marly Bird</footer>
+
+<script>
+// ── SECTION START INDICES (1-based step numbers) ──
+var SECTION_STARTS = [1, 2, 14, 78, 138];
+// 0=Start(tab), 1=SlipColumns, 2=SlipWindows, 3=GarterWeave, 4=BellEdging
+
+var ROWS = [
+  // ── BEGINNING TAB (step 1) ──
+  {side:'SETUP',section:'Beginning Tab',title:'Cast On Tab',
+   instruction:'Cast on 3 sts, and knit 7 rows.\n\nTurn work 90 degrees, pick up 3 sts from side edge, turn work 90 degrees, pick up 3 sts from cast on edge.',
+   stitches:'9 sts',rep:false},
+
+  // ── SLIP COLUMNS (steps 2–13) ──
+  {side:'RS',section:'Slip Columns',title:'Row 1',instruction:'Knit.',stitches:'9 sts',rep:false},
+  {side:'WS',section:'Slip Columns',title:'Row 2',instruction:'K3, pm, yo, p1, yo, pm, k1, pm, yo, p1, yo, pm, k3',stitches:'13 sts (incl yo\'s)',rep:false},
+  {side:'RS',section:'Slip Columns',title:'Row 3',instruction:'Knit.',stitches:'13 sts',rep:false},
+  {side:'WS',section:'Slip Columns',title:'Row 4',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'17 sts',rep:false},
+  {side:'RS',section:'Slip Columns',title:'Row 5',instruction:'Knit.',stitches:'17 sts',rep:false},
+  {side:'WS',section:'Slip Columns',title:'Row 6',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'21 sts',rep:false},
+
+  // Rep rows 7-10 (repeat 8 times, then rows 7-8 once more)
+  {side:'RS',section:'Slip Columns',title:'Row 7',instruction:'K to marker, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k1, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k3',stitches:'21 sts',rep:true,note:'wyib: move yarn to back between needles, slip st purlwise, leave yarn in back.'},
+  {side:'WS',section:'Slip Columns',title:'Row 8',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'+4 sts',rep:true},
+  {side:'RS',section:'Slip Columns',title:'Row 9',instruction:'K to marker, slm, k1, [wyib sl 1 purlwise, k1] to marker, slm, k1, slm, k1, [wyib sl 1 purlwise, k1] to marker, slm, k3',stitches:'same',rep:true,note:'wyib: move yarn to back between needles, slip st purlwise, leave yarn in back.'},
+  {side:'WS',section:'Slip Columns',title:'Row 10',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'+4 sts',rep:true,note:'Repeat Rows 7–10 a total of 8 times, then work Rows 7–8 once more. Final count: 89 sts.'},
+
+  // Final row 7 + 8
+  {side:'RS',section:'Slip Columns — Final',title:'Row 7 (last)',instruction:'K to marker, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k1, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k3',stitches:'same',rep:false},
+  {side:'WS',section:'Slip Columns — Final',title:'Row 8 (last)',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3\n\n🎉 Slip Columns complete! 89 sts total. 44 sts each side of centre st.',stitches:'89 sts',rep:false},
+
+  // ── SLIP WINDOWS (steps 14–77) ──
+  // Rep 1
+  {side:'RS',section:'Slip Windows',title:'SW Row 1',instruction:'K to marker, slm, p to marker, slm, k1, slm, p to marker, slm, k3',stitches:'89 sts',rep:false},
+  {side:'WS',section:'Slip Windows',title:'SW Row 2',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'93 sts',rep:false},
+  {side:'RS',section:'Slip Windows',title:'SW Row 3',instruction:'K to marker, slm, k4, [wyib sl 1 purlwise, k3] to 3 sts before marker, wyib sl 1 purlwise, k2, slm, k1, slm, k2, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k3',stitches:'93 sts',rep:false},
+  {side:'WS',section:'Slip Windows',title:'SW Row 4',instruction:'K to marker, slm, yo, p4, [k1, p3] to 3 sts before marker, k1, p2, yo, slm, k1, slm, yo, p2, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k3',stitches:'97 sts',rep:false},
+  {side:'RS',section:'Slip Windows',title:'SW Row 5',instruction:'K to marker, slm, k5, [wyib sl 1 purlwise, k3] to 4 sts before marker, wyib sl 1 purlwise, k3, slm, k1, slm, k3, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k3',stitches:'97 sts',rep:false},
+  {side:'WS',section:'Slip Windows',title:'SW Row 6',instruction:'K to marker, slm, yo, p5, [k1, p3] to 4 sts before marker, k1, p3, yo, slm, k1, slm, yo, p3, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k3',stitches:'101 sts',rep:false},
+  {side:'RS',section:'Slip Windows',title:'SW Row 7',instruction:'K to marker, slm, k6, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k1, slm, k4, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k3',stitches:'101 sts',rep:false},
+  {side:'WS',section:'Slip Windows',title:'SW Row 8',instruction:'K to marker, slm, yo, p6, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k1, slm, yo, p4, [k1, p3] to 7 sts before marker, k1, p6, yo, slm, k3',stitches:'105 sts',rep:false},
+  {side:'RS',section:'Slip Windows',title:'SW Row 9',instruction:'K to marker, slm, k7, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k1, slm, k5, [wyib sl 1 purlwise, k3] to 8 sts before marker, wyib sl 1 purlwise, k7, slm, k3',stitches:'105 sts',rep:false},
+  {side:'WS',section:'Slip Windows',title:'SW Row 10',instruction:'K to marker, slm, yo, p7, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k1, slm, yo, p5, [k1, p3] to 8 sts before marker, k1, p7, yo, slm, k3',stitches:'109 sts',rep:false},
+  {side:'RS',section:'Slip Windows',title:'SW Row 11',instruction:'K to marker, slm, k8, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k1, slm, k6, [wyib sl 1 purlwise, k3] to 9 sts before marker, wyib sl 1 purlwise, k8, slm, k3',stitches:'109 sts',rep:false},
+  {side:'WS',section:'Slip Windows',title:'SW Row 12',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'113 sts',rep:false},
+  {side:'RS',section:'Slip Windows',title:'SW Row 13',instruction:'K to marker, slm, p to marker, slm, k1, slm, p to marker, slm, k3',stitches:'113 sts',rep:false},
+  {side:'WS',section:'Slip Windows',title:'SW Row 14',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'117 sts',rep:false,note:'Rows 3–14 repeat 4 more times (5 total). Final: 213 sts.'},
+
+  // SW Rep 2 (rows 3-14)
+  {side:'RS',section:'Slip Windows Rep 2',title:'SW R2 Row 3',instruction:'K to marker, slm, k4, [wyib sl 1 purlwise, k3] to 3 sts before marker, wyib sl 1 purlwise, k2, slm, k1, slm, k2, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k3',stitches:'117 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 2',title:'SW R2 Row 4',instruction:'K to marker, slm, yo, p4, [k1, p3] to 3 sts before marker, k1, p2, yo, slm, k1, slm, yo, p2, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k3',stitches:'121 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 2',title:'SW R2 Row 5',instruction:'K to marker, slm, k5, [wyib sl 1 purlwise, k3] to 4 sts before marker, wyib sl 1 purlwise, k3, slm, k1, slm, k3, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k3',stitches:'121 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 2',title:'SW R2 Row 6',instruction:'K to marker, slm, yo, p5, [k1, p3] to 4 sts before marker, k1, p3, yo, slm, k1, slm, yo, p3, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k3',stitches:'125 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 2',title:'SW R2 Row 7',instruction:'K to marker, slm, k6, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k1, slm, k4, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k3',stitches:'125 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 2',title:'SW R2 Row 8',instruction:'K to marker, slm, yo, p6, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k1, slm, yo, p4, [k1, p3] to 7 sts before marker, k1, p6, yo, slm, k3',stitches:'129 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 2',title:'SW R2 Row 9',instruction:'K to marker, slm, k7, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k1, slm, k5, [wyib sl 1 purlwise, k3] to 8 sts before marker, wyib sl 1 purlwise, k7, slm, k3',stitches:'129 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 2',title:'SW R2 Row 10',instruction:'K to marker, slm, yo, p7, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k1, slm, yo, p5, [k1, p3] to 8 sts before marker, k1, p7, yo, slm, k3',stitches:'133 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 2',title:'SW R2 Row 11',instruction:'K to marker, slm, k8, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k1, slm, k6, [wyib sl 1 purlwise, k3] to 9 sts before marker, wyib sl 1 purlwise, k8, slm, k3',stitches:'133 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 2',title:'SW R2 Row 12',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'137 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 2',title:'SW R2 Row 13',instruction:'K to marker, slm, p to marker, slm, k1, slm, p to marker, slm, k3',stitches:'137 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 2',title:'SW R2 Row 14',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'141 sts',rep:false},
+
+  // SW Rep 3
+  {side:'RS',section:'Slip Windows Rep 3',title:'SW R3 Row 3',instruction:'K to marker, slm, k4, [wyib sl 1 purlwise, k3] to 3 sts before marker, wyib sl 1 purlwise, k2, slm, k1, slm, k2, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k3',stitches:'141 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 3',title:'SW R3 Row 4',instruction:'K to marker, slm, yo, p4, [k1, p3] to 3 sts before marker, k1, p2, yo, slm, k1, slm, yo, p2, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k3',stitches:'145 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 3',title:'SW R3 Row 5',instruction:'K to marker, slm, k5, [wyib sl 1 purlwise, k3] to 4 sts before marker, wyib sl 1 purlwise, k3, slm, k1, slm, k3, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k3',stitches:'145 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 3',title:'SW R3 Row 6',instruction:'K to marker, slm, yo, p5, [k1, p3] to 4 sts before marker, k1, p3, yo, slm, k1, slm, yo, p3, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k3',stitches:'149 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 3',title:'SW R3 Row 7',instruction:'K to marker, slm, k6, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k1, slm, k4, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k3',stitches:'149 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 3',title:'SW R3 Row 8',instruction:'K to marker, slm, yo, p6, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k1, slm, yo, p4, [k1, p3] to 7 sts before marker, k1, p6, yo, slm, k3',stitches:'153 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 3',title:'SW R3 Row 9',instruction:'K to marker, slm, k7, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k1, slm, k5, [wyib sl 1 purlwise, k3] to 8 sts before marker, wyib sl 1 purlwise, k7, slm, k3',stitches:'153 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 3',title:'SW R3 Row 10',instruction:'K to marker, slm, yo, p7, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k1, slm, yo, p5, [k1, p3] to 8 sts before marker, k1, p7, yo, slm, k3',stitches:'157 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 3',title:'SW R3 Row 11',instruction:'K to marker, slm, k8, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k1, slm, k6, [wyib sl 1 purlwise, k3] to 9 sts before marker, wyib sl 1 purlwise, k8, slm, k3',stitches:'157 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 3',title:'SW R3 Row 12',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'161 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 3',title:'SW R3 Row 13',instruction:'K to marker, slm, p to marker, slm, k1, slm, p to marker, slm, k3',stitches:'161 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 3',title:'SW R3 Row 14',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'165 sts',rep:false},
+
+  // SW Rep 4
+  {side:'RS',section:'Slip Windows Rep 4',title:'SW R4 Row 3',instruction:'K to marker, slm, k4, [wyib sl 1 purlwise, k3] to 3 sts before marker, wyib sl 1 purlwise, k2, slm, k1, slm, k2, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k3',stitches:'165 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 4',title:'SW R4 Row 4',instruction:'K to marker, slm, yo, p4, [k1, p3] to 3 sts before marker, k1, p2, yo, slm, k1, slm, yo, p2, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k3',stitches:'169 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 4',title:'SW R4 Row 5',instruction:'K to marker, slm, k5, [wyib sl 1 purlwise, k3] to 4 sts before marker, wyib sl 1 purlwise, k3, slm, k1, slm, k3, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k3',stitches:'169 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 4',title:'SW R4 Row 6',instruction:'K to marker, slm, yo, p5, [k1, p3] to 4 sts before marker, k1, p3, yo, slm, k1, slm, yo, p3, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k3',stitches:'173 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 4',title:'SW R4 Row 7',instruction:'K to marker, slm, k6, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k1, slm, k4, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k3',stitches:'173 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 4',title:'SW R4 Row 8',instruction:'K to marker, slm, yo, p6, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k1, slm, yo, p4, [k1, p3] to 7 sts before marker, k1, p6, yo, slm, k3',stitches:'177 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 4',title:'SW R4 Row 9',instruction:'K to marker, slm, k7, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k1, slm, k5, [wyib sl 1 purlwise, k3] to 8 sts before marker, wyib sl 1 purlwise, k7, slm, k3',stitches:'177 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 4',title:'SW R4 Row 10',instruction:'K to marker, slm, yo, p7, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k1, slm, yo, p5, [k1, p3] to 8 sts before marker, k1, p7, yo, slm, k3',stitches:'181 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 4',title:'SW R4 Row 11',instruction:'K to marker, slm, k8, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k1, slm, k6, [wyib sl 1 purlwise, k3] to 9 sts before marker, wyib sl 1 purlwise, k8, slm, k3',stitches:'181 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 4',title:'SW R4 Row 12',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'185 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 4',title:'SW R4 Row 13',instruction:'K to marker, slm, p to marker, slm, k1, slm, p to marker, slm, k3',stitches:'185 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 4',title:'SW R4 Row 14',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'189 sts',rep:false},
+
+  // SW Rep 5
+  {side:'RS',section:'Slip Windows Rep 5',title:'SW R5 Row 3',instruction:'K to marker, slm, k4, [wyib sl 1 purlwise, k3] to 3 sts before marker, wyib sl 1 purlwise, k2, slm, k1, slm, k2, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k3',stitches:'189 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 5',title:'SW R5 Row 4',instruction:'K to marker, slm, yo, p4, [k1, p3] to 3 sts before marker, k1, p2, yo, slm, k1, slm, yo, p2, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k3',stitches:'193 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 5',title:'SW R5 Row 5',instruction:'K to marker, slm, k5, [wyib sl 1 purlwise, k3] to 4 sts before marker, wyib sl 1 purlwise, k3, slm, k1, slm, k3, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k3',stitches:'193 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 5',title:'SW R5 Row 6',instruction:'K to marker, slm, yo, p5, [k1, p3] to 4 sts before marker, k1, p3, yo, slm, k1, slm, yo, p3, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k3',stitches:'197 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 5',title:'SW R5 Row 7',instruction:'K to marker, slm, k6, [wyib sl 1 purlwise, k3] to 5 sts before marker, wyib sl 1 purlwise, k4, slm, k1, slm, k4, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k3',stitches:'197 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 5',title:'SW R5 Row 8',instruction:'K to marker, slm, yo, p6, [k1, p3] to 5 sts before marker, k1, p4, yo, slm, k1, slm, yo, p4, [k1, p3] to 7 sts before marker, k1, p6, yo, slm, k3',stitches:'201 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 5',title:'SW R5 Row 9',instruction:'K to marker, slm, k7, [wyib sl 1 purlwise, k3] to 6 sts before marker, wyib sl 1 purlwise, k5, slm, k1, slm, k5, [wyib sl 1 purlwise, k3] to 8 sts before marker, wyib sl 1 purlwise, k7, slm, k3',stitches:'201 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 5',title:'SW R5 Row 10',instruction:'K to marker, slm, yo, p7, [k1, p3] to 6 sts before marker, k1, p5, yo, slm, k1, slm, yo, p5, [k1, p3] to 8 sts before marker, k1, p7, yo, slm, k3',stitches:'205 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 5',title:'SW R5 Row 11',instruction:'K to marker, slm, k8, [wyib sl 1 purlwise, k3] to 7 sts before marker, wyib sl 1 purlwise, k6, slm, k1, slm, k6, [wyib sl 1 purlwise, k3] to 9 sts before marker, wyib sl 1 purlwise, k8, slm, k3',stitches:'205 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 5',title:'SW R5 Row 12',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3',stitches:'209 sts',rep:false},
+  {side:'RS',section:'Slip Windows Rep 5',title:'SW R5 Row 13',instruction:'K to marker, slm, p to marker, slm, k1, slm, p to marker, slm, k3',stitches:'209 sts',rep:false},
+  {side:'WS',section:'Slip Windows Rep 5',title:'SW R5 Row 14',instruction:'K to marker, slm, yo, k to marker, yo, slm, k1, slm, yo, k to marker, yo, slm, k3\n\n🎉 Slip Windows complete! 213 sts. Move to Garter Weave.',stitches:'213 sts',rep:false},
+
+  // ── GARTER WEAVE (steps 78–137) ──
+  {side:'RS',section:'Garter Weave',title:'GW Set-up 1',instruction:'Knit.',stitches:'213 sts',rep:false},
+  {side:'WS',section:'Garter Weave',title:'GW Set-up 2',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'217 sts',rep:false,note:'Between each 5 Stockinette sts = 5 Garter sts. Outside repeats: Stockinette (knit RS, purl WS).'},
+  {side:'RS',section:'Garter Weave',title:'GW Row 1',instruction:'K to marker, slm, k3, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k2, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'217 sts',rep:false},
+  {side:'WS',section:'Garter Weave',title:'GW Row 2',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'221 sts',rep:false},
+  {side:'RS',section:'Garter Weave',title:'GW Row 3',instruction:'K to marker, slm, k4, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k3, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'221 sts',rep:false},
+  {side:'WS',section:'Garter Weave',title:'GW Row 4',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'225 sts',rep:false},
+  {side:'RS',section:'Garter Weave',title:'GW Row 5',instruction:'K to marker, slm, k5, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k4, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'225 sts',rep:false},
+  {side:'WS',section:'Garter Weave',title:'GW Row 6',instruction:'K to marker, slm, yo, * k5, p5; rep from * 9 more times, k5, p to marker, yo, slm, k1, slm, yo, p4, * k5, p5; rep from * 9 more times, k5, yo, slm, k3',stitches:'229 sts',rep:false,note:'⚠️ Garter sts shift position for next 5 rows.'},
+  {side:'RS',section:'Garter Weave',title:'GW Row 7',instruction:'Knit.',stitches:'229 sts',rep:false},
+  {side:'WS',section:'Garter Weave',title:'GW Row 8',instruction:'K to marker, slm, yo, p1, * k5, p5; rep from * 10 more times, yo, slm, k1, slm, yo, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'233 sts',rep:false},
+  {side:'RS',section:'Garter Weave',title:'GW Row 9',instruction:'Knit.',stitches:'233 sts',rep:false},
+  {side:'WS',section:'Garter Weave',title:'GW Row 10',instruction:'K to marker, slm, yo, p2, * k5, p5; rep from * 10 more times, k to marker, yo, slm, k1, slm, yo, p1, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'237 sts',rep:false},
+  {side:'RS',section:'Garter Weave',title:'GW Row 11',instruction:'K to marker, slm, k3, * k5, p5; rep from * 10 more times, k to marker, slm, k1, slm, k2, * p5, k5; rep from * 10 times, k to marker, slm, k3',stitches:'237 sts',rep:false,note:'⚠️ Garter sts shift position for next 5 rows.'},
+  {side:'WS',section:'Garter Weave',title:'GW Row 12',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'241 sts',rep:false},
+  {side:'RS',section:'Garter Weave',title:'GW Row 13',instruction:'K to marker, slm, k4, * k5, p5; rep from * 10 more times, k to marker, slm, k1, slm, k3, * p5, k5; rep from * 10 times, k to marker, slm, k3',stitches:'241 sts',rep:false},
+  {side:'WS',section:'Garter Weave',title:'GW Row 14',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'245 sts',rep:false},
+  {side:'RS',section:'Garter Weave',title:'GW Row 15',instruction:'K to marker, slm, k5, * k5, p5; rep from * 10 more times, k to marker, slm, k1, slm, k4, * p5, k5; rep from * 10 times, k to marker, slm, k3',stitches:'245 sts',rep:false,note:'⚠️ Garter sts shift position for next 5 rows.'},
+  {side:'WS',section:'Garter Weave',title:'GW Row 16',instruction:'K to marker, slm, yo, p5, * k5, p5; rep from * 10 more times, p to marker, yo, slm, k1, slm, yo, p4, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'249 sts',rep:false},
+  {side:'RS',section:'Garter Weave',title:'GW Row 17',instruction:'Knit.',stitches:'249 sts',rep:false},
+  {side:'WS',section:'Garter Weave',title:'GW Row 18',instruction:'K to marker, slm, yo, p6, * k5, p5; rep from * 10 more times, p to marker, yo, slm, k1, slm, yo, p5, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'253 sts',rep:false},
+  {side:'RS',section:'Garter Weave',title:'GW Row 19',instruction:'Knit.',stitches:'253 sts',rep:false},
+  {side:'WS',section:'Garter Weave',title:'GW Row 20',instruction:'K to marker, slm, yo, p7, * k5, p5; rep from * 10 more times, p to marker, yo, slm, k1, slm, yo, p6, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3\n\nRepeat Rows 1–20 twice more, then Rows 1–4 once more. Final: 345 sts.',stitches:'257 sts',rep:false},
+
+  // GW Rep 2
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 1',instruction:'K to marker, slm, k3, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k2, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'257 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 2',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'261 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 3',instruction:'K to marker, slm, k4, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k3, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'261 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 4',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'265 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 5',instruction:'K to marker, slm, k5, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k4, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'265 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 6',instruction:'K to marker, slm, yo, * k5, p5; rep from * 9 more times, k5, p to marker, yo, slm, k1, slm, yo, p4, * k5, p5; rep from * 9 more times, k5, yo, slm, k3',stitches:'269 sts',rep:false,note:'⚠️ Garter sts shift position.'},
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 7',instruction:'Knit.',stitches:'269 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 8',instruction:'K to marker, slm, yo, p1, * k5, p5; rep from * 10 more times, yo, slm, k1, slm, yo, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'273 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 9',instruction:'Knit.',stitches:'273 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 10',instruction:'K to marker, slm, yo, p2, * k5, p5; rep from * 10 more times, k to marker, yo, slm, k1, slm, yo, p1, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'277 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 11',instruction:'K to marker, slm, k3, * k5, p5; rep from * 10 more times, k to marker, slm, k1, slm, k2, * p5, k5; rep from * 10 times, k to marker, slm, k3',stitches:'277 sts',rep:false,note:'⚠️ Garter sts shift position.'},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 12',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'281 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 13',instruction:'K to marker, slm, k4, * k5, p5; rep from * 10 more times, k to marker, slm, k1, slm, k3, * p5, k5; rep from * 10 times, k to marker, slm, k3',stitches:'281 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 14',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'285 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 15',instruction:'K to marker, slm, k5, * k5, p5; rep from * 10 more times, k to marker, slm, k1, slm, k4, * p5, k5; rep from * 10 times, k to marker, slm, k3',stitches:'285 sts',rep:false,note:'⚠️ Garter sts shift position.'},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 16',instruction:'K to marker, slm, yo, p5, * k5, p5; rep from * 10 more times, p to marker, yo, slm, k1, slm, yo, p4, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'289 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 17',instruction:'Knit.',stitches:'289 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 18',instruction:'K to marker, slm, yo, p6, * k5, p5; rep from * 10 more times, p to marker, yo, slm, k1, slm, yo, p5, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'293 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 2',title:'GW R2 Row 19',instruction:'Knit.',stitches:'293 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 2',title:'GW R2 Row 20',instruction:'K to marker, slm, yo, p7, * k5, p5; rep from * 10 more times, p to marker, yo, slm, k1, slm, yo, p6, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'297 sts',rep:false},
+
+  // GW Rep 3
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 1',instruction:'K to marker, slm, k3, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k2, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'297 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 2',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'301 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 3',instruction:'K to marker, slm, k4, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k3, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'301 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 4',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'305 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 5',instruction:'K to marker, slm, k5, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k4, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'305 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 6',instruction:'K to marker, slm, yo, * k5, p5; rep from * 9 more times, k5, p to marker, yo, slm, k1, slm, yo, p4, * k5, p5; rep from * 9 more times, k5, yo, slm, k3',stitches:'309 sts',rep:false,note:'⚠️ Garter sts shift position.'},
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 7',instruction:'Knit.',stitches:'309 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 8',instruction:'K to marker, slm, yo, p1, * k5, p5; rep from * 10 more times, yo, slm, k1, slm, yo, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'313 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 9',instruction:'Knit.',stitches:'313 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 10',instruction:'K to marker, slm, yo, p2, * k5, p5; rep from * 10 more times, k to marker, yo, slm, k1, slm, yo, p1, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'317 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 11',instruction:'K to marker, slm, k3, * k5, p5; rep from * 10 more times, k to marker, slm, k1, slm, k2, * p5, k5; rep from * 10 times, k to marker, slm, k3',stitches:'317 sts',rep:false,note:'⚠️ Garter sts shift position.'},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 12',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'321 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 13',instruction:'K to marker, slm, k4, * k5, p5; rep from * 10 more times, k to marker, slm, k1, slm, k3, * p5, k5; rep from * 10 times, k to marker, slm, k3',stitches:'321 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 14',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'325 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 15',instruction:'K to marker, slm, k5, * k5, p5; rep from * 10 more times, k to marker, slm, k1, slm, k4, * p5, k5; rep from * 10 times, k to marker, slm, k3',stitches:'325 sts',rep:false,note:'⚠️ Garter sts shift position.'},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 16',instruction:'K to marker, slm, yo, p5, * k5, p5; rep from * 10 more times, p to marker, yo, slm, k1, slm, yo, p4, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'329 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 17',instruction:'Knit.',stitches:'329 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 18',instruction:'K to marker, slm, yo, p6, * k5, p5; rep from * 10 more times, p to marker, yo, slm, k1, slm, yo, p5, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'333 sts',rep:false},
+  {side:'RS',section:'Garter Weave Rep 3',title:'GW R3 Row 19',instruction:'Knit.',stitches:'333 sts',rep:false},
+  {side:'WS',section:'Garter Weave Rep 3',title:'GW R3 Row 20',instruction:'K to marker, slm, yo, p7, * k5, p5; rep from * 10 more times, p to marker, yo, slm, k1, slm, yo, p6, * p5, k5; rep from * 10 more times, p to marker, yo, slm, k3',stitches:'337 sts',rep:false},
+
+  // GW Final (rows 1-4 only)
+  {side:'RS',section:'Garter Weave Final',title:'GW Final Row 1',instruction:'K to marker, slm, k3, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k2, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'337 sts',rep:false},
+  {side:'WS',section:'Garter Weave Final',title:'GW Final Row 2',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'341 sts',rep:false},
+  {side:'RS',section:'Garter Weave Final',title:'GW Final Row 3',instruction:'K to marker, slm, k4, * p5, k5; rep from * 9 more times, k to marker, slm, k1, slm, k3, * k5, p5; rep from * 9 times, k to marker, slm, k3',stitches:'341 sts',rep:false},
+  {side:'WS',section:'Garter Weave Final',title:'GW Final Row 4',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3\n\n🎉 Garter Weave complete! 345 sts. Move to Bell Edging.',stitches:'345 sts',rep:false},
+
+  // ── BELL EDGING (steps 138–157) ──
+  {side:'RS',section:'Bell Edging',title:'BE Set-up 1',instruction:'K to marker, remove marker, k2tog, k to next marker, remove marker, k1, remove marker, k to 2 sts before last marker, k2tog, remove marker, k3',stitches:'343 sts',rep:false},
+  {side:'WS',section:'Bell Edging',title:'BE Set-up 2',instruction:'Knit.\n\n(Full Shawl Chart ends. Bell Edging Chart begins.)',stitches:'343 sts',rep:false},
+  {side:'RS',section:'Bell Edging',title:'BE Row 1',instruction:'P7, * k1, p7; repeat from * to end',stitches:'343 sts',rep:false},
+  {side:'WS',section:'Bell Edging',title:'BE Row 2',instruction:'K7, * p1, k7; repeat from * to end',stitches:'343 sts',rep:false},
+  {side:'RS',section:'Bell Edging',title:'BE Row 3',instruction:'P7, * yo, k1, yo, p7; repeat from * to end',stitches:'427 sts',rep:false},
+  {side:'WS',section:'Bell Edging',title:'BE Row 4',instruction:'K7, * p1 tbl, p1, p1 tbl, k7; repeat from * to end',stitches:'427 sts',rep:false},
+  {side:'RS',section:'Bell Edging',title:'BE Row 5',instruction:'P7, * yo, k3, yo, p7; repeat from * to end',stitches:'511 sts',rep:false},
+  {side:'WS',section:'Bell Edging',title:'BE Row 6',instruction:'K7, * p1 tbl, p3, p1 tbl, k7; repeat from * to end',stitches:'511 sts',rep:false},
+  {side:'RS',section:'Bell Edging',title:'BE Row 7',instruction:'P7, * yo, k5, yo, p7; repeat from * to end',stitches:'595 sts',rep:false},
+  {side:'WS',section:'Bell Edging',title:'BE Row 8',instruction:'K7, * p1 tbl, p5, p1 tbl, k7; repeat from * to end',stitches:'595 sts',rep:false},
+  {side:'RS',section:'Bell Edging',title:'BE Row 9',instruction:'P7, * yo, k7, yo, p7; repeat from * to end',stitches:'679 sts',rep:false},
+  {side:'WS',section:'Bell Edging',title:'BE Row 10',instruction:'K7, * p1 tbl, p7, p1 tbl, k7; repeat from * to end',stitches:'679 sts',rep:false},
+  {side:'RS',section:'Bell Edging',title:'BE Row 11',instruction:'P7, * yo, k9, yo, p7; repeat from * to end',stitches:'763 sts',rep:false},
+  {side:'WS',section:'Bell Edging',title:'BE Row 12',instruction:'K7, * p1 tbl, p9, p1 tbl, k7; repeat from * to end',stitches:'763 sts',rep:false},
+  {side:'RS',section:'Bell Edging',title:'BE Row 13',instruction:'P7, * yo, k11, yo, p7; repeat from * to end',stitches:'847 sts',rep:false},
+  {side:'WS',section:'Bell Edging',title:'BE Row 14',instruction:'K7, * p1 tbl, p11, p1 tbl, k7; repeat from * to end',stitches:'847 sts',rep:false},
+  {side:'RS',section:'Bell Edging',title:'Bind Off!',instruction:'Cast off all stitches loosely.\n\n🎉 Wet block thoroughly. Finished: approx 60" across top, 30" deep.',stitches:'DONE! 💕✨',rep:false}
+];
+
+var TOTAL = ROWS.length;
+
+var KEY_VER    = 'flirt-alert-version';
+var KEY_R_STEP = 'flirt-alert-rainbow-step';
+var KEY_R_REP  = 'flirt-alert-rainbow-rep';
+var KEY_T_STEP = 'flirt-alert-twilight-step';
+var KEY_T_REP  = 'flirt-alert-twilight-rep';
+
+var version = 'rainbow';
+var state = { rainbow:{step:1,rep:1}, twilight:{step:1,rep:1} };
+
+function loadState() {
+  var v = localStorage.getItem(KEY_VER); if(v) version=v;
+  var rs = localStorage.getItem(KEY_R_STEP); if(rs) state.rainbow.step=parseInt(rs,10);
+  var rr = localStorage.getItem(KEY_R_REP);  if(rr) state.rainbow.rep=parseInt(rr,10);
+  var ts = localStorage.getItem(KEY_T_STEP); if(ts) state.twilight.step=parseInt(ts,10);
+  var tr = localStorage.getItem(KEY_T_REP);  if(tr) state.twilight.rep=parseInt(tr,10);
+}
+
+function saveState() {
+  localStorage.setItem(KEY_VER, version);
+  localStorage.setItem(KEY_R_STEP, state.rainbow.step);
+  localStorage.setItem(KEY_R_REP,  state.rainbow.rep);
+  localStorage.setItem(KEY_T_STEP, state.twilight.step);
+  localStorage.setItem(KEY_T_REP,  state.twilight.rep);
+}
+
+function getS() { return state[version]; }
+
+function getCurrentSection(step) {
+  var s = 0;
+  for (var i = SECTION_STARTS.length-1; i >= 0; i--) {
+    if (step >= SECTION_STARTS[i]) { s = i; break; }
+  }
+  return s;
+}
+
+function jumpToSection(idx) {
+  getS().step = SECTION_STARTS[idx];
+  saveState();
+  render();
+}
+
+function render() {
+  var s = getS();
+  var row = ROWS[s.step - 1] || ROWS[0];
+
+  // Version buttons
+  document.getElementById('btn-rainbow').className = 'ver-btn' + (version==='rainbow'?' active':'');
+  document.getElementById('btn-twilight').className = 'ver-btn' + (version==='twilight'?' active':'');
+
+  // Section pills
+  var secIdx = getCurrentSection(s.step);
+  var pills = document.querySelectorAll('.sec-pill');
+  for (var i=0; i<pills.length; i++) {
+    pills[i].className = 'sec-pill' + (i===secIdx?' active':'');
+  }
+
+  // Progress
+  var pct = Math.min(Math.round((s.step/TOTAL)*100),100);
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('progress-label').textContent = 'Step '+s.step+' of '+TOTAL+' · '+pct+'%';
+
+  // Row card header
+  document.getElementById('section-label').textContent = row.section;
+  document.getElementById('row-title').textContent = row.title;
+
+  var badge = document.getElementById('side-badge');
+  var sideClass = row.side.toLowerCase();
+  badge.className = 'side-badge '+sideClass;
+  badge.textContent = row.side === 'RS' ? 'RS' : row.side === 'WS' ? 'WS' : 'SETUP';
+
+  // Rep badge
+  var repWrap = document.getElementById('rep-badge-wrap');
+  var repRow = document.getElementById('rep-row');
+  if (row.rep) {
+    repWrap.innerHTML = '<div class="rep-badge">Slip Columns Rep '+s.rep+' of 8</div>';
+    repRow.classList.remove('hidden');
+    document.getElementById('rep-val').textContent = s.rep+'/8';
+  } else {
+    repWrap.innerHTML = '';
+    repRow.classList.add('hidden');
+  }
+
+  // Instruction
+  document.getElementById('row-instruction').innerHTML = row.instruction.replace(/\n\n/g,'<br><br>');
+  document.getElementById('row-count').textContent = 'Count: '+row.stitches;
+
+  // Note
+  var noteEl = document.getElementById('row-note');
+  if (row.note) {
+    noteEl.style.display = 'block';
+    noteEl.textContent = '💡 '+row.note;
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  // Next button label
+  var nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = s.step >= TOTAL ? '🎉 Complete!' : 'Done — Next Row →';
+}
+
+function changeStep(delta) {
+  var s = getS();
+  s.step = Math.max(1, Math.min(TOTAL, s.step+delta));
+  saveState();
+  render();
+}
+
+function changeRep(delta) {
+  var s = getS();
+  s.rep = Math.max(1, Math.min(8, s.rep+delta));
+  saveState();
+  render();
+}
+
+function setVersion(v) {
+  version = v;
+  saveState();
+  render();
+}
+
+function doJump() {
+  var input = document.getElementById('jump-input');
+  var n = parseInt(input.value, 10);
+  if (!isNaN(n) && n >= 1 && n <= TOTAL) {
+    getS().step = n;
+    saveState();
+    render();
+    input.value = '';
+    input.blur();
+  }
+}
+
+// Allow Enter key on jump input
+document.getElementById('jump-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doJump();
+});
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+
+loadState();
+render();
+</script>
+</body>
+</html>
