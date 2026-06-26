@@ -1,8 +1,8 @@
-const CACHE_NAME = 'black-death-v1';
+const CACHE_NAME = 'black-death-v2';
 const ASSETS = [
-  '/oddnings-trackers/black-death/',
-  '/oddnings-trackers/black-death/index.html',
-  '/oddnings-trackers/black-death/manifest.json'
+  '/Oddnings-trackers/black-death/',
+  '/Oddnings-trackers/black-death/index.html',
+  '/Oddnings-trackers/black-death/manifest.json'
 ];
 
 self.addEventListener('install', e => {
