@@ -1,0 +1,25 @@
+{
+  "name": "Black Death Row Tracker",
+  "short_name": "Black Death",
+  "description": "Row tracker for Black Death shawl by Hoxton Handmade",
+  "start_url": "/oddnings-trackers/black-death/",
+  "scope": "/oddnings-trackers/black-death/",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
