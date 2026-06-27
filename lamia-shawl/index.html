@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lamia Wrap</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b0f1e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lamia Wrap" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --midnight: #0b0f1e;
+      --deep-navy: #111827;
+      --fjord: #1a2540;
+      --ice: #a8c8e8;
+      --silver: #c8d8e8;
+      --teal: #4a9bb8;
+      --copper: #c4794a;
+      --copper-light: #e8956a;
+      --snow: #e8f0f8;
+      --muted: #4a5568;
+      --card-bg: #141c30;
+      --border: rgba(168, 200, 232, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--midnight);
+      color: var(--snow);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Starfield background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 15% 20%, rgba(168,200,232,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 35% 8%, rgba(200,216,232,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 30%, rgba(168,200,232,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 75% 12%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 25%, rgba(168,200,232,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 45%, rgba(200,216,232,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 65% 55%, rgba(168,200,232,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 82% 48%, rgba(255,255,255,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 10% 68%, rgba(168,200,232,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 48% 72%, rgba(200,216,232,0.25) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92% 78%, rgba(168,200,232,0.35) 0%, transparent 100%),
+        radial-gradient(2px 2px at 40% 15%, rgba(168,200,232,0.25) 0%, transparent 100%),
+        radial-gradient(2px 2px at 70% 40%, rgba(74,155,184,0.2) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 16px 40px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 32px 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .moon-snowflake {
+      font-size: 36px;
+      letter-spacing: 4px;
+      display: block;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 12px rgba(168,200,232,0.5));
+    }
+
+    .title {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--silver);
+      text-shadow: 0 0 30px rgba(168,200,232,0.3);
+    }
+
+    .subtitle {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-top: 6px;
+    }
+
+    /* Progress ring */
+    .progress-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .ring-wrap {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin-bottom: 12px;
+    }
+
+    .ring-svg {
+      transform: rotate(-90deg);
+      width: 140px;
+      height: 140px;
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: var(--fjord);
+      stroke-width: 8;
+    }
+
+    .ring-fill {
+      fill: none;
+      stroke: var(--teal);
+      stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s ease;
+      filter: drop-shadow(0 0 6px rgba(74,155,184,0.6));
+    }
+
+    .ring-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring-row {
+      font-family: 'Cinzel', serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--silver);
+      line-height: 1;
+    }
+
+    .ring-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .progress-stats {
+      display: flex;
+      gap: 24px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .progress-stats span { color: var(--ice); }
+
+    /* Section pills */
+    .section-pills {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .section-pills::-webkit-scrollbar { display: none; }
+
+    .pill {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill.active {
+      background: var(--fjord);
+      border-color: var(--teal);
+      color: var(--ice);
+    }
+
+    /* Row card */
+    .row-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .row-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), var(--copper));
+    }
+
+    .row-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .row-number {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      color: var(--copper);
+      text-transform: uppercase;
+    }
+
+    .row-section-badge {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      background: rgba(74,155,184,0.1);
+      border: 1px solid rgba(74,155,184,0.25);
+      border-radius: 10px;
+      padding: 3px 10px;
+    }
+
+    .row-instruction {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--snow);
+      margin-bottom: 14px;
+    }
+
+    .row-instruction strong {
+      color: var(--copper-light);
+    }
+
+    .row-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--muted);
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .row-meta .stitch-count {
+      color: var(--ice);
+      font-weight: 500;
+    }
+
+    /* Stitch count accent */
+    .stitch-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(168,200,232,0.06);
+      border: 1px solid rgba(168,200,232,0.15);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--ice);
+    }
+
+    /* Buttons */
+    .btn-done {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--teal), #2d7a96);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 20px rgba(74,155,184,0.25);
+    }
+
+    .btn-done:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(74,155,184,0.35); }
+    .btn-done:active { transform: translateY(0); }
+
+    .btn-prev {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 20px;
+    }
+
+    .btn-prev:hover { border-color: var(--teal); color: var(--ice); }
+
+    /* Jump input */
+    .jump-wrap {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .jump-input {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--snow);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .jump-input:focus { border-color: var(--teal); }
+    .jump-input::placeholder { color: var(--muted); }
+
+    .jump-btn {
+      padding: 10px 16px;
+      background: var(--fjord);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--ice);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .jump-btn:hover { border-color: var(--teal); }
+
+    /* Section overview */
+    .section-overview {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+
+    .section-overview h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 12px;
+    }
+
+    .section-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+
+    .section-row:last-child { border-bottom: none; }
+
+    .section-name { color: var(--silver); }
+    .section-range { color: var(--muted); }
+    .section-done { color: var(--teal); font-size: 10px; }
+
+    /* Snowflake divider */
+    .divider {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: 8px;
+      margin: 20px 0;
+      opacity: 0.4;
+    }
+
+    /* Completed state */
+    .completed-banner {
+      background: linear-gradient(135deg, rgba(74,155,184,0.15), rgba(196,121,74,0.15));
+      border: 1px solid rgba(74,155,184,0.3);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .completed-banner .big-icon { font-size: 40px; margin-bottom: 12px; }
+    .completed-banner h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      color: var(--silver);
+      margin-bottom: 8px;
+    }
+    .completed-banner p { font-size: 13px; color: var(--muted); }
+
+    .reset-btn {
+      margin-top: 16px;
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .reset-btn:hover { color: var(--ice); border-color: var(--teal); }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <header class="header">
+    <span class="moon-snowflake">❄️ 🌙 ❄️</span>
+    <div class="title">Lamia Wrap</div>
+    <div class="subtitle">Toni Lipsey · Midnight Fjords</div>
+  </header>
+
+  <div class="progress-section">
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 140 140">
+        <circle class="ring-track" cx="70" cy="70" r="58" />
+        <circle class="ring-fill" id="ringFill" cx="70" cy="70" r="58"
+          stroke-dasharray="364.4"
+          stroke-dashoffset="364.4" />
+      </svg>
+      <div class="ring-center">
+        <div class="ring-row" id="ringRowNum">1</div>
+        <div class="ring-label">of 127</div>
+      </div>
+    </div>
+    <div class="progress-stats">
+      <div>Section: <span id="statSection">—</span></div>
+      <div>Stitches: <span id="statStitches">—</span></div>
+      <div>Done: <span id="statPct">0%</span></div>
+    </div>
+  </div>
+
+  <div class="section-pills" id="sectionPills">
+    <div class="pill active" data-section="all">All</div>
+    <div class="pill" data-section="foundation">Foundation</div>
+    <div class="pill" data-section="body">Body</div>
+    <div class="pill" data-section="border">Border</div>
+  </div>
+
+  <div id="mainContent"></div>
+
+</div>
+
+<script>
+// ─── Pattern Data ───────────────────────────────────────────────
+const ROWS = [];
+
+function addRow(num, section, instruction, stitches, note) {
+  ROWS.push({ num, section, instruction, stitches, note: note || '' });
+}
+
+// Foundation: Rows 1–13
+addRow(1, 'foundation', 'Ch 3, pull up a loop in the back bump of the 2nd ch from hook and the following ch, <strong>RetP</strong>.', 2, 'Starting chain — 3 loops including working loop');
+addRow(2, 'foundation', '<strong>Tss 1</strong>, yo, Lts, <strong>RetP</strong>.', 3, 'First increase row');
+addRow(3, 'foundation', '<strong>Tps 1</strong>, tss 1, yo, Lts, <strong>RetP</strong>.', 4, 'Honeycomb begins');
+addRow(4, 'foundation', '<strong>Tss 1</strong>, tps 1, tss 1, yo, Lts, <strong>RetP</strong>.', 5, '');
+addRow(5, 'foundation', '(<strong>Tps 1</strong>, tss 1) 2 times, yo, Lts, <strong>RetP</strong>.', 6, '');
+addRow(6, 'foundation', '(<strong>Tss 1</strong>, tps 1) 2 times, tss 1, yo, Lts, <strong>RetP</strong>.', 7, '');
+addRow(7, 'foundation', '(<strong>Tps 1</strong>, tss 1) to last st, yo, Lts, <strong>RetP</strong>.', 8, 'Honeycomb Row 2 repeating pattern begins');
+addRow(8, 'foundation', '(<strong>Tss 1</strong>, tps 1) to last 2 sts, tss 1, yo, Lts, <strong>RetP</strong>.', 9, 'Honeycomb Row 1 pattern');
+addRow(9, 'foundation', '(<strong>Tps 1</strong>, tss 1) to last st, yo, Lts, <strong>RetP</strong>.', 10, 'Rep of Row 7');
+addRow(10, 'foundation', '(<strong>Tss 1</strong>, tps 1) to last 2 sts, tss 1, yo, Lts, <strong>RetP</strong>.', 11, 'Rep of Row 8');
+addRow(11, 'foundation', '(<strong>Tps 1</strong>, tss 1) to last st, yo, Lts, <strong>RetP</strong>.', 12, 'Rep of Row 7');
+addRow(12, 'foundation', '(<strong>Tss 1</strong>, tps 1) to last 2 sts, tss 1, yo, Lts, <strong>RetP</strong>.', 13, 'Rep of Row 8');
+addRow(13, 'foundation', '(<strong>Tps 1</strong>, tss 1) to last st, yo, Lts, <strong>RetP</strong>.', 14, 'Final foundation row — Rep of Row 7');
+
+// Body: Rows 14–117
+for (let r = 14; r <= 117; r++) {
+  const isOdd = r % 2 === 0; // Row 14 is "Row 1" of pattern (odd pattern row)
+  // Row 14 = Honeycomb ROW 1 pattern, Row 15 = Honeycomb ROW 2 pattern, alternating
+  const patternRow = ((r - 14) % 2 === 0) ? 1 : 2;
+  const sts = r + 1; // stitch count = row number + 1
+  if (patternRow === 1) {
+    addRow(r, 'body', 'Work <strong>Honeycomb Pattern ROW 1</strong> (Tss 1, tps 1) for 13 sts, tss each st to last st, yo, Lts, <strong>RetP</strong>.', sts, 'Keep honeycomb panel at left edge, stockinette fills rest');
+  } else {
+    addRow(r, 'body', 'Work <strong>Honeycomb Pattern ROW 2</strong> (Tps 1, tss 1) for 13 sts, tss each st to last st, yo, Lts, <strong>RetP</strong>.', sts, 'Keep honeycomb panel at left edge, stockinette fills rest');
+  }
+}
+
+// Border: Rows 118–127
+for (let r = 118; r <= 127; r++) {
+  const patternRow = ((r - 118) % 2 === 0) ? 1 : 2;
+  const sts = r + 1;
+  if (r <= 127) {
+    if (patternRow === 1) {
+      addRow(r, 'border', 'Work <strong>Honeycomb Pattern ROW 1</strong> to last 2 sts, tss 1, yo, Lts, <strong>RetP</strong>.', sts, 'Full-width honeycomb — no plain stockinette section');
+    } else {
+      addRow(r, 'border', 'Work <strong>Honeycomb Pattern ROW 2</strong> to last 2 sts, tss 1, yo, Lts, <strong>RetP</strong>.', sts, 'Full-width honeycomb — no plain stockinette section');
+    }
+  }
+}
+
+// ─── State ──────────────────────────────────────────────────────
+const STORAGE_KEY = 'lamia-wrap-v1';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { currentRow: 1 };
+}
+
+function saveState(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) {}
+}
+
+let state = loadState();
+let activeSection = 'all';
+
+// ─── Render ─────────────────────────────────────────────────────
+function getSectionLabel(s) {
+  return { foundation: 'Foundation', body: 'Body', border: 'Border' }[s] || s;
+}
+
+function updateRing(rowNum) {
+  const pct = (rowNum - 1) / 127;
+  const circumference = 364.4;
+  const offset = circumference - (pct * circumference);
+  const ring = document.getElementById('ringFill');
+  if (ring) {
+    ring.style.strokeDashoffset = offset;
+  }
+  document.getElementById('ringRowNum').textContent = rowNum > 127 ? '✓' : rowNum;
+  document.getElementById('statPct').textContent = Math.round(pct * 100) + '%';
+
+  const row = ROWS[rowNum - 1];
+  if (row) {
+    document.getElementById('statSection').textContent = getSectionLabel(row.section);
+    document.getElementById('statStitches').textContent = row.stitches;
+  }
+}
+
+function render() {
+  const content = document.getElementById('mainContent');
+  const row = ROWS[state.currentRow - 1];
+  const isDone = state.currentRow > 127;
+
+  updateRing(Math.min(state.currentRow, 127));
+
+  // Section pills filter (just visual for now)
+  document.querySelectorAll('.pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.section === activeSection);
+  });
+
+  if (isDone) {
+    content.innerHTML = `
+      <div class="completed-banner">
+        <div class="big-icon">🌙❄️🌙</div>
+        <h2>Lamia Wrap Complete!</h2>
+        <p>All 127 rows finished. Time to wet block and wear with pride.</p>
+        <button class="reset-btn" onclick="resetProject()">Start Over</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Jump input
+  let jumpHtml = `
+    <div class="jump-wrap">
+      <input class="jump-input" type="number" id="jumpInput" min="1" max="127" placeholder="Jump to row…" />
+      <button class="jump-btn" onclick="jumpToRow()">Go</button>
+    </div>
+  `;
+
+  // Section overview
+  const sections = [
+    { name: 'Foundation', range: '1–13', rows: [1,13] },
+    { name: 'Body', range: '14–117', rows: [14,117] },
+    { name: 'Border', range: '118–127', rows: [118,127] },
+  ];
+
+  let overviewHtml = `<div class="section-overview"><h3>❄ Sections</h3>`;
+  sections.forEach(s => {
+    const done = state.currentRow > s.rows[1];
+    const active = state.currentRow >= s.rows[0] && state.currentRow <= s.rows[1];
+    overviewHtml += `
+      <div class="section-row">
+        <span class="section-name">${s.name}</span>
+        <span class="section-range">Rows ${s.range}</span>
+        <span class="section-done">${done ? '✓ done' : active ? '▶ current' : ''}</span>
+      </div>`;
+  });
+  overviewHtml += `</div>`;
+
+  // Row card
+  const rowHtml = `
+    <div class="row-card">
+      <div class="row-header">
+        <div class="row-number">Row ${row.num}</div>
+        <div class="row-section-badge">${getSectionLabel(row.section)}</div>
+      </div>
+      <div class="row-instruction">${row.instruction}</div>
+      <div class="row-meta">
+        <div>Stitches after: <span class="stitch-count">${row.stitches}</span></div>
+        ${row.note ? `<div style="color:var(--muted);font-style:italic">${row.note}</div>` : ''}
+      </div>
+    </div>
+  `;
+
+  // Next row preview
+  let nextHtml = '';
+  if (state.currentRow < 127) {
+    const next = ROWS[state.currentRow];
+    nextHtml = `
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;opacity:0.6;">
+        <div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Up Next · Row ${next.num}</div>
+        <div style="font-size:13px;color:var(--silver);">${next.instruction.replace(/<[^>]+>/g,'')}</div>
+      </div>
+    `;
+  }
+
+  const divider = `<div class="divider">❄ ❄ ❄</div>`;
+
+  content.innerHTML = jumpHtml + rowHtml +
+    `<button class="btn-done" onclick="advance()">✓ Row ${row.num} Complete — Next Row</button>` +
+    (state.currentRow > 1 ? `<button class="btn-prev" onclick="goBack()">← Back to Row ${state.currentRow - 1}</button>` : '') +
+    divider + nextHtml + overviewHtml;
+}
+
+function advance() {
+  if (state.currentRow <= 127) {
+    state.currentRow++;
+    saveState(state);
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function goBack() {
+  if (state.currentRow > 1) {
+    state.currentRow--;
+    saveState(state);
+    render();
+  }
+}
+
+function jumpToRow() {
+  const val = parseInt(document.getElementById('jumpInput').value);
+  if (val >= 1 && val <= 127) {
+    state.currentRow = val;
+    saveState(state);
+    render();
+  }
+}
+
+function resetProject() {
+  if (confirm('Reset all progress?')) {
+    state = { currentRow: 1 };
+    saveState(state);
+    render();
+  }
+}
+
+document.querySelectorAll('.pill').forEach(p => {
+  p.addEventListener('click', () => {
+    activeSection = p.dataset.section;
+    render();
+  });
+});
+
+// Enter key for jump
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.activeElement?.id === 'jumpInput') jumpToRow();
+});
+
+render();
+
+// Service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
