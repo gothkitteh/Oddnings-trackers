@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -489,6 +488,27 @@
 var SECTION_STARTS = [1, 2, 14, 78, 138];
 // 0=Start(tab), 1=SlipColumns, 2=SlipWindows, 3=GarterWeave, 4=BellEdging
 
+// ── RUNNING TOTALS FOR SLIP COLUMNS REP ROWS ──
+// Base: 21 sts before rep 1 row 7. Each row 8 and row 10 adds 4 sts.
+// repStitches[rep][rowKey] = running total at that point
+var SC_REP_TOTALS = (function() {
+  var out = {};
+  var base = 21;
+  for (var rep = 1; rep <= 8; rep++) {
+    out[rep] = {
+      r7:  base,
+      r8:  base + 4,
+      r9:  base + 4,
+      r10: base + 8
+    };
+    base = base + 8;
+  }
+  // Final rows 7 and 8 (after all 8 reps)
+  out['final_r7'] = base;
+  out['final_r8'] = base + 4; // = 89
+  return out;
+})();
+
 var ROWS = [
   // ── BEGINNING TAB (step 1) ──
   {side:'SETUP',section:'Beginning Tab',title:'Cast On Tab',
@@ -497,21 +517,22 @@ var ROWS = [
 
   // ── SLIP COLUMNS (steps 2–13) ──
   {side:'RS',section:'Slip Columns',title:'Row 1',instruction:'Knit.',stitches:'9 sts',rep:false},
-  {side:'WS',section:'Slip Columns',title:'Row 2',instruction:'K3, pm, yo, p1, yo, pm, k1, pm, yo, p1, yo, pm, k3',stitches:'13 sts (incl yo\'s)',rep:false},
+  {side:'WS',section:'Slip Columns',title:'Row 2',instruction:'K3, pm, yo, p1, yo, pm, k1, pm, yo, p1, yo, pm, k3',stitches:'13 sts',rep:false},
   {side:'RS',section:'Slip Columns',title:'Row 3',instruction:'Knit.',stitches:'13 sts',rep:false},
   {side:'WS',section:'Slip Columns',title:'Row 4',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'17 sts',rep:false},
   {side:'RS',section:'Slip Columns',title:'Row 5',instruction:'Knit.',stitches:'17 sts',rep:false},
   {side:'WS',section:'Slip Columns',title:'Row 6',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'21 sts',rep:false},
 
   // Rep rows 7-10 (repeat 8 times, then rows 7-8 once more)
-  {side:'RS',section:'Slip Columns',title:'Row 7',instruction:'K to marker, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k1, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k3',sstitches:'rep_r7',rep:true,note:'wyib: move yarn to back between needles, slip st purlwise, leave yarn in back.'},
+  // stitches field is a placeholder — render() fills in the running total from SC_REP_TOTALS
+  {side:'RS',section:'Slip Columns',title:'Row 7',instruction:'K to marker, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k1, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k3',stitches:'rep_r7',rep:true,note:'wyib: move yarn to back between needles, slip st purlwise, leave yarn in back.'},
   {side:'WS',section:'Slip Columns',title:'Row 8',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'rep_r8',rep:true},
-  {side:'RS',section:'Slip Columns',title:'Row 9',instruction:'K to marker, slm, k1, [wyib sl 1 purlwise, k1] to marker, slm, k1, slm, k1, [wyib sl 1 purlwise, k1] to marker, slm, k3',titches:'rep_r9',rep:true,note:'wyib: move yarn to back between needles, slip st purlwise, leave yarn in back.'},
+  {side:'RS',section:'Slip Columns',title:'Row 9',instruction:'K to marker, slm, k1, [wyib sl 1 purlwise, k1] to marker, slm, k1, slm, k1, [wyib sl 1 purlwise, k1] to marker, slm, k3',stitches:'rep_r9',rep:true,note:'wyib: move yarn to back between needles, slip st purlwise, leave yarn in back.'},
   {side:'WS',section:'Slip Columns',title:'Row 10',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3',stitches:'rep_r10',rep:true,note:'Repeat Rows 7–10 a total of 8 times, then work Rows 7–8 once more. Final count: 89 sts.'},
 
   // Final row 7 + 8
-  {side:'RS',section:'Slip Columns — Final',title:'Row 7 (last)',instruction:'K to marker, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k1, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k3',stitches:'same',rep:false},
-  {side:'WS',section:'Slip Columns — Final',title:'Row 8 (last)',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3\n\n🎉 Slip Columns complete! 89 sts total. 44 sts each side of centre st.',stitches:'89 sts',rep:false},
+  {side:'RS',section:'Slip Columns — Final',title:'Row 7 (last)',instruction:'K to marker, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k1, slm, k2, [wyib sl 1 purlwise, k1] to 1 st before marker, k1, slm, k3',stitches:'final_r7',rep:false,isFinalSC:true},
+  {side:'WS',section:'Slip Columns — Final',title:'Row 8 (last)',instruction:'K to marker, slm, yo, p to marker, yo, slm, k1, slm, yo, p to marker, yo, slm, k3\n\n🎉 Slip Columns complete! 89 sts total. 44 sts each side of centre st.',stitches:'final_r8',rep:false,isFinalSC:true},
 
   // ── SLIP WINDOWS (steps 14–77) ──
   // Rep 1
@@ -680,30 +701,8 @@ var ROWS = [
   {side:'RS',section:'Bell Edging',title:'Bind Off!',instruction:'Cast off all stitches loosely.\n\n🎉 Wet block thoroughly. Finished: approx 60" across top, 30" deep.',stitches:'DONE! 💕✨',rep:false}
 ];
 
-var SC_REP_TOTALS = (function() {
-  var out = {};
-  var base = 21;
-  for (var rep = 1; rep <= 8; rep++) {
-    out[rep] = { r7: base, r8: base+4, r9: base+4, r10: base+8 };
-    base = base + 8;
-  }
-  out['final_r7'] = base;
-  out['final_r8'] = base + 4;
-  return out;
-})();
+var TOTAL = ROWS.length;
 
-function resolveStitches(row, rep) {
-  var s = row.stitches;
-  if (!s || (!s.startsWith('rep_') && !s.startsWith('final_'))) return s;
-  var t = SC_REP_TOTALS;
-  if (s === 'rep_r7')   return t[rep] ? t[rep].r7  + ' sts' : s;
-  if (s === 'rep_r8')   return t[rep] ? t[rep].r8  + ' sts' : s;
-  if (s === 'rep_r9')   return t[rep] ? t[rep].r9  + ' sts' : s;
-  if (s === 'rep_r10')  return t[rep] ? t[rep].r10 + ' sts' : s;
-  if (s === 'final_r7') return t['final_r7'] + ' sts';
-  if (s === 'final_r8') return t['final_r8'] + ' sts';
-  return s;
-}
 var KEY_VER    = 'flirt-alert-version';
 var KEY_R_STEP = 'flirt-alert-rainbow-step';
 var KEY_R_REP  = 'flirt-alert-rainbow-rep';
@@ -711,6 +710,7 @@ var KEY_T_STEP = 'flirt-alert-twilight-step';
 var KEY_T_REP  = 'flirt-alert-twilight-rep';
 
 var version = 'rainbow';
+// ── POSITION UPDATE: Rainbow Glow stopped at Row 7 of Repeat 7 (step 8, rep 7) ──
 var state = { rainbow:{step:8,rep:7}, twilight:{step:1,rep:1} };
 
 function loadState() {
@@ -743,6 +743,20 @@ function jumpToSection(idx) {
   getS().step = SECTION_STARTS[idx];
   saveState();
   render();
+}
+
+// ── RESOLVE RUNNING TOTAL for rep and final SC rows ──
+function resolveStitches(row, rep) {
+  var s = row.stitches;
+  if (!s || (!s.startsWith('rep_') && !s.startsWith('final_'))) return s;
+  var totals = SC_REP_TOTALS;
+  if (s === 'rep_r7')   return totals[rep] ? totals[rep].r7  + ' sts' : s;
+  if (s === 'rep_r8')   return totals[rep] ? totals[rep].r8  + ' sts' : s;
+  if (s === 'rep_r9')   return totals[rep] ? totals[rep].r9  + ' sts' : s;
+  if (s === 'rep_r10')  return totals[rep] ? totals[rep].r10 + ' sts' : s;
+  if (s === 'final_r7') return totals['final_r7'] + ' sts';
+  if (s === 'final_r8') return totals['final_r8'] + ' sts';
+  return s;
 }
 
 function render() {
@@ -788,7 +802,10 @@ function render() {
 
   // Instruction
   document.getElementById('row-instruction').innerHTML = row.instruction.replace(/\n\n/g,'<br><br>');
-  var stitchDisplay = resolveStitches(row, s.rep); document.getElementById('row-count').textContent = 'Total stitches: ' + stitchDisplay;
+
+  // ── RUNNING TOTAL display ──
+  var stitchDisplay = resolveStitches(row, s.rep);
+  document.getElementById('row-count').textContent = 'Total stitches: ' + stitchDisplay;
 
   // Note
   var noteEl = document.getElementById('row-note');
