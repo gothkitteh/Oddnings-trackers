@@ -680,8 +680,30 @@ var ROWS = [
   {side:'RS',section:'Bell Edging',title:'Bind Off!',instruction:'Cast off all stitches loosely.\n\n🎉 Wet block thoroughly. Finished: approx 60" across top, 30" deep.',stitches:'DONE! 💕✨',rep:false}
 ];
 
-var SC_REP_TOTALS = (function() {   var out = {};   var base = 21;   for (var rep = 1; rep <= 8; rep++) {     out[rep] = { r7: base, r8: base+4, r9: base+4, r10: base+8 };     base = base + 8;   }   out['final_r7'] = base;   out['final_r8'] = base + 4;   return out; })();  function resolveStitches(row, rep) {   var s = row.stitches;   if (!s || (!s.startsWith('rep_') && !s.startsWith('final_'))) return s;   var t = SC_REP_TOTALS;   if (s === 'rep_r7')   return t[rep] ? t[rep].r7  + ' sts' : s;   if (s === 'rep_r8')   return t[rep] ? t[rep].r8  + ' sts' : s;   if (s === 'rep_r9')   return t[rep] ? t[rep].r9  + ' sts' : s;   if (s === 'rep_r10')  return t[rep] ? t[rep].r10 + ' sts' : s;   if (s === 'final_r7') return t['final_r7'] + ' sts';   if (s === 'final_r8') return t['final_r8'] + ' sts';   return s; }
+var SC_REP_TOTALS = (function() {
+  var out = {};
+  var base = 21;
+  for (var rep = 1; rep <= 8; rep++) {
+    out[rep] = { r7: base, r8: base+4, r9: base+4, r10: base+8 };
+    base = base + 8;
+  }
+  out['final_r7'] = base;
+  out['final_r8'] = base + 4;
+  return out;
+})();
 
+function resolveStitches(row, rep) {
+  var s = row.stitches;
+  if (!s || (!s.startsWith('rep_') && !s.startsWith('final_'))) return s;
+  var t = SC_REP_TOTALS;
+  if (s === 'rep_r7')   return t[rep] ? t[rep].r7  + ' sts' : s;
+  if (s === 'rep_r8')   return t[rep] ? t[rep].r8  + ' sts' : s;
+  if (s === 'rep_r9')   return t[rep] ? t[rep].r9  + ' sts' : s;
+  if (s === 'rep_r10')  return t[rep] ? t[rep].r10 + ' sts' : s;
+  if (s === 'final_r7') return t['final_r7'] + ' sts';
+  if (s === 'final_r8') return t['final_r8'] + ' sts';
+  return s;
+}
 var KEY_VER    = 'flirt-alert-version';
 var KEY_R_STEP = 'flirt-alert-rainbow-step';
 var KEY_R_REP  = 'flirt-alert-rainbow-rep';
