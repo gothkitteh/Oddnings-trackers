@@ -1,1 +1,25 @@
-
+{
+  "name": "Steve's Blanket",
+  "short_name": "Steve's",
+  "description": "Row tracker for Steve's Butter Ripple Afghan commission",
+  "start_url": "/Oddnings-trackers/steves-blanket/",
+  "scope": "/Oddnings-trackers/steves-blanket/",
+  "display": "standalone",
+  "background_color": "#1a2a1a",
+  "theme_color": "#1a2a1a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
