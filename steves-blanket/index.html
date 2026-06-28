@@ -1,1 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Steve's Blanket</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a2a1a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Steve's Blanket" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
 
+  <style>
+    :root {
+      --forest:    #1a2a1a;
+      --bark:      #2c3d20;
+      --moss:      #3d5c2a;
+      --leaf:      #5a7a3a;
+      --sage:      #8aab6a;
+      --wheat:     #d4a85a;
+      --cream:     #e8d4a0;
+      --parchment: #f0e8c8;
+      --snow:      #f8f4e8;
+      --muted:     #5a6a4a;
+      --card-bg:   #1e2e1a;
+      --border:    rgba(138,171,106,0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--forest);
+      color: var(--snow);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle ripple texture in background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          180deg,
+          transparent 0px,
+          transparent 18px,
+          rgba(90,122,58,0.04) 18px,
+          rgba(90,122,58,0.04) 20px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 16px 40px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 28px 0 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .header-icon { font-size: 32px; display: block; margin-bottom: 10px; }
+
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-top: 5px;
+    }
+
+    /* Deadline banner */
+    .deadline-banner {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--wheat);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .deadline-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .deadline-days {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: var(--wheat);
+      line-height: 1;
+    }
+
+    .deadline-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .pace-block { text-align: right; }
+    .pace-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: var(--sage);
+      line-height: 1;
+    }
+
+    /* Progress bar */
+    .progress-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .progress-row-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      color: var(--cream);
+      line-height: 1;
+    }
+
+    .progress-of {
+      font-size: 13px;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+
+    .progress-pct {
+      font-size: 20px;
+      color: var(--sage);
+      font-family: 'Playfair Display', serif;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      background: var(--forest);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--moss), var(--sage));
+      border-radius: 10px;
+      transition: width 0.5s ease;
+      position: relative;
+    }
+
+    /* Ripple wave on bar */
+    .bar-fill::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 20px;
+      background: linear-gradient(90deg, transparent, rgba(212,168,90,0.4));
+      border-radius: 0 10px 10px 0;
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .progress-stats span { color: var(--cream); }
+
+    /* Row counter */
+    .counter-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .counter-label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .counter-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .counter-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bark);
+      color: var(--cream);
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .counter-btn:hover { background: var(--moss); border-color: var(--sage); }
+    .counter-btn:active { transform: scale(0.95); }
+
+    .counter-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 56px;
+      color: var(--cream);
+      line-height: 1;
+      min-width: 100px;
+    }
+
+    .counter-subtext {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--moss), var(--leaf));
+      border: none;
+      border-radius: 12px;
+      color: var(--parchment);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 16px rgba(61,92,42,0.4);
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(61,92,42,0.5); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 16px;
+    }
+
+    .btn-secondary:hover { border-color: var(--sage); color: var(--cream); }
+
+    /* Jump */
+    .jump-wrap {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .jump-input {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--snow);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .jump-input:focus { border-color: var(--sage); }
+    .jump-input::placeholder { color: var(--muted); }
+
+    .jump-btn {
+      padding: 10px 16px;
+      background: var(--bark);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--cream);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .jump-btn:hover { border-color: var(--sage); }
+
+    /* Milestone callout */
+    .milestone {
+      background: linear-gradient(135deg, rgba(61,92,42,0.3), rgba(212,168,90,0.1));
+      border: 1px solid rgba(212,168,90,0.25);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--cream);
+      display: none;
+    }
+
+    .milestone.show { display: block; }
+    .milestone-icon { font-size: 18px; margin-right: 8px; }
+
+    /* Today's goal */
+    .today-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .today-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .today-target { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--wheat); }
+    .today-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .today-done { font-size: 22px; }
+
+    /* Completed */
+    .completed-banner {
+      background: linear-gradient(135deg, rgba(61,92,42,0.3), rgba(212,168,90,0.15));
+      border: 1px solid rgba(212,168,90,0.3);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .completed-banner .big-icon { font-size: 48px; margin-bottom: 12px; }
+    .completed-banner h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--cream);
+      margin-bottom: 8px;
+    }
+    .completed-banner p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    .reset-btn {
+      margin-top: 16px;
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .divider {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 6px;
+      margin: 16px 0;
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <header class="header">
+    <span class="header-icon">🌿</span>
+    <div class="title">Steve's Blanket</div>
+    <div class="subtitle">Butter Ripple Afghan · Commission</div>
+  </header>
+
+  <div id="mainContent"></div>
+
+</div>
+
+<script>
+// ─── Config ─────────────────────────────────────────────────────
+const TOTAL_ROWS = 225;
+const DEADLINE = new Date('2025-07-25T23:59:59');
+const STORAGE_KEY = 'steves-blanket-v1';
+
+// Fix deadline year
+const dl = new Date('2026-07-25T23:59:59');
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { currentRow: 134, todayStart: null, todayRows: 0 };
+}
+
+function saveState(s) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e) {}
+}
+
+let state = loadState();
+
+// ─── Calculations ────────────────────────────────────────────────
+function getDaysLeft() {
+  const now = new Date();
+  const diff = dl - now;
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
+function getRowsLeft() {
+  return Math.max(0, TOTAL_ROWS - state.currentRow);
+}
+
+function getPaceNeeded() {
+  const days = getDaysLeft();
+  if (days === 0) return getRowsLeft();
+  return (getRowsLeft() / days).toFixed(1);
+}
+
+function getTodayTarget() {
+  return Math.ceil(getRowsLeft() / getDaysLeft());
+}
+
+function getMilestone() {
+  const r = state.currentRow;
+  if (r >= TOTAL_ROWS) return null;
+  if (r === TOTAL_ROWS - 1) return { icon: '🎉', text: 'One row to go! Almost there!' };
+  if (r >= 200 && r < 202) return { icon: '🌿', text: '200 rows done — the home stretch!' };
+  if (r >= 175 && r < 177) return { icon: '🧶', text: '175 rows — over three quarters done!' };
+  if (r >= 150 && r < 152) return { icon: '🌾', text: '150 rows — two thirds of the way there!' };
+  if (r % 15 === 0) return { icon: '📏', text: `Row ${r} — time to measure your gauge!` };
+  return null;
+}
+
+// ─── Render ──────────────────────────────────────────────────────
+function render() {
+  const content = document.getElementById('mainContent');
+  const pct = Math.min(100, Math.round((state.currentRow / TOTAL_ROWS) * 100));
+  const rowsLeft = getRowsLeft();
+  const daysLeft = getDaysLeft();
+  const pace = getPaceNeeded();
+  const isDone = state.currentRow >= TOTAL_ROWS;
+  const milestone = getMilestone();
+
+  if (isDone) {
+    content.innerHTML = `
+      <div class="completed-banner">
+        <div class="big-icon">🌿🎉🌿</div>
+        <h2>Steve's Blanket is Done!</h2>
+        <p>All ${TOTAL_ROWS} rows complete.<br>Time to weave in ends and make that delivery!</p>
+        <button class="reset-btn" onclick="resetProject()">Start Over</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Deadline + pace
+  const deadlineHtml = `
+    <div class="deadline-banner">
+      <div>
+        <div class="deadline-label">Days to Deadline</div>
+        <div class="deadline-days">${daysLeft}</div>
+        <div class="deadline-sub">July 25, 2026</div>
+      </div>
+      <div class="pace-block">
+        <div class="deadline-label">Rows / Day Needed</div>
+        <div class="pace-num">${pace}</div>
+        <div class="deadline-sub">${rowsLeft} rows left</div>
+      </div>
+    </div>
+  `;
+
+  // Progress bar
+  const progressHtml = `
+    <div class="progress-section">
+      <div class="progress-header">
+        <div>
+          <span class="progress-row-num">${state.currentRow}</span>
+          <span class="progress-of">of ${TOTAL_ROWS} rows</span>
+        </div>
+        <div class="progress-pct">${pct}%</div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="progress-stats">
+        <div>Started: <span>~0</span></div>
+        <div>Done: <span>${state.currentRow}</span></div>
+        <div>Left: <span>${rowsLeft}</span></div>
+      </div>
+    </div>
+  `;
+
+  // Today's goal
+  const todayTarget = getTodayTarget();
+  const todayHtml = `
+    <div class="today-card">
+      <div>
+        <div class="today-label">Today's Goal</div>
+        <div class="today-target">${todayTarget} rows</div>
+        <div class="today-sub">to stay on pace</div>
+      </div>
+      <div class="today-done">${daysLeft <= 3 ? '🔥' : daysLeft <= 7 ? '⚡' : '🌿'}</div>
+    </div>
+  `;
+
+  // Milestone
+  const milestoneHtml = milestone ? `
+    <div class="milestone show">
+      <span class="milestone-icon">${milestone.icon}</span>${milestone.text}
+    </div>
+  ` : '';
+
+  // Counter
+  const counterHtml = `
+    <div class="counter-card">
+      <div class="counter-label">Current Row</div>
+      <div class="counter-display">
+        <button class="counter-btn" onclick="decRow()">−</button>
+        <div class="counter-num" id="counterNum">${state.currentRow}</div>
+        <button class="counter-btn" onclick="incRow()">+</button>
+      </div>
+      <div class="counter-subtext">Tap + when you finish a row</div>
+    </div>
+    <button class="btn-primary" onclick="incRow()">✓ Row ${state.currentRow} Complete — Next Row</button>
+    ${state.currentRow > 1 ? `<button class="btn-secondary" onclick="decRow()">← Back to Row ${state.currentRow - 1}</button>` : ''}
+  `;
+
+  // Jump
+  const jumpHtml = `
+    <div class="jump-wrap">
+      <input class="jump-input" type="number" id="jumpInput" min="1" max="${TOTAL_ROWS}" placeholder="Jump to row…" />
+      <button class="jump-btn" onclick="jumpToRow()">Go</button>
+    </div>
+  `;
+
+  const divider = `<div class="divider">~ ~ ~</div>`;
+
+  content.innerHTML = deadlineHtml + progressHtml + todayHtml + milestoneHtml + divider + counterHtml + jumpHtml;
+}
+
+function incRow() {
+  if (state.currentRow < TOTAL_ROWS) {
+    state.currentRow++;
+    saveState(state);
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function decRow() {
+  if (state.currentRow > 1) {
+    state.currentRow--;
+    saveState(state);
+    render();
+  }
+}
+
+function jumpToRow() {
+  const val = parseInt(document.getElementById('jumpInput').value);
+  if (val >= 1 && val <= TOTAL_ROWS) {
+    state.currentRow = val;
+    saveState(state);
+    render();
+  }
+}
+
+function resetProject() {
+  if (confirm('Reset all progress?')) {
+    state = { currentRow: 1, todayStart: null, todayRows: 0 };
+    saveState(state);
+    render();
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.activeElement?.id === 'jumpInput') jumpToRow();
+});
+
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
