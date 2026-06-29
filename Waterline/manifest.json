@@ -1,0 +1,25 @@
+{
+  "name": "Waterline Shawl Tracker",
+  "short_name": "Waterline",
+  "description": "Row tracker for Waterline Shawl by Ann Weaver for Red Heart",
+  "start_url": "/Oddnings-trackers/Waterline/",
+  "scope": "/Oddnings-trackers/Waterline/",
+  "display": "standalone",
+  "background_color": "#f0f7fa",
+  "theme_color": "#2a6b8a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
