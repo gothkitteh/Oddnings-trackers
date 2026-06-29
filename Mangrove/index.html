@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2d6a4f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mangrove">
+<title>Mangrove Shawl Tracker</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep:    #1b4332;
+    --forest:  #2d6a4f;
+    --fern:    #52b788;
+    --mist:    #b7e4c7;
+    --foam:    #e9f5ee;
+    --white:   #ffffff;
+    --accent:  #95d5b2;
+    --gold:    #d4a84b;
+    --text:    #1a2e24;
+    --subtext: #4a7a5e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--foam);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(150deg, var(--deep) 0%, var(--forest) 55%, var(--fern) 100%);
+    padding: 1.4rem 1.25rem 2.6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Mangrove root decoration */
+  header::before {
+    content: '';
+    position: absolute;
+    bottom: 8px; left: 0; right: 0;
+    height: 40px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 18px,
+      rgba(255,255,255,0.07) 18px, rgba(255,255,255,0.07) 20px
+    );
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 28px;
+    background: var(--foam);
+    clip-path: ellipse(52% 100% at 50% 100%);
+  }
+
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.65rem;
+    color: var(--white);
+    letter-spacing: 0.1em;
+    font-weight: 400;
+  }
+
+  header p {
+    color: var(--mist);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+    font-weight: 300;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    padding: 1.2rem 1.25rem 0;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--subtext);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .progress-bar {
+    height: 5px;
+    background: var(--mist);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--forest), var(--fern));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* REPEAT CHIP */
+  .repeat-chip {
+    margin: 0.9rem 1.25rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--forest);
+    color: var(--white);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.7rem;
+    border-radius: 20px;
+  }
+
+  .chip.gold {
+    background: var(--gold);
+    color: #3a2400;
+  }
+
+  .chip span.dot {
+    width: 5px; height: 5px;
+    background: var(--fern);
+    border-radius: 50%;
+  }
+
+  /* TURN INDICATOR */
+  .turn-indicator {
+    margin: 0.6rem 1.25rem 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .turn-indicator.turn { color: var(--forest); }
+  .turn-indicator.no-turn { color: var(--gold); }
+
+  /* VIEW TOGGLE */
+  .view-toggle {
+    margin: 0.9rem 1.25rem 0;
+    display: flex;
+    background: var(--mist);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: transparent;
+    color: var(--subtext);
+    letter-spacing: 0.05em;
+  }
+
+  .toggle-btn.active {
+    background: var(--white);
+    color: var(--forest);
+    box-shadow: 0 1px 4px rgba(45,106,79,0.15);
+  }
+
+  /* ROW CARD */
+  .row-card {
+    margin: 0.9rem 1.25rem;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(45,106,79,0.10);
+    overflow: hidden;
+  }
+
+  .row-card-header {
+    background: linear-gradient(135deg, var(--deep), var(--forest));
+    padding: 0.9rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .row-number {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  .row-type-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.55rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.18);
+    color: var(--white);
+  }
+
+  /* WRITTEN VIEW */
+  .view-written {
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .stitch-note {
+    margin-top: 0.7rem;
+    padding: 0.55rem 0.8rem;
+    background: var(--foam);
+    border-left: 3px solid var(--fern);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.78rem;
+    color: var(--subtext);
+    line-height: 1.5;
+  }
+
+  /* CHART VIEW */
+  .view-chart {
+    padding: 1rem 1.25rem;
+    display: none;
+  }
+
+  .chart-row {
+    font-family: 'Fira Mono', monospace;
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    color: var(--forest);
+    background: var(--foam);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--mist);
+  }
+
+  .symbol-key {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3rem 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .symbol-key-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: var(--subtext);
+  }
+
+  .sym {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--forest);
+    font-weight: 500;
+    min-width: 1.5rem;
+  }
+
+  .chart-note {
+    margin-top: 0.75rem;
+    padding: 0.55rem 0.8rem;
+    background: var(--foam);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.78rem;
+    color: var(--subtext);
+    line-height: 1.5;
+  }
+
+  /* NAV */
+  .nav-area {
+    padding: 0.9rem 1.25rem 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 0.85rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+  }
+
+  .btn-prev {
+    background: var(--mist);
+    color: var(--deep);
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--forest), var(--deep));
+    color: var(--white);
+    box-shadow: 0 3px 10px rgba(45,106,79,0.35);
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+
+  /* STITCH COUNT */
+  .stitch-count {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--subtext);
+    margin: 0 1.25rem 0.5rem;
+  }
+
+  .stitch-count strong {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    color: var(--forest);
+  }
+
+  /* COMPLETION */
+  .completion {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .completion.show { display: flex; }
+
+  .completion-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+  .completion h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: var(--deep);
+    margin-bottom: 0.5rem;
+  }
+
+  .completion p {
+    color: var(--subtext);
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mangrove</h1>
+  <p>Shawl Tracker · Marly Bird · Shawl Size</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="progress-text">Row 1</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="repeat-chip">
+  <div class="chip"><span class="dot"></span><span id="section-label">Loading...</span></div>
+  <div class="chip gold" id="repeat-label" style="display:none">Rep 1 of 9</div>
+</div>
+
+<div class="turn-indicator" id="turn-indicator"></div>
+
+<div class="view-toggle">
+  <button class="toggle-btn active" id="btn-written" onclick="setView('written')">📝 Written</button>
+  <button class="toggle-btn" id="btn-chart" onclick="setView('chart')">📊 Chart</button>
+</div>
+
+<div class="row-card" id="row-card">
+  <div class="row-card-header">
+    <span class="row-number" id="row-display">Row —</span>
+    <span class="row-type-badge" id="row-type-badge">Body</span>
+  </div>
+
+  <div class="view-written" id="view-written">
+    <div id="written-instructions">Loading...</div>
+    <div class="stitch-note" id="stitch-note" style="display:none"></div>
+  </div>
+
+  <div class="view-chart" id="view-chart">
+    <div class="chart-row" id="chart-symbols">—</div>
+    <div class="chart-note" id="chart-note"></div>
+    <div class="symbol-key">
+      <div class="symbol-key-item"><span class="sym">⊤</span> fdc</div>
+      <div class="symbol-key-item"><span class="sym">†</span> dc</div>
+      <div class="symbol-key-item"><span class="sym">‡</span> stacked dc</div>
+      <div class="symbol-key-item"><span class="sym">⌒⌒⌒</span> shell</div>
+      <div class="symbol-key-item"><span class="sym">∧</span> dc2tog</div>
+      <div class="symbol-key-item"><span class="sym">∧∧</span> dc3tog</div>
+      <div class="symbol-key-item"><span class="sym">↩</span> rev sc</div>
+      <div class="symbol-key-item"><span class="sym">+</span> sc</div>
+    </div>
+  </div>
+</div>
+
+<div class="stitch-count" id="stitch-count-display"></div>
+
+<div class="nav-area">
+  <button class="btn btn-prev" id="btn-prev" onclick="navigate(-1)">← Back</button>
+  <button class="btn btn-next" id="btn-next" onclick="navigate(1)">Next Row →</button>
+</div>
+
+<div class="completion" id="completion">
+  <div class="completion-icon">🌿</div>
+  <h2>Mangrove Complete!</h2>
+  <p>Weave in all ends.<br>Block using spray or wet method,<br>pin to schematic size and allow to dry.</p>
+</div>
+
+<script>
+// ─── PATTERN ────────────────────────────────────────────────────────────────
+// Each row: { label, section, repeatNum, type, turn, written, chart, chartNote, stitchCount }
+
+const ROWS = [];
+
+function row(label, section, repeatNum, type, turn, written, chart, chartNote, stitchCount) {
+  ROWS.push({ label, section, repeatNum, type, turn, written, chart, chartNote, stitchCount });
+}
+
+// ── ROW 1: Foundation ───────────────────────────────────────────────────────
+row('Row 1', 'Foundation', null, 'Foundation', false,
+  '133 fdc. Do not turn.\n\nFdc: Ch 3 (does not count as st), yo, insert hook into 3rd ch from hook, yo pull up loop, yo draw through 1 loop (forming chain), [yo draw through 2 loops] twice. For each next fdc: insert hook into base of previous st (chain space), repeat.',
+  '⊤'.repeat(20) + ' … ⊤ (×133)',
+  'Work 133 foundation double crochets. Do NOT turn at end.',
+  133
+);
+
+// ── ROWS 2–11 REPEAT (×9 full repeats) ──────────────────────────────────────
+for (let rep = 1; rep <= 9; rep++) {
+
+  // Row 2
+  row(`Row ${(rep-1)*10 + 2}`, 'Main Body', rep, 'Rev SC', false,
+    'Ch 1, rev sc in front loop of each st across. Do not turn.\n\nRev sc (crab stitch): Working left to right, insert hook front to back into next st to the right, yo pull up loop, yo draw through 2 loops.',
+    '↩'.repeat(15) + ' … ↩ (×133 fl)',
+    'Reverse single crochet in FRONT LOOP only across all sts. Do NOT turn.',
+    133
+  );
+
+  // Row 3
+  row(`Row ${(rep-1)*10 + 3}`, 'Main Body', rep, 'Shell Row', true,
+    '(Stacked dc, 2 dc) in back loop of first st of 1 row below, *skip 3 sts, (2 dc, ch 1, 2 dc) in back loop of next st 1 row below (shell made); repeat from * across to last 4 sts, skip next 3 sts, dc in back loop of last st 1 row below. Turn.\n\nStacked dc: Sc in first st, insert hook between two legs of base, yo pull up loop, yo draw through 2 loops.',
+    '‡†† ' + '⌒⌒⌒ '.repeat(15) + '… ⌒⌒⌒ †',
+    'Work into BACK LOOP of sts 1 row below. 32 shells + 4 dc. TURN at end.',
+    null
+  );
+
+  // Row 4
+  row(`Row ${(rep-1)*10 + 4}`, 'Main Body', rep, 'SC/DC Row', true,
+    'Ch 1, sc between first st and shell, *ch 3, dc in next ch-1 sp, ch 3, sc between next 2 shells; repeat from * across to last shell, ch 3, dc in last st. Turn.\n\n65 ch-3 sps.',
+    '+ ch3 † ch3 '.repeat(10) + '… + ch3 †',
+    '65 ch-3 spaces. TURN at end.',
+    null
+  );
+
+  // Row 5
+  row(`Row ${(rep-1)*10 + 5}`, 'Main Body', rep, 'Shell Row', true,
+    '(Stacked dc, 2 dc) in first dc, *(2 dc, ch 1, 2 dc) in next dc; repeat from * across to last dc, dc in last dc. Turn.\n\n31 shells + 4 dc.',
+    '‡†† ' + '⌒⌒⌒ '.repeat(14) + '… ⌒⌒⌒ †',
+    '31 shells + 4 dc. TURN at end.',
+    null
+  );
+
+  // Row 6
+  row(`Row ${(rep-1)*10 + 6}`, 'Main Body', rep, 'SC/DC Row', true,
+    'Ch 1, sc between first st and shell, *ch 3, dc in next ch-1 sp, ch 3, sc between next 2 shells; repeat from * across to last shell, ch 3, dc in last st. Turn.\n\n(Same as Row 4.)',
+    '+ ch3 † ch3 '.repeat(10) + '… + ch3 †',
+    'Same as Row 4. TURN at end.',
+    null
+  );
+
+  // Row 7
+  row(`Row ${(rep-1)*10 + 7}`, 'Main Body', rep, 'Shell Row', true,
+    '(Stacked dc, 2 dc) in first dc, *(2 dc, ch 1, 2 dc) in next dc; repeat from * across to last dc, dc in last dc. Turn.\n\n30 shells + 4 dc.',
+    '‡†† ' + '⌒⌒⌒ '.repeat(13) + '… ⌒⌒⌒ †',
+    '30 shells + 4 dc. TURN at end.',
+    null
+  );
+
+  // Row 8
+  row(`Row ${(rep-1)*10 + 8}`, 'Main Body', rep, 'SC Row', true,
+    'Ch 1, sc between first st and shell, *ch 1, sc in next ch-1 sp, ch 1, sc between next 2 shells; repeat from * across to last shell, ch 1, sc in last st. Turn.\n\n61 ch-1 sps.',
+    '+ ch1 + ch1 '.repeat(12) + '… + ch1 +',
+    '61 ch-1 spaces (shorter chains than rows 4/6). TURN at end.',
+    null
+  );
+
+  // Row 9
+  row(`Row ${(rep-1)*10 + 9}`, 'Main Body', rep, 'SC Row', false,
+    'Ch 1, sc in first st, *sc in next ch-1 sp, sc in next sc; repeat from * across to end. Do not turn.\n\n123 sc.',
+    '+ + + + '.repeat(15) + '… + (×123)',
+    '123 sc total. Do NOT turn.',
+    123
+  );
+
+  // Row 10
+  row(`Row ${(rep-1)*10 + 10}`, 'Main Body', rep, 'Rev SC', false,
+    'Ch 1, rev sc in front loop of each st across. Do not turn.',
+    '↩'.repeat(15) + ' … ↩ (×123 fl)',
+    'Rev sc in FRONT LOOP only. Do NOT turn.',
+    123
+  );
+
+  // Row 11
+  row(`Row ${(rep-1)*10 + 11}`, 'Main Body', rep, 'DC/Dec Row', false,
+    'Stacked dc in back loop of first st 1 row below, dc in back loop of each st 1 row below across to last 3 sts, dc3tog in back loop of last 3 sts 1 row below. Do not turn.\n\n121 sts.',
+    '‡ ' + '† '.repeat(15) + '… ∧∧',
+    'Stacked dc at start, dc across, dc3tog at end (decreases 2 sts). Do NOT turn. 121 sts.',
+    121
+  );
+}
+
+// ── ROWS 2–6 FINAL PARTIAL REPEAT ───────────────────────────────────────────
+const BASE = 91; // after 9 full repeats
+
+row(`Row ${BASE + 2}`, 'Final Repeat', null, 'Rev SC', false,
+  'Ch 1, rev sc in front loop of each st across. Do not turn.',
+  '↩ … ↩ (fl)',
+  'Rev sc in FRONT LOOP only. Do NOT turn.',
+  null
+);
+
+row(`Row ${BASE + 3}`, 'Final Repeat', null, 'Shell Row', true,
+  '(Stacked dc, 2 dc) in back loop of first st of 1 row below, *skip 3 sts, (2 dc, ch 1, 2 dc) in back loop of next st 1 row below (shell made); repeat from * across to last 4 sts, skip next 3 sts, dc in back loop of last st 1 row below. Turn.',
+  '‡†† ⌒⌒⌒ … ⌒⌒⌒ †',
+  'Shell row into back loops 1 row below. TURN.',
+  null
+);
+
+row(`Row ${BASE + 4}`, 'Final Repeat', null, 'SC/DC Row', true,
+  'Ch 1, sc between first st and shell, *ch 3, dc in next ch-1 sp, ch 3, sc between next 2 shells; repeat from * across to last shell, ch 3, dc in last st. Turn.',
+  '+ ch3 † ch3 … + ch3 †',
+  'TURN at end.',
+  null
+);
+
+row(`Row ${BASE + 5}`, 'Final Repeat', null, 'Shell Row', true,
+  '(Stacked dc, 2 dc) in first dc, *(2 dc, ch 1, 2 dc) in next dc; repeat from * across to last dc, dc in last dc. Turn.',
+  '‡†† ⌒⌒⌒ … ⌒⌒⌒ †',
+  'TURN at end.',
+  null
+);
+
+row(`Row ${BASE + 6}`, 'Final Repeat', null, 'SC/DC Row', true,
+  'Ch 1, sc between first st and shell, *ch 3, dc in next ch-1 sp, ch 3, sc between next 2 shells; repeat from * across to last shell, ch 3, dc in last st. Turn.',
+  '+ ch3 † ch3 … + ch3 †',
+  'TURN at end.',
+  null
+);
+
+// ── WIND-DOWN ROWS 107–111 ───────────────────────────────────────────────────
+row('Row 107', 'Wind-Down', null, 'Shell Row', true,
+  '(Stacked dc, 2 dc) in first dc, dc in last dc. Turn.\n\n4 dc total.',
+  '‡†† †',
+  'Only 4 dc remain — nearly done! TURN.',
+  4
+);
+
+row('Row 108', 'Wind-Down', null, 'SC Row', true,
+  'Ch 1, sc between first and second dc, ch 1, sc in last st. Turn.\n\n1 ch-3 sp.',
+  '+ ch1 +',
+  'TURN.',
+  null
+);
+
+row('Row 109', 'Wind-Down', null, 'SC Row', false,
+  'Ch 1, sc in first st, sc in next ch-1 sp, sc in last sc. Do not turn.\n\n3 sc.',
+  '+ + +',
+  'Do NOT turn.',
+  3
+);
+
+row('Row 110', 'Wind-Down', null, 'Rev SC', false,
+  'Ch 1, rev sc in front loop of each st across. Do not turn.',
+  '↩ ↩ ↩ (fl)',
+  'Do NOT turn.',
+  3
+);
+
+row('Row 111', 'Wind-Down', null, 'Final Row', false,
+  'Ch 1, sc in back loop of first st 1 row below, dc2tog in back loop of last 2 sts 1 row below. Fasten off.',
+  '+ ∧',
+  'Fasten off after this row!',
+  null
+);
+
+// ── EDGING ───────────────────────────────────────────────────────────────────
+row('Edging', 'Edging', null, 'Edging', false,
+  'Join yarn on RS at first st of Row 1 with sl st, ch 3 (does not count as st), dc evenly up straight edge of shawl working around row ends to corner, 6 dc in corner of shawl, dc evenly down diagonal edge of shawl to corner, 6 dc in corner of shawl, sl st to last st on Row 1. Fasten off.\n\nBlock: Weave in all ends. Pin to schematic size, spray with water and allow to dry (or wet block).',
+  '† † † … [6†corner] … † † † [6†corner]',
+  'Work evenly around all edges. The straight edge and diagonal edge both get dc, with 6 dc in each corner.',
+  null
+);
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'mangrove-row';
+let currentIndex = parseInt(localStorage.getItem(STORAGE_KEY) ?? '0');
+if (isNaN(currentIndex) || currentIndex < 0 || currentIndex >= ROWS.length) currentIndex = 0;
+
+let currentView = 'written';
+
+// ─── VIEW TOGGLE ─────────────────────────────────────────────────────────────
+function setView(v) {
+  currentView = v;
+  document.getElementById('btn-written').classList.toggle('active', v === 'written');
+  document.getElementById('btn-chart').classList.toggle('active', v === 'chart');
+  document.getElementById('view-written').style.display = v === 'written' ? 'block' : 'none';
+  document.getElementById('view-chart').style.display = v === 'chart' ? 'block' : 'none';
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  const total = ROWS.length;
+  const r = ROWS[currentIndex];
+  localStorage.setItem(STORAGE_KEY, currentIndex);
+
+  // Progress
+  const pct = Math.round((currentIndex / (total - 1)) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = r.label;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  // Section chip
+  document.getElementById('section-label').textContent = r.section;
+
+  // Repeat chip
+  const repEl = document.getElementById('repeat-label');
+  if (r.repeatNum) {
+    repEl.style.display = 'inline-flex';
+    repEl.textContent = `Rep ${r.repeatNum} of 9`;
+  } else {
+    repEl.style.display = 'none';
+  }
+
+  // Turn indicator
+  const turnEl = document.getElementById('turn-indicator');
+  if (r.turn) {
+    turnEl.textContent = '↩ Turn at end of row';
+    turnEl.className = 'turn-indicator turn';
+  } else {
+    turnEl.textContent = '→ Do NOT turn at end of row';
+    turnEl.className = 'turn-indicator no-turn';
+  }
+
+  // Card header
+  document.getElementById('row-display').textContent = r.label;
+  document.getElementById('row-type-badge').textContent = r.type;
+
+  // Written
+  document.getElementById('written-instructions').innerHTML =
+    r.written.replace(/\n/g, '<br>');
+  const noteEl = document.getElementById('stitch-note');
+  if (r.stitchCount) {
+    noteEl.style.display = 'block';
+    noteEl.textContent = `Stitch count: ${r.stitchCount} sts`;
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  // Chart
+  document.getElementById('chart-symbols').textContent = r.chart;
+  document.getElementById('chart-note').textContent = r.chartNote;
+
+  // Stitch count display
+  const scEl = document.getElementById('stitch-count-display');
+  scEl.innerHTML = r.stitchCount ? `<strong>${r.stitchCount}</strong> stitches` : '';
+
+  // Nav
+  document.getElementById('btn-prev').disabled = currentIndex === 0;
+  document.getElementById('btn-next').disabled = currentIndex === total - 1;
+
+  // Completion
+  const done = currentIndex === total - 1;
+  document.getElementById('completion').classList.toggle('show', done);
+  document.getElementById('row-card').style.display = done ? 'none' : 'block';
+
+  // Re-apply view
+  setView(currentView);
+}
+
+function navigate(dir) {
+  const next = currentIndex + dir;
+  if (next >= 0 && next < ROWS.length) {
+    currentIndex = next;
+    render();
+  }
+}
+
+render();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js');
+  });
+}
+</script>
+</body>
+</html>
