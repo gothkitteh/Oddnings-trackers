@@ -1,1 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2a6b8a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Waterline">
+<title>Waterline Shawl Tracker</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap');
 
+  :root {
+    --deep:    #1a4a5e;
+    --wave:    #2a6b8a;
+    --foam:    #7ab8cc;
+    --mist:    #c8e4ed;
+    --sand:    #f0f7fa;
+    --white:   #ffffff;
+    --accent:  #e8a87c;
+    --text:    #1a2e38;
+    --subtext: #4a7a8a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--sand);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* WAVE HEADER */
+  header {
+    background: linear-gradient(160deg, var(--deep) 0%, var(--wave) 60%, var(--foam) 100%);
+    padding: 1.5rem 1.25rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0; right: 0;
+    height: 32px;
+    background: var(--sand);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
+    color: var(--white);
+    letter-spacing: 0.08em;
+    font-weight: 400;
+  }
+
+  header p {
+    color: var(--mist);
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+    font-weight: 300;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    padding: 1.25rem 1.25rem 0;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--subtext);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--mist);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--wave), var(--foam));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* SECTION CHIP */
+  .section-chip {
+    margin: 1rem 1.25rem 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--wave);
+    color: var(--white);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+  }
+
+  .section-chip span.dot {
+    width: 6px; height: 6px;
+    background: var(--foam);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* ROW CARD */
+  .row-card {
+    margin: 1rem 1.25rem;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(42,107,138,0.10);
+    overflow: hidden;
+  }
+
+  .row-card-header {
+    background: linear-gradient(135deg, var(--deep), var(--wave));
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .row-number {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  .row-side {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+  }
+
+  .row-side.rs {
+    background: rgba(255,255,255,0.2);
+    color: var(--white);
+  }
+
+  .row-side.ws {
+    background: var(--accent);
+    color: #5a2a00;
+  }
+
+  .row-instructions {
+    padding: 1.1rem 1.25rem;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .stitch-note {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: var(--sand);
+    border-left: 3px solid var(--foam);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.8rem;
+    color: var(--subtext);
+    line-height: 1.5;
+  }
+
+  /* WAVE CONTEXT */
+  .wave-context {
+    margin: 0 1.25rem;
+    padding: 0.75rem 1rem;
+    background: var(--mist);
+    border-radius: 10px;
+    font-size: 0.78rem;
+    color: var(--deep);
+    line-height: 1.5;
+  }
+
+  .wave-context strong {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.25rem;
+    color: var(--subtext);
+  }
+
+  /* NAVIGATION */
+  .nav-area {
+    padding: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+  }
+
+  .btn-prev {
+    background: var(--mist);
+    color: var(--deep);
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--wave), var(--deep));
+    color: var(--white);
+    box-shadow: 0 3px 10px rgba(42,107,138,0.35);
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+
+  /* STITCH COUNT */
+  .stitch-count {
+    margin: 0 1.25rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--subtext);
+  }
+
+  .stitch-count strong {
+    font-size: 1.1rem;
+    color: var(--wave);
+    font-family: 'Cinzel', serif;
+  }
+
+  /* COMPLETION */
+  .completion {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .completion.show { display: flex; }
+
+  .completion-wave {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .completion h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: var(--deep);
+    margin-bottom: 0.5rem;
+  }
+
+  .completion p {
+    color: var(--subtext);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Waterline</h1>
+  <p>Shawl Tracker · Red Heart · Ann Weaver</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="progress-text">Loading...</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="section-chip">
+  <span class="dot"></span>
+  <span id="section-label">Loading...</span>
+</div>
+
+<div class="row-card" id="row-card">
+  <div class="row-card-header">
+    <span class="row-number" id="row-display">Row —</span>
+    <span class="row-side" id="row-side-badge">RS</span>
+  </div>
+  <div class="row-instructions" id="row-instructions">Loading...</div>
+  <div class="stitch-note" id="stitch-note"></div>
+</div>
+
+<div class="stitch-count" id="stitch-count-display"></div>
+
+<div class="wave-context" id="wave-context"></div>
+
+<div class="nav-area">
+  <button class="btn btn-prev" id="btn-prev" onclick="navigate(-1)">← Back</button>
+  <button class="btn btn-next" id="btn-next" onclick="navigate(1)">Next Row →</button>
+</div>
+
+<div class="completion" id="completion">
+  <div class="completion-wave">🌊</div>
+  <h2>Waterline Complete!</h2>
+  <p>Weave in ends, wet block to measurements,<br>and pin out the lace points while damp.</p>
+</div>
+
+<script>
+// ─── PATTERN DATA ────────────────────────────────────────────────────────────
+
+const PATTERN = [];
+
+function addRow(section, rowLabel, side, instructions, stitchCount, context) {
+  PATTERN.push({ section, rowLabel, side, instructions, stitchCount, context });
+}
+
+// SETUP
+addRow('Setup', 'Cast On', 'RS', 'Cast on 1 st.', 1, 'Cast on and begin building the spine of the shawl.');
+addRow('Setup', 'Row 1', 'RS', 'Kfbf — 3 sts.\n\nkfbf: Knit into the front, then back, then front of next stitch = 2 sts increased.', 3, 'Setup section: building initial stitches.');
+addRow('Setup', 'Row 2', 'WS', 'K1, place marker, k2.', 3, 'Setup section.');
+addRow('Setup', 'Row 3', 'RS', 'K1, yo, k1, slip marker, k1 — 4 sts.', 4, 'Setup section.');
+addRow('Setup', 'Row 4', 'WS', 'Knit.', 4, 'Setup section. Plain knit row.');
+addRow('Setup', 'Row 5', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 5, 'Setup section. Repeat rows 4-5 sixteen more times.');
+
+// Setup rows 4-5 repeat x16 (rows 6-37 in sequence = 16 more pairs)
+let setupSt = 6;
+for (let i = 1; i <= 16; i++) {
+  addRow('Setup', `Row 4–5 Rep ${i} (knit)`, 'WS', 'Knit.', setupSt, `Setup repeat ${i} of 16.`);
+  setupSt++;
+  addRow('Setup', `Row 4–5 Rep ${i} (inc)`, 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', setupSt, `Setup repeat ${i} of 16. After all 16 repeats + 1 more knit row: 21 sts.`);
+  setupSt++;
+}
+addRow('Setup', 'Row 4 final', 'WS', 'Knit. — 21 sts total.', 21, 'Final plain row of Setup. Ready for Wave Section 1.');
+
+// WAVE SECTION 1
+addRow('Wave Section 1', 'Row 1', 'RS', 'K1, yo, k1, remove marker and place it after this st, [k2tog] 3 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 22 sts.', 22, 'Wave Section 1 begins. 20 sts before marker, 2 after.');
+// Setup repeat x17 then one more knit
+for (let i = 1; i <= 17; i++) {
+  addRow('Wave Section 1', `Setup Rep ${i} (knit)`, 'WS', 'Knit.', null, `Wave 1 growth repeat ${i} of 17.`);
+  addRow('Wave Section 1', `Setup Rep ${i} (inc)`, 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', null, `Wave 1 growth repeat ${i} of 17.`);
+}
+addRow('Wave Section 1', 'Row 4 final', 'WS', 'Knit. — 39 sts total (20 before marker, 19 after).', 39, 'End of Wave Section 1. Ready for Wave Section 2.');
+
+// WAVE SECTION 2
+addRow('Wave Section 2', 'Row 1', 'RS', 'K1, yo, k1, remove marker and place it after this st, [k2tog] 3 times, [k1, yo] 6 times, [k2tog] 6 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 40 sts.', 40, 'Wave Section 2 begins. 3 repeats of waves total in this section.');
+addRow('Wave Section 2', 'Row 2', 'WS', 'Knit.', 40, 'Wave Section 2.');
+addRow('Wave Section 2', 'Row 3', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 41, 'Wave Section 2.');
+addRow('Wave Section 2', 'Row 4', 'WS', 'Knit.', 41, 'Wave Section 2.');
+addRow('Wave Section 2', 'Row 5', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 42, 'Wave Section 2.');
+addRow('Wave Section 2', 'Row 6', 'WS', 'Knit.', 42, 'Wave Section 2.');
+addRow('Wave Section 2', 'Row 7', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 43, 'Wave Section 2.');
+addRow('Wave Section 2', 'Row 8', 'WS', 'Knit.', 43, 'Wave Section 2.');
+addRow('Wave Section 2', 'Row 9 (wave)', 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, [k1, yo] 6 times, [k2tog] 6 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', 44, 'Wave row! Repeat rows 3-10 once more for 3 waves total.');
+addRow('Wave Section 2', 'Row 10', 'WS', 'Knit.', 44, 'Wave Section 2. Then repeat rows 3-10 once more.');
+// Second repeat of rows 3-10
+addRow('Wave Section 2', 'Rep 2 Row 3', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 45, 'Wave Section 2 repeat 2.');
+addRow('Wave Section 2', 'Rep 2 Row 4', 'WS', 'Knit.', 45, 'Wave Section 2 repeat 2.');
+addRow('Wave Section 2', 'Rep 2 Row 5', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 46, 'Wave Section 2 repeat 2.');
+addRow('Wave Section 2', 'Rep 2 Row 6', 'WS', 'Knit.', 46, 'Wave Section 2 repeat 2.');
+addRow('Wave Section 2', 'Rep 2 Row 7', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 47, 'Wave Section 2 repeat 2.');
+addRow('Wave Section 2', 'Rep 2 Row 8', 'WS', 'Knit.', 47, 'Wave Section 2 repeat 2.');
+addRow('Wave Section 2', 'Rep 2 Row 9 (wave)', 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, [k1, yo] 6 times, [k2tog] 6 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', 48, 'Wave Section 2 repeat 2.');
+addRow('Wave Section 2', 'Rep 2 Row 10', 'WS', 'Knit.', 48, 'Wave Section 2 repeat 2.');
+// Growth rows 4-5 x9 then knit
+for (let i = 1; i <= 9; i++) {
+  addRow('Wave Section 2', `Growth ${i} (knit)`, 'WS', 'Knit.', null, `Wave 2 growth rep ${i} of 9.`);
+  addRow('Wave Section 2', `Growth ${i} (inc)`, 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', null, `Wave 2 growth rep ${i} of 9.`);
+}
+addRow('Wave Section 2', 'Growth final knit', 'WS', 'Knit. — 57 sts total (20 before marker, 37 after).', 57, 'End of Wave Section 2. Ready for Wave Section 3.');
+
+// WAVE SECTION 3
+addRow('Wave Section 3', 'Row 1', 'RS', 'K1, yo, k1, remove marker and place it after this st, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 2 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 58 sts.', 58, 'Wave Section 3 begins. 5 waves total in this section.');
+addRow('Wave Section 3', 'Row 2', 'WS', 'Knit.', 58, 'Wave Section 3.');
+addRow('Wave Section 3', 'Row 3', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 59, 'Wave Section 3.');
+addRow('Wave Section 3', 'Row 4', 'WS', 'Knit.', 59, 'Wave Section 3.');
+addRow('Wave Section 3', 'Row 5', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 60, 'Wave Section 3.');
+addRow('Wave Section 3', 'Row 6', 'WS', 'Knit.', 60, 'Wave Section 3.');
+addRow('Wave Section 3', 'Row 7 (wave)', 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 2 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', 61, 'Wave row! Repeat rows 3-8 three more times for 5 waves total.');
+addRow('Wave Section 3', 'Row 8', 'WS', 'Knit.', 61, 'Wave Section 3.');
+for (let rep = 2; rep <= 4; rep++) {
+  addRow('Wave Section 3', `Rep ${rep} Row 3`, 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', null, `Wave Section 3 repeat ${rep} of 4.`);
+  addRow('Wave Section 3', `Rep ${rep} Row 4`, 'WS', 'Knit.', null, `Wave Section 3 repeat ${rep} of 4.`);
+  addRow('Wave Section 3', `Rep ${rep} Row 5`, 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', null, `Wave Section 3 repeat ${rep} of 4.`);
+  addRow('Wave Section 3', `Rep ${rep} Row 6`, 'WS', 'Knit.', null, `Wave Section 3 repeat ${rep} of 4.`);
+  addRow('Wave Section 3', `Rep ${rep} Row 7 (wave)`, 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 2 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', null, `Wave Section 3 repeat ${rep} of 4.`);
+  addRow('Wave Section 3', `Rep ${rep} Row 8`, 'WS', 'Knit.', null, `Wave Section 3 repeat ${rep} of 4.`);
+}
+for (let i = 1; i <= 23; i++) {
+  addRow('Wave Section 3', `Growth ${i} (knit)`, 'WS', 'Knit.', null, `Wave 3 growth rep ${i} of 23.`);
+  addRow('Wave Section 3', `Growth ${i} (inc)`, 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', null, `Wave 3 growth rep ${i} of 23.`);
+}
+addRow('Wave Section 3', 'Growth final knit', 'WS', 'Knit. — 93 sts total (38 before marker, 55 after).', 93, 'End of Wave Section 3. Ready for Wave Section 4.');
+
+// WAVE SECTION 4 ── YOUR STARTING POSITION
+const WS4_START = PATTERN.length; // index of WS4 Row 1
+
+addRow('Wave Section 4', 'Row 1', 'RS', 'K1, yo, k1, remove marker and place it after this st, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 4 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 94 sts.', 94, 'Wave Section 4 begins. 7 waves total in this section.');
+addRow('Wave Section 4', 'Row 2', 'WS', 'Knit.', 94, 'Wave Section 4. ← YOU STARTED HERE');
+addRow('Wave Section 4', 'Row 3', 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', 95, 'Wave Section 4.');
+
+// Row 4 = WS knit (YOUR CURRENT ROW)
+addRow('Wave Section 4', 'Row 4', 'WS', 'Knit.', 95, 'Wave Section 4. YOUR CURRENT ROW.');
+
+addRow('Wave Section 4', 'Row 5 (wave)', 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 4 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', 96, 'Wave row! Repeat rows 3-6 five more times for 7 waves total.');
+addRow('Wave Section 4', 'Row 6', 'WS', 'Knit.', 96, 'Wave Section 4.');
+
+for (let rep = 2; rep <= 6; rep++) {
+  addRow('Wave Section 4', `Rep ${rep} Row 3`, 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', null, `Wave Section 4 repeat ${rep} of 6.`);
+  addRow('Wave Section 4', `Rep ${rep} Row 4`, 'WS', 'Knit.', null, `Wave Section 4 repeat ${rep} of 6.`);
+  addRow('Wave Section 4', `Rep ${rep} Row 5 (wave)`, 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 4 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', null, `Wave Section 4 repeat ${rep} of 6.`);
+  addRow('Wave Section 4', `Rep ${rep} Row 6`, 'WS', 'Knit.', null, `Wave Section 4 repeat ${rep} of 6.`);
+}
+for (let i = 1; i <= 23; i++) {
+  addRow('Wave Section 4', `Growth ${i} (knit)`, 'WS', 'Knit.', null, `Wave 4 growth rep ${i} of 23.`);
+  addRow('Wave Section 4', `Growth ${i} (inc)`, 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', null, `Wave 4 growth rep ${i} of 23.`);
+}
+addRow('Wave Section 4', 'Growth final knit', 'WS', 'Knit. — 129 sts total (38 before marker, 91 after).', 129, 'End of Wave Section 4. Ready for Wave Section 5.');
+
+// WAVE SECTION 5
+addRow('Wave Section 5', 'Row 1', 'RS', 'K1, yo, k1, remove marker and place it after this st, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 6 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 130 sts.', 130, 'Wave Section 5 begins. 9 waves total in this section.');
+addRow('Wave Section 5', 'Row 2', 'WS', 'Knit.', 130, 'Wave Section 5.');
+addRow('Wave Section 5', 'Row 3 (wave)', 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 6 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', 131, 'Wave row! Repeat rows 3-4 seven more times for 9 waves total.');
+addRow('Wave Section 5', 'Row 4', 'WS', 'Knit.', 131, 'Wave Section 5.');
+for (let rep = 2; rep <= 8; rep++) {
+  addRow('Wave Section 5', `Rep ${rep} Row 3 (wave)`, 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 6 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', null, `Wave Section 5 repeat ${rep} of 8.`);
+  addRow('Wave Section 5', `Rep ${rep} Row 4`, 'WS', 'Knit.', null, `Wave Section 5 repeat ${rep} of 8.`);
+}
+for (let i = 1; i <= 27; i++) {
+  addRow('Wave Section 5', `Growth ${i} (knit)`, 'WS', 'Knit.', null, `Wave 5 growth rep ${i} of 27.`);
+  addRow('Wave Section 5', `Growth ${i} (inc)`, 'RS', 'K1, yo, knit to marker, slip marker, knit to end — 1 st increased.', null, `Wave 5 growth rep ${i} of 27.`);
+}
+addRow('Wave Section 5', 'Growth final knit', 'WS', 'Knit. — 165 sts total (38 before marker, 127 after).', 165, 'End of Wave Section 5. Ready for Wave Section 6.');
+
+// WAVE SECTION 6
+addRow('Wave Section 6', 'Row 1', 'RS', 'K1, yo, k1, remove marker and place it after this st, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 8 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 166 sts.', 166, 'Wave Section 6 begins. 11 waves total — home stretch!');
+addRow('Wave Section 6', 'Row 2', 'WS', 'Knit.', 166, 'Wave Section 6.');
+addRow('Wave Section 6', 'Row 3 (wave)', 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 8 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', 167, 'Wave row! Repeat rows 3-4 nine more times for 11 waves total.');
+addRow('Wave Section 6', 'Row 4', 'WS', 'Knit.', 167, 'Wave Section 6.');
+for (let rep = 2; rep <= 10; rep++) {
+  addRow('Wave Section 6', `Rep ${rep} Row 3 (wave)`, 'RS', 'K1, yo, knit to marker, slip marker, [k2tog] 3 times, *[k1, yo] 6 times, [k2tog] 6 times; repeat from * 8 times, [k1, yo] 6 times, [k2tog] 3 times, k1 — 1 st increased.', null, `Wave Section 6 repeat ${rep} of 10.`);
+  addRow('Wave Section 6', `Rep ${rep} Row 4`, 'WS', 'Knit.', null, `Wave Section 6 repeat ${rep} of 10.`);
+}
+addRow('Wave Section 6', 'Bind Off', 'RS', 'Bind off loosely. — 176 sts total.\n\nFinishing: Weave in ends. Wet block to measurements. Pin out the points on the bind-off edge while the shawl is wet to bring out the lace pattern.', 176, '🌊 Done! Block and enjoy your Waterline shawl.');
+
+// ─── FIND YOUR STARTING INDEX ────────────────────────────────────────────────
+// Wave Section 4 Row 4 (WS) = current row
+const START_INDEX = PATTERN.findIndex(r => r.section === 'Wave Section 4' && r.rowLabel === 'Row 4');
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'waterline_row';
+let currentIndex = parseInt(localStorage.getItem(STORAGE_KEY) ?? START_INDEX);
+if (isNaN(currentIndex) || currentIndex < 0) currentIndex = START_INDEX;
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  const total = PATTERN.length;
+  const row = PATTERN[currentIndex];
+
+  // save
+  localStorage.setItem(STORAGE_KEY, currentIndex);
+
+  // progress
+  const pct = Math.round((currentIndex / (total - 1)) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `Row ${currentIndex + 1} of ${total}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  // section chip
+  document.getElementById('section-label').textContent = row.section;
+
+  // card header
+  document.getElementById('row-display').textContent = row.rowLabel;
+  const badge = document.getElementById('row-side-badge');
+  badge.textContent = row.side;
+  badge.className = 'row-side ' + row.side.toLowerCase().replace(' side','');
+
+  // instructions
+  document.getElementById('row-instructions').innerHTML =
+    row.instructions.replace(/\n/g, '<br>');
+
+  // stitch note
+  const noteEl = document.getElementById('stitch-note');
+  if (row.stitchCount) {
+    noteEl.style.display = 'block';
+    noteEl.textContent = `Stitch count after this row: ${row.stitchCount} sts`;
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  // stitch count display
+  const scEl = document.getElementById('stitch-count-display');
+  if (row.stitchCount) {
+    scEl.innerHTML = `<strong>${row.stitchCount}</strong> stitches`;
+  } else {
+    scEl.innerHTML = '';
+  }
+
+  // wave context
+  document.getElementById('wave-context').innerHTML =
+    `<strong>Context</strong>${row.context}`;
+
+  // nav
+  document.getElementById('btn-prev').disabled = currentIndex === 0;
+  document.getElementById('btn-next').disabled = currentIndex === total - 1;
+
+  // completion
+  const isLast = currentIndex === total - 1;
+  document.getElementById('completion').classList.toggle('show', isLast);
+  document.getElementById('row-card').style.display = isLast ? 'none' : 'block';
+  document.getElementById('wave-context').style.display = isLast ? 'none' : 'block';
+  document.getElementById('stitch-count-display').style.display = isLast ? 'none' : 'flex';
+}
+
+function navigate(dir) {
+  const next = currentIndex + dir;
+  if (next >= 0 && next < PATTERN.length) {
+    currentIndex = next;
+    render();
+  }
+}
+
+render();
+
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+</body>
+</html>
