@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0c0616">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Boothbay Harbor">
+<title>Boothbay Harbor Tracker</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+  :root {
+    --bg:      #0c0616;
+    --surface: #170f24;
+    --surface2:#211735;
+    --indigo:  #3a1866;
+    --gold:    #e88c36;
+    --gold-br: #ffc478;
+    --magenta: #d8508a;
+    --magenta-br: #f078b0;
+    --text:    #ece0f0;
+    --subtext: #9884ac;
+    --radius:  14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    background: radial-gradient(120% 140% at 50% 0%, #4a1f7a 0%, var(--bg) 70%);
+    padding: 1.5rem 1.25rem 2.25rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid #2a1c40;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--indigo), var(--magenta-br), var(--gold-br), var(--magenta-br), var(--indigo));
+    opacity: 0.85;
+  }
+
+  .header-glyph {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 15px;
+    opacity: 0.4;
+    letter-spacing: 5px;
+    color: var(--gold-br);
+  }
+
+  .title-icon { font-size: 1.3rem; margin-right: 0.15rem; filter: drop-shadow(0 0 6px rgba(232,140,54,0.55)); }
+
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.65rem;
+    color: var(--text);
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    text-shadow: 0 0 18px rgba(216,80,138,0.3);
+  }
+
+  header p {
+    color: var(--subtext);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.35rem;
+    font-weight: 300;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    padding: 1.25rem 1.25rem 0;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--subtext);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid #2c1f42;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--indigo), var(--magenta), var(--gold));
+    box-shadow: 0 0 8px rgba(216,80,138,0.5);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* SECTION CHIP */
+  .section-chip {
+    margin: 1rem 1.25rem 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface2);
+    border: 1px solid #2e2148;
+    color: var(--gold-br);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+  }
+
+  .section-chip span.dot {
+    width: 6px; height: 6px;
+    background: var(--magenta-br);
+    box-shadow: 0 0 6px var(--magenta-br);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* ROW CARD */
+  .row-card {
+    margin: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid #241a38;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .row-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--indigo), var(--magenta), var(--gold), var(--magenta), var(--indigo));
+    z-index: 1;
+  }
+
+  .row-card-header {
+    background: linear-gradient(135deg, #2a1848, #4a2258);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .row-number {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .row-side {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    white-space: nowrap;
+    display: none;
+  }
+
+  .row-side.show { display: inline-block; }
+  .row-side.rs { background: var(--gold-br); color: #3a2308; }
+  .row-side.setup { background: rgba(255,255,255,0.12); color: var(--text); }
+  .row-side.finish { background: var(--magenta-br); color: #3a1224; }
+
+  .row-instructions {
+    padding: 1.1rem 1.25rem;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .stitch-note {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: var(--surface2);
+    border-left: 3px solid var(--gold-br);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.8rem;
+    color: var(--subtext);
+    line-height: 1.5;
+    display: none;
+  }
+
+  .stitch-note.show { display: block; }
+
+  /* NAVIGATION */
+  .nav-area {
+    padding: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-prev {
+    background: var(--surface2);
+    color: var(--subtext);
+    border: 1px solid #2c1f42;
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--magenta), var(--gold));
+    color: #1c0e28;
+    box-shadow: 0 3px 14px rgba(216,80,138,0.35);
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+
+  /* STITCH COUNT */
+  .stitch-count {
+    margin: 0 1.25rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--subtext);
+  }
+
+  .stitch-count strong {
+    font-size: 1.1rem;
+    color: var(--gold-br);
+    font-family: 'Cinzel', serif;
+  }
+
+  /* COMPLETION */
+  .completion {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .completion.show { display: flex; }
+
+  .completion-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(232,140,54,0.45));
+  }
+
+  .completion h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .completion p {
+    color: var(--subtext);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  /* DECORATIVE FOOTER */
+  .deco {
+    text-align: center;
+    font-size: 15px;
+    opacity: 0.3;
+    padding: 4px 0 0;
+    letter-spacing: 8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="header-glyph">&#127945; &#127955; &#127945;</span>
+  <h1><span class="title-icon">&#127955;</span> Boothbay Harbor</h1>
+  <p>Crochet Shawl &middot; Marly Bird &amp; Robyn Chachula &middot; Sirdar Jewelspun &middot; Tourmaline Dream</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="progress-text">Loading...</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="section-chip">
+  <span class="dot"></span>
+  <span id="section-label">Body</span>
+</div>
+
+<div class="row-card" id="row-card">
+  <div class="row-card-header">
+    <span class="row-number" id="row-display">Row &mdash;</span>
+    <span class="row-side" id="row-side-badge"></span>
+  </div>
+  <div class="row-instructions" id="row-instructions">Loading...</div>
+  <div class="stitch-note" id="stitch-note"></div>
+</div>
+
+<div class="stitch-count" id="stitch-count-display"></div>
+
+<div class="deco">&#127945; &#127955; &#127946; &#127955; &#127945;</div>
+
+<div class="nav-area">
+  <button class="btn btn-prev" id="btn-prev" onclick="navigate(-1)">&larr; Back</button>
+  <button class="btn btn-next" id="btn-next" onclick="navigate(1)">Next &rarr;</button>
+</div>
+
+<div class="completion" id="completion">
+  <div class="completion-icon">&#127955;</div>
+  <h2>Boothbay Harbor Complete!</h2>
+  <p>Pin to schematic size (68.5" x 37") and steam block, holding the iron at least an inch above the fabric.</p>
+</div>
+
+<script>
+// ─── PATTERN DATA ────────────────────────────────────────────────────────────
+
+const PATTERN = [{"rowLabel": "Row 1", "side": "RS", "instructions": "229 fsc, turn.", "stitchCount": 229, "context": "Foundation single crochet (fsc): Ch 2, insert hook into 2nd ch from hook, yo and pull up a loop, yo and draw through 1 loop (forming a chain), yo and draw through 2 loops (forming the sc). For each next fsc: insert hook into base of previous stitch, repeat. This is the longest side \u2014 the shawl shortens with every row after this, forming the triangle."}, {"rowLabel": "Row 2", "side": "", "instructions": "Ch 1, sc in first sc, *ch 5, skip 3 sc, sc in next sc; repeat from * across to last 4 sc, ch 2, skip 3 sc, tr in last sc (counts as a ch-5 sp), turn.", "stitchCount": null, "context": "57 ch-5 sps."}, {"rowLabel": "Row 3", "side": "", "instructions": "Ch 1, sc around tr (in space made by tr and ch 2), [ch 5, sc in next ch-5 sp] 3 times, *8 dc in next ch-5 sp, sc in next ch-5 sp, [ch 5, sc in next ch-5 sp] twice; repeat from * across to last ch-5 sps, ch 2, tr in last ch-5 sp (counts as ch-5 sp throughout), turn.", "stitchCount": null, "context": "13 dc groups + 30 ch-5 sps."}, {"rowLabel": "Row 4", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 1 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 5", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 1 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 6", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 1 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 7", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 1 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 8", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 2 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 9", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 2 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 10", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 2 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 11", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 2 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 12", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 3 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 13", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 3 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 14", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 3 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 15", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 3 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 16", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 4 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 17", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 4 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 18", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 4 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 19", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 4 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 20", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 5 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 21", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 5 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 22", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 5 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 23", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 5 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 24", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 6 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 25", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 6 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 26", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 6 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 27", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 6 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 28", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 7 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 29", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 7 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 30", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 7 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 31", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 7 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 32", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 8 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 33", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 8 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 34", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 8 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 35", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 8 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 36", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 9 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 37", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 9 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 38", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 9 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 39", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 9 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 40", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 10 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 41", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 10 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 42", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 10 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 43", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 10 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 44", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 11 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 45", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 11 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 46", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 11 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 47", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 11 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 48", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 12 of 12 (rows 4\u20137). First pass: 13 dc groups + 16 ch-5 sps + 26 ch-4 sps."}, {"rowLabel": "Row 49", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 12 of 12. First pass: 13 dc groups + 28 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 50", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 12 of 12. First pass: 13 dc groups + 40 ch-5 sps + 26 ch-3 sps."}, {"rowLabel": "Row 51", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, *sc between next 2 dc, ch 5, sc in next ch-5 sp, 8 dc in next ch-5 sp, sc in next ch-5 sp, ch 5; repeat from * across to last 2 dc, sc between last 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Main body repeat 12 of 12. First pass: 12 dc groups + 28 ch-5 sps. The shawl narrows by one dc group each time you complete this 4-row repeat \u2014 your own dc group count decreases by 1 from here each cycle as the triangle grows."}, {"rowLabel": "Row 52", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-5 sp] twice, *ch 4, skip next dc, dc in next 6 dc, skip last dc, ch 4, sc in next ch-5 sp, ch 5, sc in next ch-5 sp; repeat from * across to last ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Final partial repeat (rows 4\u20136 only, no row 7 this time)."}, {"rowLabel": "Row 53", "side": "", "instructions": "Ch 1, sc around tr, *[ch 5, sc in next ch-sp] twice, ch 3, skip next dc, dc in next 4 dc, skip last dc, ch 3, sc in next ch-sp; repeat from * across to last 2 ch-5 sps, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Final partial repeat."}, {"rowLabel": "Row 54", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, *ch 3, skip next dc, dc in next 2 dc, skip last dc, ch 3, sc in next ch-sp**, [ch 5, sc in next ch-sp] 3 times; repeat from * across to last 2 ch-5 sps ending at **, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "Final partial repeat \u2014 last row of the main repeating section."}, {"rowLabel": "Row 55", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 5, sc between next 2 dc, ch 5, sc in next ch-5 sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "4 ch-5 sps. Shawl point is narrowing fast now."}, {"rowLabel": "Row 56", "side": "", "instructions": "Ch 1, sc around tr, [ch 5, sc in next ch-sp] twice, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "3 ch-5 sps."}, {"rowLabel": "Row 57", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in next ch-sp, ch 2, tr in last ch-5 sp, turn.", "stitchCount": null, "context": "2 ch-5 sps."}, {"rowLabel": "Row 58", "side": "", "instructions": "Ch 1, sc around tr, ch 5, sc in last ch-5 sp, fasten off.", "stitchCount": null, "context": "1 ch-5 sp. Body is complete \u2014 on to the edging!"}, {"rowLabel": "Join Yarn", "side": "SETUP", "instructions": "Join yarn to foundation edge on RS with sl st.", "stitchCount": null, "context": "Starting the edging along the long foundation (Row 1) edge."}, {"rowLabel": "Edging Row 1", "side": "RS", "instructions": "Ch 7, sc in same st as join, *ch 5, sc in next ch-sp on edge; repeat from * across to center ch-5 sp, ch 5, (sc, ch 5, sc) in center ch-5 sp, [ch 5, sc in next ch-sp on edge] repeat to opposite foundation edge, ch 5, (sc, ch 4, tr) in last st on foundation, turn.", "stitchCount": null, "context": "115 ch-5 sps + 1 ch-7 sp + 1 ch-4 sp."}, {"rowLabel": "Edging Row 2", "side": "", "instructions": "Ch 7, (sc, ch 3, 3 dc-cl) in first ch-sp, *sc in next ch-5 sp, ch 5, (sc, ch 3, 3 dc-cl) in next ch-5 sp; repeat from * across to 1 ch-5 sp before center ch-sp, sc in next ch-5 sp, ch 5, (sc, ch 5, sc) in center ch-5 sp, [ch 5, (sc, ch 3, 3 dc-cl) in next ch-5 sp, sc in next ch-5 sp] repeat across to last ch-5 sp, ch 5, (sc, ch 3, 3 dc-cl) in last ch-5 sp, (sc, ch 4, tr) in last ch-7, turn.", "stitchCount": null, "context": "59 ch-5 sps + 58 ch-3 sps + 1 ch-7 sp + 1 ch-4 sp. Double crochet cluster (3 dc-cl): *yo, insert hook in indicated st, yo and pull up a loop, yo and draw through 2 loops; repeat from * in same st, yo and draw through all 4 loops on hook."}, {"rowLabel": "Edging Row 3", "side": "", "instructions": "Ch 7, sc in first ch-sp, *ch 5, sc in next ch-3 sp, ch 5, sc in next ch-5 sp; repeat from * across to center ch-5 sp, ch 5, (sc, ch 5, sc) in center ch-5 sp, [ch 5, sc in next ch-5 sp, ch 5, sc in next ch-3 sp] repeat across to last ch-sp, ch 5, (sc, ch 4, tr) in last ch-sp, turn.", "stitchCount": null, "context": "119 ch-5 sps + 1 ch-7 sp + 1 ch-4 sp."}, {"rowLabel": "Edging Row 4", "side": "", "instructions": "Ch 7, (sc, ch 3, 3 dc-cl) in first ch-sp, *sc in next ch-5 sp, ch 5, (sc, ch 3, 3 dc-cl) in next ch-5 sp; repeat from * across to 1 ch-5 sp before center ch-sp, sc in next ch-5 sp, ch 5, (sc, ch 5, sc) in center ch-5 sp, [ch 5, (sc, ch 3, 3 dc-cl) in next ch-5 sp, sc in next ch-5 sp] repeat across to last ch-5 sp, ch 5, (sc, ch 3, 3 dc-cl) in last ch-5 sp, (sc, ch 4, tr) in last ch-7, turn.", "stitchCount": null, "context": "61 ch-5 sps + 60 ch-3 sps + 1 ch-7 sp + 1 ch-4 sp."}, {"rowLabel": "Edging Row 5", "side": "FINISH", "instructions": "Ch 7, (sc, ch 3, sc) in first ch-sp, *ch 7, skip next ch-3 sp, (sc, ch 3, sc) in next ch-5 sp; repeat from * across to center ch-5 sp, ch 5, (sc, ch 5, sc) in center ch-5 sp, ch 5 [(sc, ch 3, sc) in next ch-5 sp, ch 7, skip next ch-3 sp] repeat across to last ch-sp, (sc, ch 3, sc, ch 7, sl st) in last ch-sp, fasten off.", "stitchCount": null, "context": "60 ch-5 sps + 62 ch-3 sps + 3 ch-5 sps + 1 ch-7 sp + 1 ch-4 sp. This is the last edging row!"}, {"rowLabel": "Blocking", "side": "FINISH", "instructions": "Pin shawl to schematic size (68.5\" wide x 37\" deep). Steam with iron, holding iron at least an inch above the fabric. Allow to dry.", "stitchCount": null, "context": "Done! Enjoy your Boothbay Harbor shawl."}];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'boothbayharbor_row';
+let currentIndex = parseInt(localStorage.getItem(STORAGE_KEY) ?? 0);
+if (isNaN(currentIndex) || currentIndex < 0) currentIndex = 0;
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  const total = PATTERN.length;
+  const row = PATTERN[currentIndex];
+
+  localStorage.setItem(STORAGE_KEY, currentIndex);
+
+  const pct = Math.round((currentIndex / (total - 1)) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `Row ${currentIndex + 1} of ${total}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  document.getElementById('section-label').textContent = currentIndex >= 58 ? 'Edging' : 'Body';
+
+  document.getElementById('row-display').textContent = row.rowLabel;
+  const badge = document.getElementById('row-side-badge');
+  if (row.side && row.side.length > 0) {
+    badge.textContent = row.side;
+    badge.className = 'row-side show ' + row.side.toLowerCase();
+  } else {
+    badge.className = 'row-side';
+  }
+
+  document.getElementById('row-instructions').innerHTML = row.instructions.replace(/\n/g, '<br>');
+
+  const noteEl = document.getElementById('stitch-note');
+  if (row.context && row.context.length > 0) {
+    noteEl.classList.add('show');
+    noteEl.textContent = row.context;
+  } else {
+    noteEl.classList.remove('show');
+  }
+
+  const scEl = document.getElementById('stitch-count-display');
+  if (row.stitchCount) {
+    scEl.innerHTML = `<strong>${row.stitchCount}</strong> stitches`;
+  } else {
+    scEl.innerHTML = '';
+  }
+
+  document.getElementById('btn-prev').disabled = currentIndex === 0;
+  document.getElementById('btn-next').disabled = currentIndex === total - 1;
+
+  const isLast = currentIndex === total - 1;
+  document.getElementById('completion').classList.toggle('show', isLast);
+  document.getElementById('row-card').style.display = isLast ? 'none' : 'block';
+  document.getElementById('stitch-count-display').style.display = isLast ? 'none' : 'flex';
+}
+
+function navigate(dir) {
+  const next = currentIndex + dir;
+  if (next >= 0 && next < PATTERN.length) {
+    currentIndex = next;
+    render();
+  }
+}
+
+render();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+</body>
+</html>
