@@ -5,8 +5,8 @@
   "start_url": "/Oddnings-trackers/Mangrove/",
   "scope": "/Oddnings-trackers/Mangrove/",
   "display": "standalone",
-  "background_color": "#e9f5ee",
-  "theme_color": "#2d6a4f",
+  "background_color": "#060d08",
+  "theme_color": "#060d08",
   "orientation": "portrait",
   "icons": [
     {

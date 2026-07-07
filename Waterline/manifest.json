@@ -5,8 +5,8 @@
   "start_url": "/Oddnings-trackers/Waterline/",
   "scope": "/Oddnings-trackers/Waterline/",
   "display": "standalone",
-  "background_color": "#f0f7fa",
-  "theme_color": "#2a6b8a",
+  "background_color": "#060d10",
+  "theme_color": "#060d10",
   "orientation": "portrait",
   "icons": [
     {

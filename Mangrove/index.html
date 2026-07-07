@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#2d6a4f">
+<meta name="theme-color" content="#060d08">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mangrove">
@@ -13,23 +13,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --deep:    #1b4332;
+    --bg:      #060d08;
+    --surface: #0c1911;
+    --surface2:#122619;
+    --deep:    #0e2818;
     --forest:  #2d6a4f;
-    --fern:    #52b788;
-    --mist:    #b7e4c7;
-    --foam:    #e9f5ee;
-    --white:   #ffffff;
-    --accent:  #95d5b2;
-    --gold:    #d4a84b;
-    --text:    #1a2e24;
-    --subtext: #4a7a5e;
+    --fern:    #5fbf8f;
+    --mist:    #6f9481;
+    --gold:    #d9b25c;
+    --gold-br: #f0cf85;
+    --text:    #d9ecdf;
+    --subtext: #6f9481;
+    --radius:  14px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Lato', sans-serif;
-    background: var(--foam);
+    background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     display: flex;
@@ -38,40 +40,38 @@
 
   /* HEADER */
   header {
-    background: linear-gradient(150deg, var(--deep) 0%, var(--forest) 55%, var(--fern) 100%);
-    padding: 1.4rem 1.25rem 2.6rem;
+    background: radial-gradient(120% 140% at 50% 0%, #133b26 0%, var(--bg) 70%);
+    padding: 1.4rem 1.25rem 2.2rem;
     position: relative;
     overflow: hidden;
+    border-bottom: 1px solid #16301f;
   }
 
-  /* Mangrove root decoration */
   header::before {
     content: '';
     position: absolute;
-    bottom: 8px; left: 0; right: 0;
-    height: 40px;
-    background: repeating-linear-gradient(
-      90deg,
-      transparent 0px, transparent 18px,
-      rgba(255,255,255,0.07) 18px, rgba(255,255,255,0.07) 20px
-    );
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.7;
   }
 
-  header::after {
-    content: '';
+  .header-glyph {
     position: absolute;
-    bottom: -1px; left: 0; right: 0;
-    height: 28px;
-    background: var(--foam);
-    clip-path: ellipse(52% 100% at 50% 100%);
+    top: 14px;
+    right: 16px;
+    font-size: 15px;
+    opacity: 0.35;
+    letter-spacing: 5px;
+    color: var(--gold);
   }
 
   header h1 {
     font-family: 'Cinzel', serif;
     font-size: 1.65rem;
-    color: var(--white);
+    color: var(--text);
     letter-spacing: 0.1em;
-    font-weight: 400;
+    font-weight: 600;
   }
 
   header p {
@@ -100,14 +100,16 @@
 
   .progress-bar {
     height: 5px;
-    background: var(--mist);
+    background: var(--surface2);
     border-radius: 3px;
     overflow: hidden;
+    border: 1px solid #17331f;
   }
 
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--forest), var(--fern));
+    box-shadow: 0 0 8px rgba(95,191,143,0.55);
     border-radius: 3px;
     transition: width 0.4s ease;
   }
@@ -124,8 +126,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background: var(--forest);
-    color: var(--white);
+    background: var(--surface2);
+    border: 1px solid #1d4028;
+    color: var(--fern);
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -136,12 +139,14 @@
 
   .chip.gold {
     background: var(--gold);
-    color: #3a2400;
+    color: #2e1e00;
+    border: none;
   }
 
   .chip span.dot {
     width: 5px; height: 5px;
     background: var(--fern);
+    box-shadow: 0 0 6px var(--fern);
     border-radius: 50%;
   }
 
@@ -154,14 +159,15 @@
     text-transform: uppercase;
   }
 
-  .turn-indicator.turn { color: var(--forest); }
-  .turn-indicator.no-turn { color: var(--gold); }
+  .turn-indicator.turn { color: var(--fern); }
+  .turn-indicator.no-turn { color: var(--gold-br); }
 
   /* VIEW TOGGLE */
   .view-toggle {
     margin: 0.9rem 1.25rem 0;
     display: flex;
-    background: var(--mist);
+    background: var(--surface2);
+    border: 1px solid #1d4028;
     border-radius: 10px;
     padding: 3px;
     gap: 3px;
@@ -180,21 +186,33 @@
     background: transparent;
     color: var(--subtext);
     letter-spacing: 0.05em;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .toggle-btn.active {
-    background: var(--white);
-    color: var(--forest);
-    box-shadow: 0 1px 4px rgba(45,106,79,0.15);
+    background: var(--forest);
+    color: var(--text);
+    box-shadow: 0 1px 8px rgba(45,106,79,0.5);
   }
 
   /* ROW CARD */
   .row-card {
     margin: 0.9rem 1.25rem;
-    background: var(--white);
+    background: var(--surface);
+    border: 1px solid #16301f;
     border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(45,106,79,0.10);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
     overflow: hidden;
+    position: relative;
+  }
+
+  .row-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--forest), var(--gold), var(--forest));
+    z-index: 1;
   }
 
   .row-card-header {
@@ -208,7 +226,7 @@
   .row-number {
     font-family: 'Cinzel', serif;
     font-size: 1.05rem;
-    color: var(--white);
+    color: var(--text);
     font-weight: 600;
   }
 
@@ -219,8 +237,8 @@
     text-transform: uppercase;
     padding: 0.22rem 0.55rem;
     border-radius: 10px;
-    background: rgba(255,255,255,0.18);
-    color: var(--white);
+    background: rgba(255,255,255,0.1);
+    color: var(--gold-br);
   }
 
   /* WRITTEN VIEW */
@@ -234,7 +252,7 @@
   .stitch-note {
     margin-top: 0.7rem;
     padding: 0.55rem 0.8rem;
-    background: var(--foam);
+    background: var(--surface2);
     border-left: 3px solid var(--fern);
     border-radius: 0 8px 8px 0;
     font-size: 0.78rem;
@@ -252,14 +270,14 @@
     font-family: 'Fira Mono', monospace;
     font-size: 1.05rem;
     letter-spacing: 0.08em;
-    color: var(--forest);
-    background: var(--foam);
+    color: var(--gold-br);
+    background: var(--surface2);
     padding: 0.75rem 1rem;
     border-radius: 8px;
     overflow-x: auto;
     white-space: nowrap;
     margin-bottom: 0.75rem;
-    border: 1px solid var(--mist);
+    border: 1px solid #1d4028;
   }
 
   .symbol-key {
@@ -280,7 +298,7 @@
   .sym {
     font-family: 'Fira Mono', monospace;
     font-size: 0.9rem;
-    color: var(--forest);
+    color: var(--fern);
     font-weight: 500;
     min-width: 1.5rem;
   }
@@ -288,7 +306,7 @@
   .chart-note {
     margin-top: 0.75rem;
     padding: 0.55rem 0.8rem;
-    background: var(--foam);
+    background: var(--surface2);
     border-left: 3px solid var(--gold);
     border-radius: 0 8px 8px 0;
     font-size: 0.78rem;
@@ -314,17 +332,19 @@
     cursor: pointer;
     transition: all 0.15s ease;
     letter-spacing: 0.04em;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .btn-prev {
-    background: var(--mist);
-    color: var(--deep);
+    background: var(--surface2);
+    color: var(--mist);
+    border: 1px solid #1d4028;
   }
 
   .btn-next {
-    background: linear-gradient(135deg, var(--forest), var(--deep));
-    color: var(--white);
-    box-shadow: 0 3px 10px rgba(45,106,79,0.35);
+    background: linear-gradient(135deg, var(--forest), var(--fern));
+    color: #04140b;
+    box-shadow: 0 3px 14px rgba(95,191,143,0.35);
   }
 
   .btn:active { transform: scale(0.97); }
@@ -341,7 +361,7 @@
   .stitch-count strong {
     font-family: 'Cinzel', serif;
     font-size: 1.05rem;
-    color: var(--forest);
+    color: var(--fern);
   }
 
   /* COMPLETION */
@@ -355,12 +375,16 @@
 
   .completion.show { display: flex; }
 
-  .completion-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .completion-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(217,178,92,0.5));
+  }
 
   .completion h2 {
     font-family: 'Cinzel', serif;
     font-size: 1.4rem;
-    color: var(--deep);
+    color: var(--text);
     margin-bottom: 0.5rem;
   }
 
@@ -369,18 +393,30 @@
     font-size: 0.88rem;
     line-height: 1.6;
   }
+
+
+  .title-icon { font-size: 1.3rem; margin-right: 0.15rem; filter: drop-shadow(0 0 6px rgba(217,178,92,0.5)); }
+
+  .deco {
+    text-align: center;
+    font-size: 15px;
+    opacity: 0.3;
+    padding: 4px 0 0;
+    letter-spacing: 8px;
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Mangrove</h1>
+  <span class="header-glyph">🐚 🍃 🐚</span>
+  <h1><span class="title-icon">🍃</span> Mangrove</h1>
   <p>Shawl Tracker · Marly Bird · Shawl Size</p>
 </header>
 
 <div class="progress-wrap">
   <div class="progress-label">
-    <span id="progress-text">Row 1</span>
+    <span>🍃 <span id="progress-text">Row 1</span></span>
     <span id="progress-pct">0%</span>
   </div>
   <div class="progress-bar">
@@ -428,6 +464,8 @@
 </div>
 
 <div class="stitch-count" id="stitch-count-display"></div>
+
+<div class="deco">🐚 🍃 🦀 🍃 🐚</div>
 
 <div class="nav-area">
   <button class="btn btn-prev" id="btn-prev" onclick="navigate(-1)">← Back</button>

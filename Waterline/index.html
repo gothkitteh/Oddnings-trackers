@@ -3,70 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#2a6b8a">
+<meta name="theme-color" content="#060d10">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Waterline">
 <title>Waterline Shawl Tracker</title>
 <link rel="manifest" href="manifest.json">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap');
 
   :root {
-    --deep:    #1a4a5e;
-    --wave:    #2a6b8a;
-    --foam:    #7ab8cc;
-    --mist:    #c8e4ed;
-    --sand:    #f0f7fa;
-    --white:   #ffffff;
-    --accent:  #e8a87c;
-    --text:    #1a2e38;
-    --subtext: #4a7a8a;
+    --bg:      #060d10;
+    --surface: #0c1a1f;
+    --surface2:#122730;
+    --deep:    #0e2b36;
+    --wave:    #2a8fa8;
+    --wave-br: #5fd3e8;
+    --foam:    #cdeef4;
+    --mist:    #6f97a1;
+    --accent:  #e8c07c;
+    --text:    #d8eef2;
+    --subtext: #6f97a1;
+    --radius:  14px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Lato', sans-serif;
-    background: var(--sand);
+    background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
-  /* WAVE HEADER */
+  /* HEADER */
   header {
-    background: linear-gradient(160deg, var(--deep) 0%, var(--wave) 60%, var(--foam) 100%);
-    padding: 1.5rem 1.25rem 2.5rem;
+    background: radial-gradient(120% 140% at 50% 0%, #12333e 0%, var(--bg) 70%);
+    padding: 1.5rem 1.25rem 2.25rem;
     position: relative;
     overflow: hidden;
+    border-bottom: 1px solid #132a31;
   }
 
-  header::after {
+  header::before {
     content: '';
     position: absolute;
-    bottom: -1px;
-    left: 0; right: 0;
-    height: 32px;
-    background: var(--sand);
-    clip-path: ellipse(55% 100% at 50% 100%);
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--wave-br), transparent);
+    opacity: 0.7;
+  }
+
+  .header-glyph {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 15px;
+    opacity: 0.35;
+    letter-spacing: 5px;
+    color: var(--foam);
   }
 
   header h1 {
     font-family: 'Cinzel', serif;
-    font-size: 1.6rem;
-    color: var(--white);
-    letter-spacing: 0.08em;
-    font-weight: 400;
+    font-size: 1.65rem;
+    color: var(--foam);
+    letter-spacing: 0.09em;
+    font-weight: 600;
   }
 
   header p {
     color: var(--mist);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-top: 0.2rem;
+    margin-top: 0.3rem;
     font-weight: 300;
   }
 
@@ -87,14 +100,16 @@
 
   .progress-bar {
     height: 6px;
-    background: var(--mist);
+    background: var(--surface2);
     border-radius: 3px;
     overflow: hidden;
+    border: 1px solid #16323b;
   }
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--wave), var(--foam));
+    background: linear-gradient(90deg, var(--wave), var(--wave-br));
+    box-shadow: 0 0 8px rgba(95,211,232,0.6);
     border-radius: 3px;
     transition: width 0.4s ease;
   }
@@ -105,8 +120,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: var(--wave);
-    color: var(--white);
+    background: var(--surface2);
+    border: 1px solid #1d3d47;
+    color: var(--wave-br);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -117,7 +133,8 @@
 
   .section-chip span.dot {
     width: 6px; height: 6px;
-    background: var(--foam);
+    background: var(--wave-br);
+    box-shadow: 0 0 6px var(--wave-br);
     border-radius: 50%;
     display: inline-block;
   }
@@ -125,10 +142,21 @@
   /* ROW CARD */
   .row-card {
     margin: 1rem 1.25rem;
-    background: var(--white);
+    background: var(--surface);
+    border: 1px solid #16323b;
     border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(42,107,138,0.10);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
     overflow: hidden;
+    position: relative;
+  }
+
+  .row-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--wave), var(--wave-br), var(--wave));
+    z-index: 1;
   }
 
   .row-card-header {
@@ -142,7 +170,7 @@
   .row-number {
     font-family: 'Cinzel', serif;
     font-size: 1.1rem;
-    color: var(--white);
+    color: var(--foam);
     font-weight: 600;
   }
 
@@ -156,13 +184,13 @@
   }
 
   .row-side.rs {
-    background: rgba(255,255,255,0.2);
-    color: var(--white);
+    background: rgba(255,255,255,0.12);
+    color: var(--wave-br);
   }
 
   .row-side.ws {
     background: var(--accent);
-    color: #5a2a00;
+    color: #3a2400;
   }
 
   .row-instructions {
@@ -175,8 +203,8 @@
   .stitch-note {
     margin-top: 0.75rem;
     padding: 0.6rem 0.85rem;
-    background: var(--sand);
-    border-left: 3px solid var(--foam);
+    background: var(--surface2);
+    border-left: 3px solid var(--wave-br);
     border-radius: 0 8px 8px 0;
     font-size: 0.8rem;
     color: var(--subtext);
@@ -187,10 +215,11 @@
   .wave-context {
     margin: 0 1.25rem;
     padding: 0.75rem 1rem;
-    background: var(--mist);
+    background: var(--surface2);
+    border: 1px solid #1d3d47;
     border-radius: 10px;
     font-size: 0.78rem;
-    color: var(--deep);
+    color: var(--foam);
     line-height: 1.5;
   }
 
@@ -222,17 +251,19 @@
     cursor: pointer;
     transition: all 0.15s ease;
     letter-spacing: 0.04em;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .btn-prev {
-    background: var(--mist);
-    color: var(--deep);
+    background: var(--surface2);
+    color: var(--mist);
+    border: 1px solid #1d3d47;
   }
 
   .btn-next {
-    background: linear-gradient(135deg, var(--wave), var(--deep));
-    color: var(--white);
-    box-shadow: 0 3px 10px rgba(42,107,138,0.35);
+    background: linear-gradient(135deg, var(--wave), var(--wave-br));
+    color: #04141a;
+    box-shadow: 0 3px 14px rgba(95,211,232,0.35);
   }
 
   .btn:active { transform: scale(0.97); }
@@ -251,7 +282,7 @@
 
   .stitch-count strong {
     font-size: 1.1rem;
-    color: var(--wave);
+    color: var(--wave-br);
     font-family: 'Cinzel', serif;
   }
 
@@ -270,12 +301,13 @@
   .completion-wave {
     font-size: 3rem;
     margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(95,211,232,0.5));
   }
 
   .completion h2 {
     font-family: 'Cinzel', serif;
     font-size: 1.4rem;
-    color: var(--deep);
+    color: var(--foam);
     margin-bottom: 0.5rem;
   }
 
@@ -284,18 +316,30 @@
     font-size: 0.9rem;
     line-height: 1.6;
   }
+
+
+  .title-icon { font-size: 1.3rem; margin-right: 0.15rem; filter: drop-shadow(0 0 6px rgba(95,211,232,0.5)); }
+
+  .deco {
+    text-align: center;
+    font-size: 15px;
+    opacity: 0.3;
+    padding: 4px 0 0;
+    letter-spacing: 8px;
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Waterline</h1>
+  <span class="header-glyph">🌊 🌙 🌊</span>
+  <h1><span class="title-icon">🌙</span> Waterline</h1>
   <p>Shawl Tracker · Red Heart · Ann Weaver</p>
 </header>
 
 <div class="progress-wrap">
   <div class="progress-label">
-    <span id="progress-text">Loading...</span>
+    <span>🌊 <span id="progress-text">Loading...</span></span>
     <span id="progress-pct">0%</span>
   </div>
   <div class="progress-bar">
@@ -320,6 +364,8 @@
 <div class="stitch-count" id="stitch-count-display"></div>
 
 <div class="wave-context" id="wave-context"></div>
+
+<div class="deco">🌙 〰️ 🌊 〰️ 🌙</div>
 
 <div class="nav-area">
   <button class="btn btn-prev" id="btn-prev" onclick="navigate(-1)">← Back</button>
