@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0912">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pando Aspen">
+<title>Pando Aspen Tracker</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+  :root {
+    --bg:      #0a0912;
+    --surface: #16131f;
+    --surface2:#1f1a2e;
+    --sage:    #a8c7a8;
+    --blush:   #e7bcba;
+    --cream:   #eee0c8;
+    --dusty:   #b0cad6;
+    --coral:   #db9e86;
+    --moon:    #f5eed6;
+    --text:    #ece6f0;
+    --subtext: #9a90ac;
+    --radius:  14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    background: radial-gradient(120% 140% at 60% 10%, #2c2748 0%, var(--bg) 70%);
+    padding: 1.5rem 1.25rem 2.25rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid #221d34;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--sage), var(--blush), var(--cream), var(--dusty), var(--coral));
+    opacity: 0.85;
+  }
+
+  .header-glyph {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 15px;
+    opacity: 0.4;
+    letter-spacing: 5px;
+    color: var(--moon);
+  }
+
+  .title-icon { font-size: 1.3rem; margin-right: 0.15rem; filter: drop-shadow(0 0 6px rgba(245,238,214,0.5)); }
+
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.65rem;
+    color: var(--moon);
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    text-shadow: 0 0 18px rgba(245,238,214,0.3);
+  }
+
+  header p {
+    color: var(--subtext);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.35rem;
+    font-weight: 300;
+  }
+
+  /* PROGRESS BAR (setup / edging phases) */
+  .progress-wrap {
+    padding: 1.25rem 1.25rem 0;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--subtext);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid #271f3a;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), var(--blush), var(--cream), var(--dusty), var(--coral));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* REP CHIP (repeat phase) */
+  .rep-chip-wrap {
+    padding: 1.25rem 1.25rem 0;
+    display: none;
+  }
+  .rep-chip-wrap.show { display: block; }
+
+  .rep-chip {
+    background: var(--surface2);
+    border: 1px solid #271f3a;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .rep-chip-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--subtext);
+  }
+
+  .rep-chip-value {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    color: var(--moon);
+    font-weight: 600;
+  }
+
+  /* SECTION CHIP */
+  .section-chip {
+    margin: 1rem 1.25rem 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface2);
+    border: 1px solid #2a2340;
+    color: var(--dusty);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+  }
+
+  .section-chip span.dot {
+    width: 6px; height: 6px;
+    background: var(--blush);
+    box-shadow: 0 0 6px var(--blush);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* ROW CARD */
+  .row-card {
+    margin: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid #221d34;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .row-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--sage), var(--blush), var(--cream), var(--dusty), var(--coral));
+    z-index: 1;
+  }
+
+  .row-card-header {
+    background: linear-gradient(135deg, #241f38, #352a4e);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .row-number {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--moon);
+    font-weight: 600;
+  }
+
+  .row-side {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    white-space: nowrap;
+    display: none;
+  }
+
+  .row-side.show { display: inline-block; }
+  .row-side.ws { background: var(--blush); color: #3a1a20; }
+  .row-side.finish { background: var(--cream); color: #3a3020; }
+
+  .row-instructions {
+    padding: 1.1rem 1.25rem;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .stitch-note {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: var(--surface2);
+    border-left: 3px solid var(--dusty);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.8rem;
+    color: var(--subtext);
+    line-height: 1.5;
+    display: none;
+  }
+
+  .stitch-note.show { display: block; }
+
+  /* NAVIGATION */
+  .nav-area {
+    padding: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .nav-area.stacked {
+    flex-direction: column;
+  }
+
+  .btn {
+    flex: 1;
+    width: 100%;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-prev {
+    background: var(--surface2);
+    color: var(--subtext);
+    border: 1px solid #271f3a;
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--blush), var(--dusty));
+    color: #221528;
+    box-shadow: 0 3px 14px rgba(231,188,186,0.3);
+  }
+
+  .btn-repeat {
+    background: linear-gradient(135deg, var(--sage), var(--dusty));
+    color: #16281c;
+    box-shadow: 0 3px 14px rgba(168,199,168,0.3);
+  }
+
+  .btn-edging {
+    background: linear-gradient(135deg, var(--coral), var(--cream));
+    color: #3a2416;
+    box-shadow: 0 3px 14px rgba(219,158,134,0.3);
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+
+  .decision-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+
+  /* COMPLETION */
+  .completion {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .completion.show { display: flex; }
+
+  .completion-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(245,238,214,0.4));
+  }
+
+  .completion h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: var(--moon);
+    margin-bottom: 0.5rem;
+  }
+
+  .completion p {
+    color: var(--subtext);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  /* DECORATIVE FOOTER */
+  .deco {
+    text-align: center;
+    font-size: 15px;
+    opacity: 0.3;
+    padding: 4px 0 0;
+    letter-spacing: 8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="header-glyph">&#9729; &#127769; &#127770;</span>
+  <h1><span class="title-icon">&#127769;</span> Pando Aspen</h1>
+  <p>Crochet Shawl &middot; Marly Bird &middot; Caron Blossom Cakes &middot; Radiant Rainbow</p>
+</header>
+
+<div class="progress-wrap" id="progress-wrap">
+  <div class="progress-label">
+    <span id="progress-text">Loading...</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="rep-chip-wrap" id="rep-chip-wrap">
+  <div class="rep-chip">
+    <span class="rep-chip-label">Main Body Repeat</span>
+    <span class="rep-chip-value" id="rep-chip-value">1</span>
+  </div>
+</div>
+
+<div class="section-chip">
+  <span class="dot"></span>
+  <span id="section-label">Loading...</span>
+</div>
+
+<div class="row-card" id="row-card">
+  <div class="row-card-header">
+    <span class="row-number" id="row-display">Row &mdash;</span>
+    <span class="row-side" id="row-side-badge"></span>
+  </div>
+  <div class="row-instructions" id="row-instructions">Loading...</div>
+  <div class="stitch-note" id="stitch-note"></div>
+</div>
+
+<div class="deco">&#9729; &#127769; &#129415; &#127769; &#9729;</div>
+
+<div class="nav-area" id="nav-area">
+  <button class="btn btn-prev" id="btn-prev" onclick="navigatePrev()">&larr; Back</button>
+  <button class="btn btn-next" id="btn-next" onclick="navigateNext()">Next &rarr;</button>
+</div>
+
+<div class="nav-area stacked" id="decision-area" style="display:none;">
+  <button class="btn btn-prev" id="btn-prev-decision" onclick="navigatePrev()">&larr; Back</button>
+  <div class="decision-row">
+    <button class="btn btn-repeat" onclick="repeatAgain()">&#8635; Repeat Rows 6&ndash;15 Again</button>
+    <button class="btn btn-edging" onclick="moveToEdging()">Move to Edging &rarr;</button>
+  </div>
+</div>
+
+<div class="completion" id="completion">
+  <div class="completion-icon">&#127769;</div>
+  <h2>Pando Aspen Complete!</h2>
+  <p>Fasten off, weave in ends, and wet block to finished size. Enjoy your shawl!</p>
+</div>
+
+<script>
+// ─── PATTERN DATA ────────────────────────────────────────────────────────────
+
+const SETUP = [{"rowLabel": "Row 1", "side": "", "instructions": "Ch 1, sc in back bump of chain, turn.", "context": ""}, {"rowLabel": "Row 2", "side": "", "instructions": "Ch 4 (counts as tr), (3 dc, tr) in sc, turn \u2014 2 tr + 3 dc.", "context": ""}, {"rowLabel": "Row 3", "side": "", "instructions": "Ch 1, 2 sc in first tr, sc in next 3 dc, 2 sc in top of tch, turn \u2014 7 sc.", "context": ""}, {"rowLabel": "Row 4", "side": "", "instructions": "Ch 4 (counts as tr), 2 dc in first sc, ch 2, skip 2 sc, sc in next sc, ch 2, skip 2 sc, (2 dc, tr) in last sc, turn \u2014 2 tr + 4 dc + 2 ch-2 sps + 1 sc.", "context": ""}, {"rowLabel": "Row 5", "side": "", "instructions": "Ch 1, 2 sc in first tr, sc in next 2 dc, ch 2, skip ch-2 sp, dc in next sc, ch 2, skip next ch-2 sp, sc in next 2 dc, 2 sc in top of tch, turn \u2014 8 sc + 2 ch-2 sps + 1 dc.", "context": ""}];
+const REPEAT_UNIT = [{"rowLabel": "Row 6", "side": "", "instructions": "Ch 6 (counts as tr + ch-2 sp), skip first sc, *sc in next sc, ch 2, skip 2 sc, 2 dc in next ch-2 sp, dc in next dc, 2 dc in next ch-2 sp, ch 2, skip 2 sc; repeat from * across to last 2 sc, sc in next sc, ch 2, tr in last sc, turn \u2014 2 tr + 5 dc + 4 ch-2 sps + 2 sc.", "context": ""}, {"rowLabel": "Row 7", "side": "", "instructions": "Ch 1, 2 sc in first tr, *ch 2, skip next ch-2 sp, dc in next sc, ch 2, skip next ch-2 sp, sc in next 5 dc; repeat from * across to last 2 ch-2 sps, ch 2, skip next ch-2 sp, dc in next sc, ch 2, 2 sc in 4th ch of tch, turn \u2014 9 sc + 4 ch-2 sps + 2 dc.", "context": ""}, {"rowLabel": "Row 8", "side": "", "instructions": "Ch 5 (counts as dc + ch-2 sp), skip first 2 sc, *2 dc in next ch-2 sp, dc in next dc, 2 dc in next ch-2 sp, ch 2, skip 2 sc, sc in next sc, ch 2, skip 2 sc; repeat from * across to last 2 ch-2 sps, 2 dc in next ch-2 sp, dc in next dc, 2 dc in last ch-2 sp, ch 2, dc in last sc, turn \u2014 12 dc + 4 ch-2 sps + 1 sc.", "context": ""}, {"rowLabel": "Row 9", "side": "", "instructions": "Ch 4 (counts as dc + ch-1 sp), dc in first dc, *ch 2, skip next ch-2 sp, sc in next 5 dc, ch 2, skip next ch-2 sp, dc in next sc; repeat from * across to last 2 ch-2 sps, ch 2, skip next ch-2 sp, sc in next 5 dc, ch 2, (dc, ch 1, dc) in 3rd ch of tch, turn \u2014 5 dc + 10 sc + 4 ch-2 sps + 2 ch-1 sps.", "context": ""}, {"rowLabel": "Row 10", "side": "", "instructions": "Ch 4 (counts as dc + ch-1 sp), dc in first dc, dc in ch-1 sp, *dc in next dc, 2 dc in next ch-2 sp, ch 2, skip 2 sc, sc in next sc, ch 2, skip 2 sc, 2 dc in next ch-2 sp; repeat from * across to last dc + tch, dc in next dc, dc in tch-sp, (dc, ch 1, dc) in 3rd ch of tch, turn \u2014 17 dc + 2 sc + 4 ch-2 sps + 2 ch-1 sps.", "context": ""}, {"rowLabel": "Row 11", "side": "", "instructions": "Ch 5 (counts as dc + ch-2 sp), skip first dc, skip ch-1 sp, *sc in next 5 dc, ch 2, skip next ch-2 sp, dc in next sc, ch 2, skip next ch-2 sp; repeat from * across to last 5 dc + tch, sc in next 5 dc, ch 2, dc in 3rd ch of tch, turn \u2014 15 sc + 4 dc + 6 ch-2 sps.", "context": ""}, {"rowLabel": "Row 12", "side": "", "instructions": "Ch 4 (counts as tr), 2 dc in first dc, *2 dc in next ch-2 sp, ch 2, skip 2 sc, sc in next sc, ch 2, skip 2 sc, 2 dc in next ch-2 sp, dc in next dc; repeat from * across to last 2 ch-2 sps, 2 dc in next ch-2 sp, ch 2, skip 2 sc, sc in next sc, ch 2, skip 2 sc, 2 dc in tch-sp, (2 dc, tr) in 3rd ch of tch, turn \u2014 18 dc + 2 tr + 6 ch-2 sps + 3 sc.", "context": ""}, {"rowLabel": "Row 13", "side": "", "instructions": "Ch 1, 2 sc in first tr, sc in next 4 dc, *ch 2, skip next ch-2 sp, dc in next sc, ch 2, skip next ch-2 sp, sc in next 5 dc; repeat from * across to last 2 ch-2 sps, ch 2, skip next ch-2 sp, dc in next sc, ch 2, skip next ch-2 sp, sc in next 4 dc, 2 sc in top of tch, turn \u2014 22 sc + 3 dc + 6 ch-2 sps.", "context": ""}, {"rowLabel": "Row 14", "side": "", "instructions": "Ch 4 (counts as tr), 2 dc in first sc, *ch 2, skip 2 sc, sc in next sc, ch 2, skip 2 sc, 2 dc in next ch-2 sp, dc in next dc, 2 dc in next ch-2 sp; repeat from * across to last 6 sc, ch 2, skip 2 sc, sc in next sc, ch 2, skip 2 sc, (2 dc, tr) in last sc, turn \u2014 19 dc + 2 tr + 4 sc + 8 ch-2 sps.", "context": ""}, {"rowLabel": "Row 15", "side": "", "instructions": "Ch 1, 2 sc in first tr, sc in next 2 dc, *ch 2, skip next ch-2 sp, dc in next sc, ch 2, skip next ch-2 sp, sc in next 5 dc; repeat across to last 2 ch-2 sps, ch 2, skip next ch-2 sp, dc in next dc, ch 2, skip last ch-2 sp, sc in next 2 dc, 2 sc in top of tch, turn \u2014 23 sc + 4 dc + 8 ch-2 sps.", "context": ""}];
+const EDGING = [{"rowLabel": "Round 1", "side": "WS", "instructions": "Join yarn to first sc of last row on WS of shawl with sc, sc in each st across to last st of last row, 3 sc in last st, turn to begin working over row ends. Sc along edge 4 times, *ch 3, skip a space on the edge, sc along edge 7 times*; repeat from * across to corner (row 1), ch 3, place marker in ch-3 sp, sc along edge 7 times, repeat from * to * across to end of edge, ch 3, skip a space on the edge, sc along edge 4 times, sl st to first sc, turn.", "context": "3 sc around tr row ends, 2 sc around dc row ends, 1 sc around sc row ends. When skipping a stitch: 2 sc around tr row ends, 1 sc around dc row ends, skip sc row ends entirely. More stitches = ruffled edge; fewer = straighter. Both look great."}, {"rowLabel": "Row 2", "side": "", "instructions": "Ch 7 (counts as dc + ch-3 sp), *(2 dc, [ch 3, sl st to top of prev dc (working the front loop and 1 vertical strand)] 3 times, 2 dc) in next ch-3 sp, ch 3, skip 3 sc, dc in next sc, ch 3*; repeat from * across to marked corner ch-3 sp, (2 dc, ch 3, sl st to top of prev dc, 2 dc, [ch 3, sl st to top of prev dc] 3 times, 2 dc, ch 3, sl st to top of prev dc, move marker to ch-3 sp, 2 dc) in corner ch-3 sp, ch 3, skip 3 sc, dc in next sc, ch 3, repeat from * to * to last 4 sc of this side, ch 3, skip 3 sc, dc in next sc, leave remaining sts unworked, turn.", "context": ""}, {"rowLabel": "Row 3", "side": "", "instructions": "Ch 1, sc in first dc, *3 sc in next ch-3 sp, ch 3, skip next ch-3 sp, sl st in next ch-3 sp, ch 3, skip next ch-3 sp, 3 sc in next ch-3 sp, sc in next dc*; repeat from * across to 1 ch-3 sp before marker, 3 sc in next ch-3 sp, ch 2, sl st in next ch-3 sp, ch 3, skip next ch-3 sp, sl st in next ch-3 sp, ch 3, skip next ch-3 sp, sl st in next ch-3 sp, ch 2, 3 sc in next ch-3 sp, sc in next dc; repeat from * to * across (finishing last sequence in tch-sp and 3rd ch of tch), turn.", "context": ""}, {"rowLabel": "Row 4", "side": "", "instructions": "Ch 1, sc in first sc, *(dc, ch 1, dc, ch 1, dc) in next ch-3 sp, ch 3, (dc, ch 1, dc, ch 1, dc) in next ch-3 sp, skip 3 sc, sc in next sc*; repeat from * across to ch-2 sp, (dc, ch 1, dc, ch 1, dc) in next ch-2 sp, ch 1, (dc, ch 1, dc, ch 1, dc) in next ch-3 sp, ch 3, (dc, ch 1, dc, ch 1, dc) in next ch-3 sp, ch 1, (dc, ch 1, dc, ch 1, dc) in next ch-2 sp, skip 3 sc, sc in next sc; repeat from * to * across. Fasten off, weave in ends.", "context": ""}, {"rowLabel": "Finishing", "side": "FINISH", "instructions": "Fasten off, weave in ends. Wet block to finished size.", "context": "Done! Enjoy your Pando Aspen shawl."}];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'pandoaspen_state';
+let state = { phase: 'setup', setupIndex: 0, repCount: 1, repRowIndex: 0, edgingIndex: 0 };
+
+try {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if (saved && saved.phase) state = saved;
+} catch (e) {}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function currentRow() {
+  if (state.phase === 'setup') return SETUP[state.setupIndex];
+  if (state.phase === 'repeat') return REPEAT_UNIT[state.repRowIndex];
+  if (state.phase === 'edging') return EDGING[state.edgingIndex];
+  return null;
+}
+
+function currentSectionLabel() {
+  if (state.phase === 'setup') return 'Main Body \u2014 Setup';
+  if (state.phase === 'repeat') return `Main Body \u2014 Repeat ${state.repCount}`;
+  if (state.phase === 'edging') return 'Edging';
+  return '';
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  save();
+  const isDecisionPoint = state.phase === 'repeat' && state.repRowIndex === REPEAT_UNIT.length - 1;
+  const isComplete = state.phase === 'edging' && state.edgingIndex === EDGING.length - 1;
+
+  document.getElementById('completion').classList.toggle('show', isComplete);
+  document.getElementById('row-card').style.display = isComplete ? 'none' : 'block';
+  document.querySelector('.section-chip').style.display = isComplete ? 'none' : 'inline-flex';
+  document.getElementById('rep-chip-wrap').classList.toggle('show', !isComplete && state.phase === 'repeat');
+  document.getElementById('progress-wrap').style.display = isComplete ? 'none' : (state.phase === 'repeat' ? 'none' : 'block');
+
+  if (isComplete) {
+    document.getElementById('nav-area').style.display = 'flex';
+    document.getElementById('decision-area').style.display = 'none';
+    document.getElementById('btn-prev').disabled = false;
+    document.getElementById('btn-next').disabled = true;
+    document.getElementById('btn-next').textContent = 'Next \u2192';
+    return;
+  }
+
+  const row = currentRow();
+  document.getElementById('section-label').textContent = currentSectionLabel();
+
+  // progress bar vs rep chip
+  if (state.phase === 'repeat') {
+    document.getElementById('rep-chip-value').textContent = state.repCount;
+  } else {
+    let total, idx;
+    if (state.phase === 'setup') { total = SETUP.length; idx = state.setupIndex; }
+    else { total = EDGING.length; idx = state.edgingIndex; }
+    const pct = total > 1 ? Math.round((idx / (total - 1)) * 100) : 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = state.phase === 'setup'
+      ? `Setup: step ${idx + 1} of ${total}`
+      : `Edging: step ${idx + 1} of ${total}`;
+    document.getElementById('progress-pct').textContent = pct + '%';
+  }
+
+  document.getElementById('row-display').textContent = row.rowLabel;
+  const badge = document.getElementById('row-side-badge');
+  if (row.side && row.side.length > 0) {
+    badge.textContent = row.side;
+    badge.className = 'row-side show ' + row.side.toLowerCase();
+  } else {
+    badge.className = 'row-side';
+  }
+
+  document.getElementById('row-instructions').innerHTML = row.instructions.replace(/\n/g, '<br>');
+
+  const noteEl = document.getElementById('stitch-note');
+  if (row.context && row.context.length > 0) {
+    noteEl.classList.add('show');
+    noteEl.textContent = row.context;
+  } else {
+    noteEl.classList.remove('show');
+  }
+
+  // nav vs decision buttons
+  const navArea = document.getElementById('nav-area');
+  const decisionArea = document.getElementById('decision-area');
+  if (isDecisionPoint) {
+    navArea.style.display = 'none';
+    decisionArea.style.display = 'flex';
+  } else {
+    navArea.style.display = 'flex';
+    decisionArea.style.display = 'none';
+    const atVeryStart = state.phase === 'setup' && state.setupIndex === 0;
+    document.getElementById('btn-prev').disabled = atVeryStart;
+    document.getElementById('btn-next').disabled = false;
+    document.getElementById('btn-next').textContent = 'Next \u2192';
+  }
+}
+
+function navigateNext() {
+  if (state.phase === 'setup') {
+    if (state.setupIndex < SETUP.length - 1) {
+      state.setupIndex++;
+    } else {
+      state.phase = 'repeat';
+      state.repCount = 1;
+      state.repRowIndex = 0;
+    }
+  } else if (state.phase === 'repeat') {
+    if (state.repRowIndex < REPEAT_UNIT.length - 1) {
+      state.repRowIndex++;
+    }
+    // if at last row of repeat unit, decision buttons take over (handled in render)
+  } else if (state.phase === 'edging') {
+    if (state.edgingIndex < EDGING.length - 1) {
+      state.edgingIndex++;
+    }
+  }
+  render();
+}
+
+function navigatePrev() {
+  if (state.phase === 'setup') {
+    if (state.setupIndex > 0) state.setupIndex--;
+  } else if (state.phase === 'repeat') {
+    if (state.repRowIndex > 0) {
+      state.repRowIndex--;
+    } else if (state.repCount > 1) {
+      state.repCount--;
+      state.repRowIndex = REPEAT_UNIT.length - 1;
+    } else {
+      state.phase = 'setup';
+      state.setupIndex = SETUP.length - 1;
+    }
+  } else if (state.phase === 'edging') {
+    if (state.edgingIndex > 0) {
+      state.edgingIndex--;
+    } else {
+      state.phase = 'repeat';
+      state.repRowIndex = REPEAT_UNIT.length - 1;
+      // repCount stays at whatever it was
+    }
+  }
+  render();
+}
+
+function repeatAgain() {
+  state.repCount++;
+  state.repRowIndex = 0;
+  render();
+}
+
+function moveToEdging() {
+  state.phase = 'edging';
+  state.edgingIndex = 0;
+  render();
+}
+
+render();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+</body>
+</html>
