@@ -1,0 +1,25 @@
+{
+  "name": "Jessie's Girl Knit Tracker",
+  "short_name": "Jessie's Girl",
+  "description": "Row tracker for Jessie's Girl sleeveless pullover by Elizabeth Smith Knits, Size 3",
+  "start_url": "/Oddnings-trackers/jessies-girl/",
+  "scope": "/Oddnings-trackers/jessies-girl/",
+  "display": "standalone",
+  "background_color": "#0c0614",
+  "theme_color": "#0c0614",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

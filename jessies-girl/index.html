@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0c0614">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jessie's Girl">
+<title>Jessie's Girl Tracker</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Righteous&family=Lato:wght@300;400;700&display=swap');
+
+  :root {
+    --bg:      #070310;
+    --surface: #190f28;
+    --surface2:#28193d;
+    --deep:    #3d1566;
+    --magenta: #ec5cd6;
+    --magenta-br: #ff6fe8;
+    --cerulean: #4fd4f2;
+    --cerulean-br: #7be8ff;
+    --lavender: #b06bf0;
+    --text:    #ecdff5;
+    --subtext: #9c86b0;
+    --radius:  14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    background: radial-gradient(120% 140% at 50% 0%, #5a1f96 0%, var(--bg) 70%);
+    padding: 1.5rem 1.25rem 2.25rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid #29173d;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--magenta-br), var(--cerulean-br), transparent);
+    opacity: 0.8;
+  }
+
+  .header-glyph {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 15px;
+    opacity: 0.4;
+    letter-spacing: 5px;
+    color: var(--magenta-br);
+  }
+
+  .title-icon { font-size: 1.3rem; margin-right: 0.15rem; filter: drop-shadow(0 0 6px rgba(214,110,200,0.6)); }
+
+  header h1 {
+    font-family: 'Righteous', cursive;
+    font-size: 1.75rem;
+    color: var(--text);
+    letter-spacing: 0.03em;
+    font-weight: 400;
+    text-shadow: 0 0 22px rgba(236,92,214,0.65);
+  }
+
+  header p {
+    color: var(--lavender);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.35rem;
+    font-weight: 300;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    padding: 1.25rem 1.25rem 0;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--subtext);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid #2c1c40;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--magenta), var(--cerulean));
+    box-shadow: 0 0 8px rgba(214,110,200,0.55);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* SECTION CHIP */
+  .section-chip {
+    margin: 1rem 1.25rem 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface2);
+    border: 1px solid #33204a;
+    color: var(--cerulean-br);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+  }
+
+  .section-chip span.dot {
+    width: 6px; height: 6px;
+    background: var(--magenta-br);
+    box-shadow: 0 0 6px var(--magenta-br);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* ROW CARD */
+  .row-card {
+    margin: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid #29173d;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .row-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--magenta), var(--cerulean), var(--magenta));
+    z-index: 1;
+  }
+
+  .row-card-header {
+    background: linear-gradient(135deg, var(--deep), var(--magenta));
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .row-number {
+    font-family: 'Righteous', cursive;
+    font-size: 1.05rem;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .row-side {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+
+  .row-side.rs { background: rgba(255,255,255,0.12); color: var(--cerulean-br); }
+  .row-side.ws { background: var(--magenta-br); color: #3a0a30; }
+  .row-side.rnd { background: var(--lavender); color: #200a38; }
+  .row-side.setup { background: rgba(255,255,255,0.1); color: var(--text); }
+  .row-side.finish { background: var(--cerulean-br); color: #052430; }
+
+  .row-instructions {
+    padding: 1.1rem 1.25rem;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .stitch-note {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: var(--surface2);
+    border-left: 3px solid var(--cerulean-br);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.8rem;
+    color: var(--subtext);
+    line-height: 1.5;
+  }
+
+  /* CONTEXT NOTE */
+  .context-note {
+    margin: 0 1.25rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface2);
+    border: 1px solid #33204a;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.5;
+    display: none;
+  }
+
+  .context-note.show { display: block; }
+
+  .context-note strong {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.25rem;
+    color: var(--subtext);
+  }
+
+  /* NAVIGATION */
+  .nav-area {
+    padding: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-prev {
+    background: var(--surface2);
+    color: var(--lavender);
+    border: 1px solid #33204a;
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--magenta), var(--cerulean));
+    color: #0c0614;
+    box-shadow: 0 3px 14px rgba(214,110,200,0.4);
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+
+  /* STITCH COUNT */
+  .stitch-count {
+    margin: 0 1.25rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--subtext);
+  }
+
+  .stitch-count strong {
+    font-size: 1.1rem;
+    color: var(--magenta-br);
+    font-family: 'Righteous', cursive;
+    font-weight: 400;
+  }
+
+  /* COMPLETION */
+  .completion {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .completion.show { display: flex; }
+
+  .completion-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(214,110,200,0.5));
+  }
+
+  .completion h2 {
+    font-family: 'Righteous', cursive;
+    font-size: 1.4rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .completion p {
+    color: var(--subtext);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  /* DECORATIVE FOOTER */
+  .deco {
+    text-align: center;
+    font-size: 15px;
+    opacity: 0.3;
+    padding: 4px 0 0;
+    letter-spacing: 8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="header-glyph">&#9889; &#129419; &#9889;</span>
+  <h1><span class="title-icon">&#129419;</span> Jessie's Girl</h1>
+  <p>Sleeveless Pullover &middot; Elizabeth Smith Knits &middot; Size 3 &middot; Mandala Mothra</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="progress-text">Loading...</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="section-chip">
+  <span class="dot"></span>
+  <span id="section-label">Loading...</span>
+</div>
+
+<div class="row-card" id="row-card">
+  <div class="row-card-header">
+    <span class="row-number" id="row-display">Row &mdash;</span>
+    <span class="row-side" id="row-side-badge">RS</span>
+  </div>
+  <div class="row-instructions" id="row-instructions">Loading...</div>
+  <div class="stitch-note" id="stitch-note"></div>
+</div>
+
+<div class="stitch-count" id="stitch-count-display"></div>
+
+<div class="context-note" id="context-note"></div>
+
+<div class="deco">&#127925; &#9889; &#129419; &#9889; &#127925;</div>
+
+<div class="nav-area">
+  <button class="btn btn-prev" id="btn-prev" onclick="navigate(-1)">&larr; Back</button>
+  <button class="btn btn-next" id="btn-next" onclick="navigate(1)">Next &rarr;</button>
+</div>
+
+<div class="completion" id="completion">
+  <div class="completion-icon">&#129419;</div>
+  <h2>Jessie's Girl Complete!</h2>
+  <p>Weave in ends and block to schematic measurements:<br>bust 52", front/back width 26", armhole depth 8".</p>
+</div>
+
+<script>
+// ─── PATTERN DATA ────────────────────────────────────────────────────────────
+
+const PATTERN = [];
+
+function addRow(section, rowLabel, side, instructions, stitchCount, context) {
+  PATTERN.push({ section, rowLabel, side, instructions, stitchCount, context });
+}
+
+addRow('Back Hem', 'Cast On', 'SETUP', 'With US 8/5mm 32"/80cm circular needle, using the long tail CO technique, CO 111 sts.', 111, 'This is the back hem. Size 3 (52" bust).');
+addRow('Back Hem', 'Row 1', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 1 of 12.');
+addRow('Back Hem', 'Row 2', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 2 of 12.');
+addRow('Back Hem', 'Row 3', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 3 of 12.');
+addRow('Back Hem', 'Row 4', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 4 of 12.');
+addRow('Back Hem', 'Row 5', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 5 of 12.');
+addRow('Back Hem', 'Row 6', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 6 of 12.');
+addRow('Back Hem', 'Row 7', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 7 of 12.');
+addRow('Back Hem', 'Row 8', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 8 of 12.');
+addRow('Back Hem', 'Row 9', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 9 of 12.');
+addRow('Back Hem', 'Row 10', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 10 of 12.');
+addRow('Back Hem', 'Row 11', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 11 of 12.');
+addRow('Back Hem', 'Row 12', 'SETUP', 'Knit. (Garter St flat: knit every row.)', 111, 'Back hem, row 12 of 12.');
+addRow('Joining Front', 'Cast On', 'SETUP', 'With yarn still attached to back, using the cable CO technique, CO 113 sts.', null, 'Casting on the front to create the split hem.');
+addRow('Joining Front', 'Row 1', 'RS', 'K across 112 of these newly CO sts, pm on RN ("side marker"), k2, insert LN into 2nd-st-in on RN (the last of the CO sts) and lift it up and over the st you just knit and off the needle, then k to end. Do not turn work.', null, 'Next step joins for working in the round.');
+addRow('Joining Front', 'Joining Rnd', 'RND', 'K1 to join for working in the rnd (do not twist sts), then insert LN into 2nd-st-in on RN (the last st on the back section) and lift it up and over the st you just knit and off the needle, pm on RN ("main marker" — this is the BOR, use a different color than the side marker), then p to side marker, sm, p to end (the main marker).', 222, 'There are now 222 sts on the circ — 111 sts for each front and back.');
+addRow('Body', 'Rnd 1', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'First round of the body, worked in Garter St in the round (alternating knit/purl rounds).');
+addRow('Body', 'Rnd 2', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Repeat rnds 1–2, 45 more times — 46 total repeats of the pair.');
+addRow('Body', 'Repeat 1 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 1 of 45 more (46 total).');
+addRow('Body', 'Repeat 1 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 1 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 2 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 2 of 45 more (46 total).');
+addRow('Body', 'Repeat 2 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 2 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 3 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 3 of 45 more (46 total).');
+addRow('Body', 'Repeat 3 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 3 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 4 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 4 of 45 more (46 total).');
+addRow('Body', 'Repeat 4 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 4 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 5 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 5 of 45 more (46 total).');
+addRow('Body', 'Repeat 5 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 5 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 6 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 6 of 45 more (46 total).');
+addRow('Body', 'Repeat 6 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 6 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 7 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 7 of 45 more (46 total).');
+addRow('Body', 'Repeat 7 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 7 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 8 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 8 of 45 more (46 total).');
+addRow('Body', 'Repeat 8 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 8 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 9 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 9 of 45 more (46 total).');
+addRow('Body', 'Repeat 9 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 9 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 10 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 10 of 45 more (46 total).');
+addRow('Body', 'Repeat 10 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 10 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 11 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 11 of 45 more (46 total).');
+addRow('Body', 'Repeat 11 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 11 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 12 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 12 of 45 more (46 total).');
+addRow('Body', 'Repeat 12 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 12 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 13 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 13 of 45 more (46 total).');
+addRow('Body', 'Repeat 13 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 13 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 14 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 14 of 45 more (46 total).');
+addRow('Body', 'Repeat 14 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 14 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 15 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 15 of 45 more (46 total).');
+addRow('Body', 'Repeat 15 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 15 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 16 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 16 of 45 more (46 total).');
+addRow('Body', 'Repeat 16 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 16 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 17 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 17 of 45 more (46 total).');
+addRow('Body', 'Repeat 17 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 17 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 18 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 18 of 45 more (46 total).');
+addRow('Body', 'Repeat 18 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 18 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 19 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 19 of 45 more (46 total).');
+addRow('Body', 'Repeat 19 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 19 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 20 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 20 of 45 more (46 total).');
+addRow('Body', 'Repeat 20 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 20 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 21 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 21 of 45 more (46 total).');
+addRow('Body', 'Repeat 21 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 21 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 22 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 22 of 45 more (46 total).');
+addRow('Body', 'Repeat 22 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 22 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 23 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 23 of 45 more (46 total).');
+addRow('Body', 'Repeat 23 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 23 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 24 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 24 of 45 more (46 total).');
+addRow('Body', 'Repeat 24 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 24 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 25 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 25 of 45 more (46 total).');
+addRow('Body', 'Repeat 25 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 25 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 26 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 26 of 45 more (46 total).');
+addRow('Body', 'Repeat 26 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 26 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 27 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 27 of 45 more (46 total).');
+addRow('Body', 'Repeat 27 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 27 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 28 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 28 of 45 more (46 total).');
+addRow('Body', 'Repeat 28 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 28 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 29 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 29 of 45 more (46 total).');
+addRow('Body', 'Repeat 29 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 29 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 30 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 30 of 45 more (46 total).');
+addRow('Body', 'Repeat 30 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 30 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 31 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 31 of 45 more (46 total).');
+addRow('Body', 'Repeat 31 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 31 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 32 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 32 of 45 more (46 total).');
+addRow('Body', 'Repeat 32 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 32 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 33 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 33 of 45 more (46 total).');
+addRow('Body', 'Repeat 33 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 33 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 34 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 34 of 45 more (46 total).');
+addRow('Body', 'Repeat 34 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 34 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 35 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 35 of 45 more (46 total).');
+addRow('Body', 'Repeat 35 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 35 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 36 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 36 of 45 more (46 total).');
+addRow('Body', 'Repeat 36 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 36 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 37 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 37 of 45 more (46 total).');
+addRow('Body', 'Repeat 37 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 37 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 38 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 38 of 45 more (46 total).');
+addRow('Body', 'Repeat 38 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 38 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 39 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 39 of 45 more (46 total).');
+addRow('Body', 'Repeat 39 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 39 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 40 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 40 of 45 more (46 total).');
+addRow('Body', 'Repeat 40 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 40 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 41 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 41 of 45 more (46 total).');
+addRow('Body', 'Repeat 41 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 41 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 42 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 42 of 45 more (46 total).');
+addRow('Body', 'Repeat 42 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 42 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 43 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 43 of 45 more (46 total).');
+addRow('Body', 'Repeat 43 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 43 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 44 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 44 of 45 more (46 total).');
+addRow('Body', 'Repeat 44 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 44 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Body', 'Repeat 45 — Rnd 1 (knit)', 'RND', 'Knit to main marker, slipping side marker as you reach it.', 222, 'Body repeat 45 of 45 more (46 total).');
+addRow('Body', 'Repeat 45 — Rnd 2 (purl)', 'RND', 'Purl to main marker, slipping side marker as you reach it.', 222, 'Body repeat 45 of 45 more (46 total). Keep in mind the length will grow after blocking.');
+addRow('Underarm Divide', 'Row 1', 'RS', 'Knit to side marker, remove marker, turn work.', null, 'Dividing front and back at the underarms.');
+addRow('Underarm Divide', 'Row 2', 'WS', 'Knit across front sts to main marker, remove marker, turn work.', 111, 'You will now work just the Front piece, back and forth, no longer in the round. Back sts can rest on the circ or be moved to scrap yarn.');
+addRow('Front Piece', 'Row 1', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 1 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 2', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 2 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 3', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 3 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 4', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 4 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 5', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 5 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 6', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 6 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 7', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 7 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 8', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 8 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 9', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 9 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 10', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 10 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 11', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 11 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 12', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 12 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 13', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 13 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 14', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 14 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 15', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 15 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 16', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 16 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 17', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 17 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 18', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 18 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 19', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 19 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 20', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 20 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 21', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 21 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 22', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 22 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 23', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 23 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 24', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 24 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 25', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 25 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 26', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 26 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 27', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 27 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 28', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 28 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 29', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 29 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 30', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 30 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 31', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 31 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 32', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 32 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 33', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 33 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 34', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 34 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 35', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 35 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 36', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 36 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 37', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 37 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 38', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 38 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 39', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 39 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 40', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 40 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 41', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 41 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 42', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 42 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 43', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 43 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 44', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 44 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 45', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 45 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Piece', 'Row 46', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Front piece, row 46 of 46. Armhole will grow to approx 8"/20cm from the underarm divide after blocking.');
+addRow('Front Shoulder Shaping', 'Row 1', 'RS', 'K to 3 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Shoulder Shaping', 'Row 2', 'WS', 'Rep row 1: k to 3 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Shoulder Shaping', 'Row 3', 'RS', 'K to 6 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Shoulder Shaping', 'Row 4', 'WS', 'Rep row 3: k to 6 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Shoulder Shaping', 'Row 5', 'RS', 'K to 8 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Shoulder Shaping', 'Row 6', 'WS', 'Rep row 5: k to 8 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Shoulder Shaping', 'Row 7', 'RS', 'K to 10 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Shoulder Shaping', 'Row 8', 'WS', 'Rep row 7: k to 10 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Shoulder Shaping', 'Row 9', 'RS', 'K to 12 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Shoulder Shaping', 'Row 10', 'WS', 'Rep row 9: k to 12 sts before end of row, w&t.', null, 'Short-row shoulder shaping — size 3 works through row 10.');
+addRow('Front Dividing Rows', 'Row 1', 'RS', 'K to 14 sts before end of row, w&t.', null, 'Beginning to divide for the neck.');
+addRow('Front Dividing Rows', 'Row 2', 'WS', 'K until there are 46 sts on the RN, pm for neck, k 19, pm for neck, k to 14 sts before end of row, w&t.', null, 'Setting up the neck markers.');
+addRow('Front Dividing Rows', 'Row 3', 'RS', 'K to 1 st before marker, kfb (creating 1 new st), remove marker, k1, insert LN into the new st from the kfb and lift it up and over the st just knit and off the needle, then BO all sts until you reach the next marker, remove marker, BO 1 more st, then k to 16 sts before end of row, w&t.', 46, '46 sts will be on either side of the front BO sts. You will now work just the Right Front side — Left Front sts rest on the circ.');
+addRow('Right Front Side', 'Row 1 (and all WS rows)', 'WS', 'K to 1 st before end, sl1 wyif.', null, 'This "k to 1 before end, sl1 wyif" is the rule for every WS row in this section unless noted otherwise.');
+addRow('Right Front Side', 'Row 2', 'RS', 'Sl2 wyib, insert LN into the first slipped st and lift it up and over the second and off the needle, then BO 2 sts, then k to 18 sts before end of row, w&t.', 43, 'Right front shoulder shaping begins.');
+addRow('Right Front Side', 'Row 3', 'WS', 'K to 1 st before end, sl1 wyif.', null, '');
+addRow('Right Front Side', 'Row 4', 'RS', 'Sl2 wyib, insert LN into the first slipped st and lift it up and over the second and off the needle, then BO 1 st, then k to 20 sts before end of row, w&t.', 41, '');
+addRow('Right Front Side', 'Row 5', 'WS', 'K to 1 st before end, sl1 wyif.', null, '');
+addRow('Right Front Side', 'Row 6', 'RS', 'Sl2 wyib, insert LN into the first slipped st and lift it up and over the second and off the needle (no BO this row), then k to 22 sts before end of row, w&t.', 40, '');
+addRow('Right Front Side', 'Row 7', 'WS', 'K to 1 st before end, sl1 wyif.', null, '');
+addRow('Right Front Side', 'Row 8', 'RS', 'Sl2 wyib, insert LN into the first slipped st and lift it up and over the second and off the needle, then k to 24 sts before end of row, w&t.', 39, '');
+addRow('Right Front Side', 'Row 9', 'WS', 'K to 1 st before end, sl1 wyif.', null, '');
+addRow('Right Front Side', 'Row 10', 'RS', 'Sl2 wyib, insert LN into the first slipped st and lift it up and over the second and off the needle, then k to 26 sts before end of row, w&t.', 38, '');
+addRow('Right Front Side', 'Row 11', 'WS', 'K to 1 st before end, sl1 wyif.', null, '');
+addRow('Right Front Side', 'Row 12', 'RS', 'Sl2 wyib, insert LN into the first slipped st and lift it up and over the second and off the needle, then k to 27 sts before end of row, w&t.', 37, '');
+addRow('Right Front Side', 'Row 13', 'WS', 'K to 1 st before end, sl1 wyif.', null, '');
+addRow('Right Front Side', 'Row 14', 'RS', 'Sl2 wyib, insert LN into the first slipped st and lift it up and over the second and off the needle, then k to 28 sts before end of row, w&t.', 36, '');
+addRow('Right Front Side', 'Row 15', 'WS', 'K to 1 st before end, sl1 wyif.', null, '');
+addRow('Right Front Side', 'Row 16', 'RS', 'Sl2 wyib, insert LN into the first slipped st and lift it up and over the second and off the needle, then k to 29 sts before end of row, w&t.', 35, '');
+addRow('Right Front Side', 'Row 17', 'WS', 'K to 1 st before end, sl1 wyif.', null, 'Size 3 stops here and proceeds to Final Right Shoulder Rows.');
+addRow('Final Right Shoulder Rows', 'Row 1', 'RS', 'Sl2 wyib, insert LN into the first slipped st and lift it up and over the second and off the needle, then k to end, knitting wraps as you reach them.', 34, '');
+addRow('Final Right Shoulder Rows', 'Row 2', 'WS', 'K to end.', 34, 'Cut yarn and transfer these 34 Right Front sts to a holder or scrap yarn using a tapestry needle.');
+addRow('Left Front Side', 'Row 1', 'WS', 'Starting on a WS row and joining yarn at the neck edge, k to 16 sts before end of row, w&t.', null, 'Left Front sts were resting on the circ — pick them up here.');
+addRow('Left Front Side', 'Row 2 (and all RS rows)', 'RS', 'K to 1 st before end, sl1 wyib.', null, 'This "k to 1 before end, sl1 wyib" is the rule for every RS row in this section unless noted otherwise.');
+addRow('Left Front Side', 'Row 3', 'WS', 'Sl2 wyif, insert LN into the first slipped st and lift it up and over the second and off the needle, bring yarn to back and BO 2 sts, then k to 18 sts before end of row, w&t.', 43, '');
+addRow('Left Front Side', 'Row 4', 'RS', 'K to 1 st before end, sl1 wyib.', null, '');
+addRow('Left Front Side', 'Row 5', 'WS', 'Sl2 wyif, insert LN into the first slipped st and lift it up and over the second and off the needle, bring yarn to back and BO 1 st, then k to 20 sts before end of row, w&t.', 41, '');
+addRow('Left Front Side', 'Row 6', 'RS', 'K to 1 st before end, sl1 wyib.', null, '');
+addRow('Left Front Side', 'Row 7', 'WS', 'Sl2 wyif, insert LN into the first slipped st and lift it up and over the second and off the needle, bring yarn to back (no BO this row), then k to 22 sts before end of row, w&t.', 40, '');
+addRow('Left Front Side', 'Row 8', 'RS', 'K to 1 st before end, sl1 wyib.', null, '');
+addRow('Left Front Side', 'Row 9', 'WS', 'Sl2 wyif, insert LN into the first slipped st and lift it up and over the second and off the needle, bring yarn to back, k to 24 sts before end of row, w&t.', 39, '');
+addRow('Left Front Side', 'Row 10', 'RS', 'K to 1 st before end, sl1 wyib.', null, '');
+addRow('Left Front Side', 'Row 11', 'WS', 'Sl2 wyif, insert LN into the first slipped st and lift it up and over the second and off the needle, bring yarn to back, k to 26 sts before end of row, w&t.', 38, '');
+addRow('Left Front Side', 'Row 12', 'RS', 'K to 1 st before end, sl1 wyib.', null, '');
+addRow('Left Front Side', 'Row 13', 'WS', 'Sl2 wyif, insert LN into the first slipped st and lift it up and over the second and off the needle, bring yarn to back, k to 27 sts before end of row, w&t.', 37, '');
+addRow('Left Front Side', 'Row 14', 'RS', 'K to 1 st before end, sl1 wyib.', null, '');
+addRow('Left Front Side', 'Row 15', 'WS', 'Sl2 wyif, insert LN into the first slipped st and lift it up and over the second and off the needle, bring yarn to back, k to 28 sts before end of row, w&t.', 36, '');
+addRow('Left Front Side', 'Row 16', 'RS', 'K to 1 st before end, sl1 wyib.', null, '');
+addRow('Left Front Side', 'Row 17', 'WS', 'Sl2 wyif, insert LN into the first slipped st and lift it up and over the second and off the needle, bring yarn to back, k to 29 sts before end of row, w&t.', 35, 'Size 3 stops here and proceeds to Final Left Shoulder Rows.');
+addRow('Final Left Shoulder Rows', 'Row 1', 'RS', 'K to 1 st before end, sl1 wyib.', null, '');
+addRow('Final Left Shoulder Rows', 'Row 2', 'WS', 'Sl2 wyif, insert LN into the first slipped st and lift it up and over the second and off the needle, then bring yarn to back and k to end, knitting wraps as you reach them.', 34, 'Cut yarn leaving a very long tail (used later for shoulder seaming). Transfer these 34 Left Front sts to a holder or scrap yarn.');
+addRow('Back Piece', 'Setup', 'SETUP', 'If you transferred your Back sts to scrap yarn, transfer them back to the US 8/5mm 32"/80cm circ. With RS facing, join yarn at the Right Back edge.', 111, 'Starting the back piece.');
+addRow('Back Piece', 'Row 1', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 1 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 2', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 2 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 3', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 3 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 4', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 4 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 5', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 5 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 6', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 6 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 7', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 7 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 8', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 8 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 9', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 9 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 10', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 10 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 11', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 11 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 12', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 12 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 13', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 13 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 14', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 14 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 15', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 15 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 16', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 16 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 17', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 17 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 18', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 18 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 19', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 19 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 20', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 20 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 21', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 21 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 22', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 22 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 23', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 23 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 24', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 24 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 25', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 25 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 26', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 26 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 27', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 27 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 28', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 28 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 29', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 29 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 30', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 30 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 31', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 31 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 32', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 32 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 33', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 33 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 34', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 34 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 35', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 35 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 36', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 36 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 37', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 37 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 38', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 38 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 39', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 39 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 40', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 40 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 41', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 41 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 42', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 42 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 43', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 43 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 44', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 44 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 45', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 45 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 46', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 46 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 47', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 47 of 48, or until it measures the same as your front armholes.');
+addRow('Back Piece', 'Row 48', 'SETUP', 'Knit. (Garter St flat.)', 111, 'Back piece, row 48 of 48, or until it measures the same as your front armholes.');
+addRow('Back Shoulder Shaping', 'Row 1', 'RS', 'K to 3 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 2', 'WS', 'Rep row 1.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 3', 'RS', 'K to 6 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 4', 'WS', 'Rep row 3.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 5', 'RS', 'K to 8 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 6', 'WS', 'Rep row 5.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 7', 'RS', 'K to 10 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 8', 'WS', 'Rep row 7.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 9', 'RS', 'K to 12 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 10', 'WS', 'Rep row 9.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 11', 'RS', 'K to 14 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 12', 'WS', 'Rep row 11.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 13', 'RS', 'K to 16 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 14', 'WS', 'Rep row 13.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 15', 'RS', 'K to 18 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 16', 'WS', 'Rep row 15.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 17', 'RS', 'K to 20 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 18', 'WS', 'Rep row 17.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 19', 'RS', 'K to 22 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 20', 'WS', 'Rep row 19.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 21', 'RS', 'K to 24 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 22', 'WS', 'Rep row 21.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 23', 'RS', 'K to 26 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 24', 'WS', 'Rep row 23.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 25', 'RS', 'K to 27 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 26', 'WS', 'Rep row 25.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 27', 'RS', 'K to 28 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 28', 'WS', 'Rep row 27.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 29', 'RS', 'K to 29 sts before end of row, w&t.', null, 'Back shoulder shaping.');
+addRow('Back Shoulder Shaping', 'Row 30', 'WS', 'Rep row 29.', null, 'Back shoulder shaping — size 3 works through row 30, then proceeds to Final Back Shoulder Rows.');
+addRow('Final Back Shoulder Rows', 'Row 1', 'RS', 'K until there are 34 sts on the RN, pm for neck, k 43, pm for neck, k to end, knitting wraps as you reach them.', null, 'Setting up the back neck.');
+addRow('Final Back Shoulder Rows', 'Row 2 — Back Neck BO Row', 'WS', 'K to 1 st before marker, kfb (creating 1 new st), remove marker, k1, insert LN into the new st from the kfb and lift it up and over the st just knit and off the needle, then BO all sts until you reach the next marker, remove marker, BO 1 more st, then k to end, knitting wraps as you reach them.', 34, 'You should have 34 sts on either side of the back neck BO sts.');
+addRow('Joining Shoulders', 'Right Shoulders', 'FINISH', 'Transfer Right Front sts to the extra US 8/5mm circ. Put RS’s together and, starting at the shoulder edge, using the working yarn still attached to Right Back, work the 3 Needle Bind-Off technique to attach Right Front and Right Back shoulder sts together.', null, 'Joining the right shoulder seam.');
+addRow('Joining Shoulders', 'Left Shoulders', 'FINISH', 'Transfer Left Front sts to the extra US 8/5mm circ. Put RS’s of Left Front and Left Back together and, using the long tail left from Left Front, work the 3 Needle Bind-Off technique to attach Left Front and Left Back shoulder sts together.', null, 'Joining the left shoulder seam.');
+addRow('Finishing', 'Finishing', 'FINISH', 'Weave in ends and block to schematic measurements: bust 52", front/back width 26", armhole depth 8", back neck width 10", underarm-to-hem front 14.75", back 16.75".', null, 'Done! Block to measurements and enjoy your Jessie’s Girl.');
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'jessiesgirl_row';
+let currentIndex = parseInt(localStorage.getItem(STORAGE_KEY) ?? 0);
+if (isNaN(currentIndex) || currentIndex < 0) currentIndex = 0;
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  const total = PATTERN.length;
+  const row = PATTERN[currentIndex];
+
+  localStorage.setItem(STORAGE_KEY, currentIndex);
+
+  const pct = Math.round((currentIndex / (total - 1)) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `Step ${currentIndex + 1} of ${total}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  document.getElementById('section-label').textContent = row.section;
+
+  document.getElementById('row-display').textContent = row.rowLabel;
+  const badge = document.getElementById('row-side-badge');
+  badge.textContent = row.side;
+  badge.className = 'row-side ' + row.side.toLowerCase();
+
+  document.getElementById('row-instructions').innerHTML =
+    row.instructions.replace(/\n/g, '<br>');
+
+  const noteEl = document.getElementById('stitch-note');
+  if (row.stitchCount) {
+    noteEl.style.display = 'block';
+    noteEl.textContent = `Stitch count after this step: ${row.stitchCount} sts`;
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  const scEl = document.getElementById('stitch-count-display');
+  if (row.stitchCount) {
+    scEl.innerHTML = `<strong>${row.stitchCount}</strong> stitches`;
+  } else {
+    scEl.innerHTML = '';
+  }
+
+  const ctxEl = document.getElementById('context-note');
+  if (row.context && row.context.length > 0) {
+    ctxEl.innerHTML = `<strong>Note</strong>${row.context}`;
+    ctxEl.classList.add('show');
+  } else {
+    ctxEl.classList.remove('show');
+  }
+
+  document.getElementById('btn-prev').disabled = currentIndex === 0;
+  document.getElementById('btn-next').disabled = currentIndex === total - 1;
+
+  const isLast = currentIndex === total - 1;
+  document.getElementById('completion').classList.toggle('show', isLast);
+  document.getElementById('row-card').style.display = isLast ? 'none' : 'block';
+  document.getElementById('context-note').style.display = isLast ? 'none' : (row.context ? 'block' : 'none');
+  document.getElementById('stitch-count-display').style.display = isLast ? 'none' : 'flex';
+}
+
+function navigate(dir) {
+  const next = currentIndex + dir;
+  if (next >= 0 && next < PATTERN.length) {
+    currentIndex = next;
+    render();
+  }
+}
+
+render();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+</body>
+</html>
