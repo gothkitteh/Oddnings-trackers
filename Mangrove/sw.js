@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mangrove-v1';
+const CACHE_NAME = 'mangrove-v2';
 const ASSETS = [
   '/Oddnings-trackers/Mangrove/',
   '/Oddnings-trackers/Mangrove/index.html',
