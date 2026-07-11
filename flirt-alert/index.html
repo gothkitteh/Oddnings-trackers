@@ -823,7 +823,28 @@ function render() {
 
 function changeStep(delta) {
   var s = getS();
-  s.step = Math.max(1, Math.min(TOTAL, s.step+delta));
+  var REP_ROW7 = 8;   // step index for Row 7 (start of repeat cycle)
+  var REP_ROW10 = 11; // step index for Row 10 (end of repeat cycle)
+
+  if (delta > 0) {
+    if (s.step === REP_ROW10 && s.rep < 8) {
+      s.rep = s.rep + 1;
+      s.step = REP_ROW7;
+      saveState();
+      render();
+      return;
+    }
+  } else if (delta < 0) {
+    if (s.step === REP_ROW7 && s.rep > 1) {
+      s.rep = s.rep - 1;
+      s.step = REP_ROW10;
+      saveState();
+      render();
+      return;
+    }
+  }
+
+  s.step = Math.max(1, Math.min(TOTAL, s.step + delta));
   saveState();
   render();
 }
