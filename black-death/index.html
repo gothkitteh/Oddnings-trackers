@@ -94,6 +94,33 @@
       gap: 12px;
     }
 
+    /* ── VERSION TOGGLE ── */
+    .version-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .version-btn {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.15s;
+    }
+
+    .version-btn.active {
+      background: var(--blood);
+      border-color: var(--blood-bright);
+      color: var(--bone);
+      font-weight: 700;
+    }
+
     /* ── SIZE TOGGLE ── */
     .size-toggle {
       display: flex;
@@ -345,6 +372,11 @@
 </header>
 
 <main>
+
+  <div class="version-toggle">
+    <button class="version-btn" id="btn-crimson" onclick="setVersion('crimson')">🌇 Crimson Sunset</button>
+    <button class="version-btn" id="btn-lovely" onclick="setVersion('lovely')">💜 Lovely</button>
+  </div>
 
   <div class="size-toggle">
     <button class="size-btn" id="btn-small" onclick="setSize('small')">🕸️ Small (stop 75)</button>
@@ -1020,8 +1052,8 @@ var ROWS = [
 ];
 
 // ── STATE ──
-var KEY = 'black-death-step';
-var KEY_SIZE = 'black-death-size';
+var KEY_VERSION = 'black-death-version';
+var currentVersion = 'crimson';
 var currentStep = 1;
 var currentSize = 'large';
 
@@ -1029,16 +1061,32 @@ var STOP_SMALL = 74; // row index (1-based step)
 var STOP_LARGE = 90;
 var TOTAL_STEPS = ROWS.length;
 
+function stepKey() { return 'black-death-' + currentVersion + '-step'; }
+function sizeKey() { return 'black-death-' + currentVersion + '-size'; }
+
 function loadState() {
-  var saved = localStorage.getItem(KEY);
-  if (saved) currentStep = parseInt(saved, 10);
-  var savedSize = localStorage.getItem(KEY_SIZE);
-  if (savedSize) currentSize = savedSize;
+  var savedVersion = localStorage.getItem(KEY_VERSION);
+  if (savedVersion) currentVersion = savedVersion;
+  var saved = localStorage.getItem(stepKey());
+  currentStep = saved ? parseInt(saved, 10) : 1;
+  var savedSize = localStorage.getItem(sizeKey());
+  currentSize = savedSize || 'large';
 }
 
 function saveState() {
-  localStorage.setItem(KEY, currentStep);
-  localStorage.setItem(KEY_SIZE, currentSize);
+  localStorage.setItem(KEY_VERSION, currentVersion);
+  localStorage.setItem(stepKey(), currentStep);
+  localStorage.setItem(sizeKey(), currentSize);
+}
+
+function setVersion(v) {
+  currentVersion = v;
+  var saved = localStorage.getItem(stepKey());
+  currentStep = saved ? parseInt(saved, 10) : 1;
+  var savedSize = localStorage.getItem(sizeKey());
+  currentSize = savedSize || 'large';
+  saveState();
+  render();
 }
 
 function getRow() {
@@ -1096,6 +1144,10 @@ function render() {
   // Size buttons
   document.getElementById('btn-small').classList.toggle('active', currentSize === 'small');
   document.getElementById('btn-large').classList.toggle('active', currentSize === 'large');
+
+  // Version buttons
+  document.getElementById('btn-crimson').classList.toggle('active', currentVersion === 'crimson');
+  document.getElementById('btn-lovely').classList.toggle('active', currentVersion === 'lovely');
 }
 
 function changeStep(delta) {
