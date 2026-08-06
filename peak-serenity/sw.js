@@ -1,25 +1,28 @@
-{
-  "name": "Peak Serenity Knit Tracker",
-  "short_name": "Peak Serenity",
-  "description": "Row tracker for Peak Serenity knit shawl by Marly Bird",
-  "start_url": "/Oddnings-trackers/peak-serenity/",
-  "scope": "/Oddnings-trackers/peak-serenity/",
-  "display": "standalone",
-  "background_color": "#0d1420",
-  "theme_color": "#0d1420",
-  "orientation": "portrait",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
-}
+const CACHE_NAME = 'peakserenity-v1';
+const ASSETS = [
+  '/Oddnings-trackers/peak-serenity/',
+  '/Oddnings-trackers/peak-serenity/index.html',
+  '/Oddnings-trackers/peak-serenity/manifest.json'
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(cached => cached || fetch(e.request))
+  );
+});
