@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d1420">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Peak Serenity">
+<title>Peak Serenity Tracker</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+  :root {
+    --bg:      #0d1420;
+    --surface: #161f2e;
+    --surface2:#1e2a3c;
+    --sage:    #9fc9b0;
+    --mist:    #a8c4d9;
+    --gold:    #d9b872;
+    --stone:   #c9a8a0;
+    --moon:    #f1ecd9;
+    --text:    #e8e6df;
+    --subtext: #8b95a3;
+    --radius:  14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: radial-gradient(120% 140% at 60% 10%, #1c2c3a 0%, var(--bg) 70%);
+    padding: 1.5rem 1.25rem 2.25rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid #1c2534;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--sage), var(--mist), var(--gold), var(--stone));
+    opacity: 0.85;
+  }
+
+  .header-glyph {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 15px;
+    opacity: 0.4;
+    letter-spacing: 5px;
+    color: var(--moon);
+  }
+
+  .title-icon { font-size: 1.3rem; margin-right: 0.15rem; filter: drop-shadow(0 0 6px rgba(241,236,217,0.5)); }
+
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.65rem;
+    color: var(--moon);
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    text-shadow: 0 0 18px rgba(241,236,217,0.3);
+  }
+
+  header p {
+    color: var(--subtext);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.35rem;
+    font-weight: 300;
+  }
+
+  .progress-wrap { padding: 1.25rem 1.25rem 0; }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--subtext);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid #22304400;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), var(--mist), var(--gold));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .stitch-chip-wrap { padding: 0.85rem 1.25rem 0; }
+  .stitch-chip {
+    background: var(--surface2);
+    border: 1px solid #29374b;
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .stitch-chip-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--subtext);
+  }
+  .stitch-chip-value {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    color: var(--moon);
+    font-weight: 600;
+  }
+
+  .section-chip {
+    margin: 1rem 1.25rem 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface2);
+    border: 1px solid #29374b;
+    color: var(--mist);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+  }
+
+  .section-chip span.dot {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    box-shadow: 0 0 6px var(--gold);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .row-card {
+    margin: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid #1c2534;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .row-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--sage), var(--mist), var(--gold), var(--stone));
+    z-index: 1;
+  }
+
+  .row-card-header {
+    background: linear-gradient(135deg, #1c2938, #22344a);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .row-number {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--moon);
+    font-weight: 600;
+  }
+
+  .row-side {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    white-space: nowrap;
+    display: none;
+  }
+
+  .row-side.show { display: inline-block; }
+  .row-side.rs { background: var(--sage); color: #10251a; }
+  .row-side.ws { background: var(--stone); color: #331d18; }
+  .row-side.finish { background: var(--gold); color: #3a2c10; }
+
+  .row-instructions {
+    padding: 1.1rem 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .stitch-note {
+    margin: 0 1.25rem 1.1rem;
+    padding: 0.6rem 0.85rem;
+    background: var(--surface2);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.8rem;
+    color: var(--subtext);
+    line-height: 1.5;
+    display: none;
+  }
+
+  .stitch-note.show { display: block; }
+
+  .nav-area {
+    padding: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .btn {
+    flex: 1;
+    width: 100%;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-prev {
+    background: var(--surface2);
+    color: var(--subtext);
+    border: 1px solid #29374b;
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--sage), var(--mist));
+    color: #10221a;
+    box-shadow: 0 3px 14px rgba(159,201,176,0.3);
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+
+  .jump-area {
+    padding: 0 1.25rem 1.25rem;
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .jump-area input {
+    width: 72px;
+    padding: 0.6rem;
+    border-radius: 10px;
+    border: 1px solid #29374b;
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  .jump-area button {
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #29374b;
+    background: var(--surface2);
+    color: var(--mist);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .jump-area label {
+    font-size: 0.72rem;
+    color: var(--subtext);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .completion {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .completion.show { display: flex; }
+
+  .completion-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(241,236,217,0.4));
+  }
+
+  .completion h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: var(--moon);
+    margin-bottom: 0.5rem;
+  }
+
+  .completion p {
+    color: var(--subtext);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .deco {
+    text-align: center;
+    font-size: 15px;
+    opacity: 0.3;
+    padding: 4px 0 0;
+    letter-spacing: 8px;
+  }
+
+  footer.app-footer {
+    text-align: center;
+    padding: 1.25rem 1rem 2rem;
+    font-size: 0.68rem;
+    color: var(--subtext);
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="header-glyph">&#127956; &#9729; &#127772;</span>
+  <h1><span class="title-icon">&#127956;</span> Peak Serenity</h1>
+  <p>Knit Shawl &middot; Marly Bird &middot; Herrschners Worsted Heathers</p>
+</header>
+
+<div class="progress-wrap" id="progress-wrap">
+  <div class="progress-label">
+    <span id="progress-text">Loading...</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="stitch-chip-wrap" id="stitch-chip-wrap">
+  <div class="stitch-chip">
+    <span class="stitch-chip-label">Stitch Count</span>
+    <span class="stitch-chip-value" id="stitch-chip-value">&mdash;</span>
+  </div>
+</div>
+
+<div class="section-chip">
+  <span class="dot"></span>
+  <span id="section-label">Loading...</span>
+</div>
+
+<div class="row-card" id="row-card">
+  <div class="row-card-header">
+    <span class="row-number" id="row-display">Row &mdash;</span>
+    <span class="row-side" id="row-side-badge"></span>
+  </div>
+  <div class="row-instructions" id="row-instructions">Loading...</div>
+  <div class="stitch-note" id="stitch-note"></div>
+</div>
+
+<div class="deco">&#127956; &#9729; &#127772; &#9729; &#127956;</div>
+
+<div class="nav-area" id="nav-area">
+  <button class="btn btn-prev" id="btn-prev" onclick="navigatePrev()">&larr; Back</button>
+  <button class="btn btn-next" id="btn-next" onclick="navigateNext()">Next &rarr;</button>
+</div>
+
+<div class="jump-area">
+  <label for="jump-input">Jump to row</label>
+  <input type="number" id="jump-input" min="1" max="234" placeholder="1&ndash;234">
+  <button onclick="jumpToRow()">Go</button>
+</div>
+
+<div class="completion" id="completion">
+  <div class="completion-icon">&#127956;</div>
+  <h2>Peak Serenity Complete!</h2>
+  <p>Bind off all stitches knitwise, being careful not to bind off too tight. Weave in all loose ends. Enjoy your shawl!</p>
+</div>
+
+<footer class="app-footer">Oddnings Trackers</footer>
+
+<script>
+// ─── PATTERN DATA ────────────────────────────────────────────────────────────
+const ROWS = [{"row":1,"side":"RS","instructions":"Kfb, K1 -- 3 stitches.","section":"Garter Increase","note":""},{"row":2,"side":"WS","instructions":"K3.","section":"Garter Increase","note":""},{"row":3,"side":"RS","instructions":"Kfb, K2 -- 4 stitches.","section":"Garter Increase","note":""},{"row":4,"side":"WS","instructions":"K4.","section":"Garter Increase","note":""},{"row":5,"side":"RS","instructions":"Kfb, K3 -- 5 stitches.","section":"Garter Increase","note":""},{"row":6,"side":"WS","instructions":"K5.","section":"Garter Increase","note":""},{"row":7,"side":"RS","instructions":"Kfb, K4 -- 6 stitches.","section":"Garter Increase","note":""},{"row":8,"side":"WS","instructions":"K6.","section":"Garter Increase","note":""},{"row":9,"side":"RS","instructions":"Kfb, K5 -- 7 stitches.","section":"Garter Increase","note":""},{"row":10,"side":"WS","instructions":"K7.","section":"Garter Increase","note":""},{"row":11,"side":"RS","instructions":"Kfb, K6 -- 8 stitches.","section":"Garter Increase","note":""},{"row":12,"side":"WS","instructions":"K8.","section":"Garter Increase","note":""},{"row":13,"side":"RS","instructions":"Kfb, K7 -- 9 stitches.","section":"Garter Increase","note":""},{"row":14,"side":"WS","instructions":"K9.","section":"Garter Increase","note":""},{"row":15,"side":"RS","instructions":"Kfb, K8 -- 10 stitches.","section":"Garter Increase","note":""},{"row":16,"side":"WS","instructions":"K10.","section":"Garter Increase","note":""},{"row":17,"side":"RS","instructions":"Kfb, K9 -- 11 stitches.","section":"Garter Increase","note":""},{"row":18,"side":"WS","instructions":"K11.","section":"Garter Increase","note":""},{"row":19,"side":"RS","instructions":"Kfb, K10 -- 12 stitches.","section":"Garter Increase","note":""},{"row":20,"side":"WS","instructions":"K12.","section":"Garter Increase","note":""},{"row":21,"side":"RS","instructions":"Kfb, K11 -- 13 stitches.","section":"Garter Increase","note":""},{"row":22,"side":"WS","instructions":"K13.","section":"Garter Increase","note":""},{"row":23,"side":"RS","instructions":"Kfb, K12 -- 14 stitches.","section":"Garter Increase","note":""},{"row":24,"side":"WS","instructions":"K14.","section":"Garter Increase","note":""},{"row":25,"side":"RS","instructions":"Kfb, K13 -- 15 stitches.","section":"Garter Increase","note":""},{"row":26,"side":"WS","instructions":"K15.","section":"Garter Increase","note":""},{"row":27,"side":"RS","instructions":"Kfb, K14 -- 16 stitches.","section":"Garter Increase","note":""},{"row":28,"side":"WS","instructions":"K16.","section":"Garter Increase","note":""},{"row":29,"side":"RS","instructions":"Kfb, K15 -- 17 stitches.","section":"Garter Increase","note":""},{"row":30,"side":"WS","instructions":"K17.","section":"Garter Increase","note":""},{"row":31,"side":"RS","instructions":"Kfb, K16 -- 18 stitches.","section":"Garter Increase","note":""},{"row":32,"side":"WS","instructions":"K18.","section":"Garter Increase","note":""},{"row":33,"side":"RS","instructions":"Kfb, K17 -- 19 stitches.","section":"Garter Increase","note":""},{"row":34,"side":"WS","instructions":"K19.","section":"Garter Increase","note":""},{"row":35,"side":"RS","instructions":"Kfb, K18 -- 20 stitches.","section":"Garter Increase","note":""},{"row":36,"side":"WS","instructions":"K20.","section":"Garter Increase","note":""},{"row":37,"side":"RS","instructions":"Kfb, K19 -- 21 stitches.","section":"Garter Increase","note":""},{"row":38,"side":"WS","instructions":"K21.","section":"Garter Increase","note":""},{"row":39,"side":"RS","instructions":"Kfb, K20 -- 22 stitches.","section":"Garter Increase","note":""},{"row":40,"side":"WS","instructions":"K22.","section":"Garter Increase","note":""},{"row":41,"side":"RS","instructions":"Kfb, K21 -- 23 stitches.","section":"Garter Increase","note":""},{"row":42,"side":"WS","instructions":"K23.","section":"Garter Increase","note":""},{"row":43,"side":"RS","instructions":"Kfb, K22 -- 24 stitches.","section":"Garter Increase","note":""},{"row":44,"side":"WS","instructions":"K24.","section":"Garter Increase","note":""},{"row":45,"side":"RS","instructions":"Kfb, K23 -- 25 stitches.","section":"Garter Increase","note":""},{"row":46,"side":"WS","instructions":"K25.","section":"Garter Increase","note":""},{"row":47,"side":"RS","instructions":"Kfb, K24 -- 26 stitches.","section":"Garter Increase","note":""},{"row":48,"side":"WS","instructions":"K26.","section":"Garter Increase","note":""},{"row":49,"side":"RS","instructions":"Kfb, K25 -- 27 stitches.","section":"Garter Increase","note":""},{"row":50,"side":"WS","instructions":"K27.","section":"Garter Increase","note":""},{"row":51,"side":"RS","instructions":"Kfb, K26 -- 28 stitches.","section":"Garter Increase","note":""},{"row":52,"side":"WS","instructions":"K28. 8","section":"Garter Increase","note":""},{"row":53,"side":"RS","instructions":"Kfb, K27 -- 29 stitches.","section":"Garter Increase","note":""},{"row":54,"side":"WS","instructions":"K29.","section":"Garter Increase","note":""},{"row":55,"side":"RS","instructions":"Kfb, K28 -- 30 stitches.","section":"Garter Increase","note":""},{"row":56,"side":"WS","instructions":"K30.","section":"Garter Increase","note":""},{"row":57,"side":"RS","instructions":"Kfb, K29 -- 31 stitches.","section":"Garter Increase","note":""},{"row":58,"side":"WS","instructions":"K31.","section":"Garter Increase","note":""},{"row":59,"side":"RS","instructions":"Kfb, K30 -- 32 stitches.","section":"Garter Increase","note":""},{"row":60,"side":"WS","instructions":"K32.","section":"Garter Increase","note":""},{"row":61,"side":"RS","instructions":"Kfb, K31 -- 33 stitches.","section":"Garter Increase","note":""},{"row":62,"side":"WS","instructions":"K33.","section":"Garter Increase","note":""},{"row":63,"side":"RS","instructions":"Kfb, K32 -- 34 stitches.","section":"Garter Increase","note":""},{"row":64,"side":"WS","instructions":"K34.","section":"Garter Increase","note":""},{"row":65,"side":"RS","instructions":"Kfb, K33 -- 35 stitches.","section":"Garter Increase","note":""},{"row":66,"side":"WS","instructions":"K35.","section":"Garter Increase","note":""},{"row":67,"side":"RS","instructions":"Kfb, K34 -- 36 stitches.","section":"Garter Increase","note":""},{"row":68,"side":"WS","instructions":"K36.","section":"Garter Increase","note":""},{"row":69,"side":"RS","instructions":"Kfb, K35 -- 37 stitches.","section":"Garter Increase","note":""},{"row":70,"side":"WS","instructions":"K37.","section":"Garter Increase","note":""},{"row":71,"side":"RS","instructions":"Kfb, K36 -- 38 stitches.","section":"Garter Increase","note":""},{"row":72,"side":"WS","instructions":"K38.","section":"Garter Increase","note":""},{"row":73,"side":"RS","instructions":"Kfb, K37 -- 39 stitches.","section":"Garter Increase","note":""},{"row":74,"side":"WS","instructions":"K39.","section":"Garter Increase","note":""},{"row":75,"side":"RS","instructions":"Kfb, K38 -- 40 stitches.","section":"Garter Increase","note":""},{"row":76,"side":"WS","instructions":"K40.","section":"Garter Increase","note":""},{"row":77,"side":"RS","instructions":"Kfb, K39 -- 41 stitches.","section":"Garter Increase","note":""},{"row":78,"side":"WS","instructions":"K41.","section":"Garter Increase","note":""},{"row":79,"side":"RS","instructions":"Kfb, K40 -- 42 stitches.","section":"Garter Increase","note":""},{"row":80,"side":"WS","instructions":"K42.","section":"Garter Increase","note":""},{"row":81,"side":"RS","instructions":"Kfb, K41 -- 43 stitches.","section":"Garter Increase","note":""},{"row":82,"side":"WS","instructions":"K43.","section":"Garter Increase","note":""},{"row":83,"side":"RS","instructions":"Kfb, K42 -- 44 stitches.","section":"Garter Increase","note":""},{"row":84,"side":"WS","instructions":"K44.","section":"Garter Increase","note":""},{"row":85,"side":"RS","instructions":"Kfb, K43 -- 45 stitches.","section":"Garter Increase","note":""},{"row":86,"side":"WS","instructions":"K45.","section":"Garter Increase","note":""},{"row":87,"side":"RS","instructions":"Kfb, K44 -- 46 stitches.","section":"Garter Increase","note":""},{"row":88,"side":"WS","instructions":"K46.","section":"Garter Increase","note":""},{"row":89,"side":"RS","instructions":"Kfb, K45 -- 47 stitches.","section":"Garter Increase","note":""},{"row":90,"side":"WS","instructions":"K47.","section":"Garter Increase","note":""},{"row":91,"side":"RS","instructions":"Kfb, K46 -- 48 stitches.","section":"Garter Increase","note":""},{"row":92,"side":"WS","instructions":"K48.","section":"Garter Increase","note":""},{"row":93,"side":"RS","instructions":"Kfb, K47 -- 49 stitches.","section":"Garter Increase","note":""},{"row":94,"side":"WS","instructions":"K49.","section":"Garter Increase","note":""},{"row":95,"side":"RS","instructions":"Kfb, K48 -- 50 stitches.","section":"Garter Increase","note":""},{"row":96,"side":"WS","instructions":"K50.","section":"Garter Increase","note":""},{"row":97,"side":"RS","instructions":"Kfb, K49 -- 51 stitches.","section":"Garter Increase","note":""},{"row":98,"side":"WS","instructions":"K51.","section":"Garter Increase","note":""},{"row":99,"side":"RS","instructions":"Kfb, K50 -- 52 stitches.","section":"Garter Increase","note":""},{"row":100,"side":"WS","instructions":"K52.","section":"Garter Increase","note":""},{"row":101,"side":"RS","instructions":"Kfb, K51 -- 53 stitches.","section":"Garter Increase","note":""},{"row":102,"side":"WS","instructions":"K53. 9","section":"Garter Increase","note":""},{"row":103,"side":"RS","instructions":"Kfb, K52 -- 54 stitches.","section":"Garter Increase","note":""},{"row":104,"side":"WS","instructions":"K54.","section":"Garter Increase","note":""},{"row":105,"side":"RS","instructions":"Kfb, K53 -- 55 stitches.","section":"Garter Increase","note":""},{"row":106,"side":"WS","instructions":"K55.","section":"Garter Increase","note":""},{"row":107,"side":"RS","instructions":"Kfb, K54 -- 56 stitches.","section":"Garter Increase","note":""},{"row":108,"side":"WS","instructions":"K56.","section":"Garter Increase","note":""},{"row":109,"side":"RS","instructions":"Kfb, K55 -- 57 stitches.","section":"Garter Increase","note":""},{"row":110,"side":"WS","instructions":"K57.","section":"Garter Increase","note":""},{"row":111,"side":"RS","instructions":"Kfb, K56 -- 58 stitches.","section":"Garter Increase","note":""},{"row":112,"side":"WS","instructions":"K58.","section":"Garter Increase","note":""},{"row":113,"side":"RS","instructions":"Kfb, K57 -- 59 stitches.","section":"Garter Increase","note":""},{"row":114,"side":"WS","instructions":"K59.","section":"Garter Increase","note":""},{"row":115,"side":"RS","instructions":"Kfb, K58 -- 60 stitches.","section":"Garter Increase","note":""},{"row":116,"side":"WS","instructions":"K60.","section":"Garter Increase","note":""},{"row":117,"side":"RS","instructions":"Kfb, K59 -- 61 stitches.","section":"Garter Increase","note":""},{"row":118,"side":"WS","instructions":"K61.","section":"Garter Increase","note":""},{"row":119,"side":"RS","instructions":"Kfb, K60 -- 62 stitches.","section":"Garter Increase","note":""},{"row":120,"side":"WS","instructions":"K62.","section":"Garter Increase","note":""},{"row":121,"side":"RS","instructions":"Kfb, K61 -- 63 stitches.","section":"Garter Increase","note":""},{"row":122,"side":"WS","instructions":"K63.","section":"Garter Increase","note":""},{"row":123,"side":"RS","instructions":"Kfb, K62 -- 64 stitches.","section":"Garter Increase","note":""},{"row":124,"side":"WS","instructions":"K64.","section":"Garter Increase","note":""},{"row":125,"side":"RS","instructions":"Kfb, K63 -- 65 stitches.","section":"Garter Increase","note":""},{"row":126,"side":"WS","instructions":"K65.","section":"Garter Increase","note":""},{"row":127,"side":"RS","instructions":"Kfb, K64 -- 66 stitches.","section":"Garter Increase","note":""},{"row":128,"side":"WS","instructions":"K66.","section":"Garter Increase","note":""},{"row":129,"side":"RS","instructions":"Kfb, K65 -- 67 stitches.","section":"Garter Increase","note":""},{"row":130,"side":"WS","instructions":"K67.","section":"Garter Increase","note":""},{"row":131,"side":"RS","instructions":"Kfb, K66 -- 68 stitches.","section":"Garter Increase","note":""},{"row":132,"side":"WS","instructions":"K68.","section":"Garter Increase","note":""},{"row":133,"side":"RS","instructions":"Kfb, K67 -- 69 stitches.","section":"Garter Increase","note":""},{"row":134,"side":"WS","instructions":"K69.","section":"Garter Increase","note":""},{"row":135,"side":"RS","instructions":"Kfb, K68 -- 70 stitches.","section":"Garter Increase","note":""},{"row":136,"side":"WS","instructions":"K70.","section":"Garter Increase","note":""},{"row":137,"side":"RS","instructions":"Kfb, K69 -- 71 stitches.","section":"Garter Increase","note":""},{"row":138,"side":"WS","instructions":"K71.","section":"Garter Increase","note":""},{"row":139,"side":"RS","instructions":"Kfb, K70 -- 72 stitches.","section":"Garter Increase","note":""},{"row":140,"side":"WS","instructions":"K72.","section":"Garter Increase","note":""},{"row":141,"side":"RS","instructions":"Kfb, K71 -- 73 stitches.","section":"Garter Increase","note":""},{"row":142,"side":"WS","instructions":"K73.","section":"Garter Increase","note":""},{"row":143,"side":"RS","instructions":"Kfb, K72 -- 74 stitches.","section":"Garter Increase","note":""},{"row":144,"side":"WS","instructions":"K74.","section":"Garter Increase","note":""},{"row":145,"side":"RS","instructions":"Kfb, K73 -- 75 stitches.","section":"Garter Increase","note":""},{"row":146,"side":"WS","instructions":"K75.","section":"Garter Increase","note":""},{"row":147,"side":"RS","instructions":"Kfb, K74 -- 76 stitches.","section":"Garter Increase","note":""},{"row":148,"side":"WS","instructions":"K76.","section":"Garter Increase","note":""},{"row":149,"side":"RS","instructions":"Kfb, K75 -- 77 stitches.","section":"Garter Increase","note":""},{"row":150,"side":"WS","instructions":"K77.","section":"Garter Increase","note":""},{"row":151,"side":"RS","instructions":"Kfb, K76 -- 78 stitches.","section":"Garter Increase","note":""},{"row":152,"side":"WS","instructions":"K78.","section":"Garter Increase","note":""},{"row":153,"side":"RS","instructions":"Kfb, K77 -- 79 stitches.","section":"Garter Increase","note":""},{"row":154,"side":"WS","instructions":"K79.","section":"Garter Increase","note":""},{"row":155,"side":"RS","instructions":"Kfb, K78 -- 80 stitches.","section":"Garter Increase","note":""},{"row":156,"side":"WS","instructions":"K80.","section":"Garter Increase","note":""},{"row":157,"side":"RS","instructions":"Kfb, K79 -- 81 stitches.","section":"Garter Increase","note":""},{"row":158,"side":"WS","instructions":"K81.","section":"Garter Increase","note":""},{"row":159,"side":"RS","instructions":"Kfb, K80 -- 82 stitches.","section":"Garter Increase","note":""},{"row":160,"side":"WS","instructions":"K82.","section":"Garter Increase","note":""},{"row":161,"side":"RS","instructions":"Kfb, K81 -- 83 stitches.","section":"Garter Increase","note":""},{"row":162,"side":"WS","instructions":"K83. 10","section":"Garter Increase","note":""},{"row":163,"side":"RS","instructions":"Kfb, K82 -- 84 stitches.","section":"Garter Increase","note":""},{"row":164,"side":"WS","instructions":"K84.","section":"Garter Increase","note":""},{"row":165,"side":"RS","instructions":"Kfb, K83 -- 85 stitches.","section":"Garter Increase","note":""},{"row":166,"side":"WS","instructions":"K85.","section":"Garter Increase","note":""},{"row":167,"side":"RS","instructions":"Kfb, K84 -- 86 stitches.","section":"Garter Increase","note":""},{"row":168,"side":"WS","instructions":"K86.","section":"Garter Increase","note":""},{"row":169,"side":"RS","instructions":"Kfb, K85 -- 87 stitches.","section":"Garter Increase","note":""},{"row":170,"side":"WS","instructions":"K87.","section":"Garter Increase","note":""},{"row":171,"side":"RS","instructions":"Kfb, K86 -- 88 stitches.","section":"Garter Increase","note":""},{"row":172,"side":"WS","instructions":"K88.","section":"Garter Increase","note":""},{"row":173,"side":"RS","instructions":"Kfb, K87 -- 89 stitches.","section":"Garter Increase","note":""},{"row":174,"side":"WS","instructions":"K89.","section":"Garter Increase","note":""},{"row":175,"side":"RS","instructions":"Kfb, K88 -- 90 stitches.","section":"Garter Increase","note":""},{"row":176,"side":"WS","instructions":"K90.","section":"Garter Increase","note":""},{"row":177,"side":"RS","instructions":"Kfb, K89 -- 91 stitches.","section":"Garter Increase","note":""},{"row":178,"side":"WS","instructions":"K91.","section":"Garter Increase","note":""},{"row":179,"side":"RS","instructions":"Kfb, K90 -- 92 stitches.","section":"Garter Increase","note":""},{"row":180,"side":"WS","instructions":"K92.","section":"Garter Increase","note":""},{"row":181,"side":"RS","instructions":"Kfb, K91 -- 93 stitches.","section":"Garter Increase","note":""},{"row":182,"side":"WS","instructions":"K93.","section":"Garter Increase","note":""},{"row":183,"side":"RS","instructions":"Kfb, K92 -- 94 stitches.","section":"Garter Increase","note":""},{"row":184,"side":"WS","instructions":"K94.","section":"Garter Increase","note":""},{"row":185,"side":"RS","instructions":"Kfb, K93 -- 95 stitches.","section":"Garter Increase","note":""},{"row":186,"side":"WS","instructions":"K95.","section":"Garter Increase","note":""},{"row":187,"side":"RS","instructions":"Kfb, K94 -- 96 stitches.","section":"Garter Increase","note":""},{"row":188,"side":"WS","instructions":"K96.","section":"Garter Increase","note":""},{"row":189,"side":"RS","instructions":"Kfb, K95 -- 97 stitches.","section":"Garter Increase","note":""},{"row":190,"side":"WS","instructions":"K97.","section":"Garter Increase","note":""},{"row":191,"side":"RS","instructions":"Kfb, K96 -- 98 stitches.","section":"Garter Increase","note":""},{"row":192,"side":"WS","instructions":"K98.","section":"Garter Increase","note":""},{"row":193,"side":"RS","instructions":"Kfb, K97 -- 99 stitches.","section":"Garter Increase","note":""},{"row":194,"side":"WS","instructions":"K99.","section":"Garter Increase","note":""},{"row":195,"side":"RS","instructions":"Kfb, K98 -- 100 stitches.","section":"Garter Increase","note":""},{"row":196,"side":"WS","instructions":"K100.","section":"Garter Increase","note":""},{"row":197,"side":"RS","instructions":"Kfb, K99 -- 101 stitches.","section":"Garter Increase","note":""},{"row":198,"side":"WS","instructions":"K101.","section":"Garter Increase","note":""},{"row":199,"side":"RS","instructions":"Kfb, K100 -- 102 stitches.","section":"Garter Increase","note":""},{"row":200,"side":"WS","instructions":"K102.","section":"Garter Increase","note":""},{"row":201,"side":"RS","instructions":"Kfb, K101 -- 103 stitches.","section":"Garter Increase","note":""},{"row":202,"side":"WS","instructions":"K103.","section":"Garter Increase","note":""},{"row":203,"side":"RS","instructions":"Kfb, K2, [P1, K5] 16 times, P1, K3 -- 104 stitches.","section":"Diamond Brocade","note":""},{"row":204,"side":"WS","instructions":"[K1, P1] 2 times, [K1, P3, K1, P1] 16 times, K1, P1, K2.","section":"Diamond Brocade","note":""},{"row":205,"side":"RS","instructions":"Kfb, [K1, P1, K3, P1] 17 times, K1 -- 105 stitches.","section":"Diamond Brocade","note":""},{"row":206,"side":"WS","instructions":"[K1, P5] 17 times, K3.","section":"Diamond Brocade","note":""},{"row":207,"side":"RS","instructions":"Kfb, [P1, K1, P1, K3] 17 times, P1, K1 -- 106 stitches.","section":"Diamond Brocade","note":""},{"row":208,"side":"WS","instructions":"[K1, P1] 2 times, [K1, P3, K1, P1] 16 times, K1, P3, K2.","section":"Diamond Brocade","note":""},{"row":209,"side":"RS","instructions":"Kfb, [K5, P1] 17 times, K3 -- 107 stitches. 11","section":"Diamond Brocade","note":""},{"row":210,"side":"WS","instructions":"[K1, P1] 2 times, [K1, P3, K1, P1] 16 times, K1, P3, K3.","section":"Diamond Brocade","note":""},{"row":211,"side":"RS","instructions":"Kfb, K2, [P1, K1, P1, K3] 17 times, P1, K1 -- 108 stitches.","section":"Diamond Brocade","note":""},{"row":212,"side":"WS","instructions":"[K1, P5] 17 times, K1, P3, K2.","section":"Diamond Brocade","note":""},{"row":213,"side":"RS","instructions":"Kfb, [K3, P1, K1, P1] 17 times, K3, P1, K1 -- 109 stitches.","section":"Diamond Brocade","note":""},{"row":214,"side":"WS","instructions":"[K1, P1] 2 times, [K1, P3, K1, P1] 17 times, K3.","section":"Diamond Brocade","note":""},{"row":215,"side":"RS","instructions":"Kfb, K2, [P1, K5] 17 times, P1, K3 -- 110 stitches.","section":"Diamond Brocade","note":""},{"row":216,"side":"WS","instructions":"[K1, P1] 2 times, [K1, P3, K1, P1] 17 times, K1, P1, K2.","section":"Diamond Brocade","note":""},{"row":217,"side":"RS","instructions":"Kfb, [K1, P1, K3, P1] 18 times, K1 -- 111 stitches.","section":"Diamond Brocade","note":""},{"row":218,"side":"WS","instructions":"[K1, P5] 18 times, K3.","section":"Diamond Brocade","note":""},{"row":219,"side":"RS","instructions":"Kfb, [P1, K1, P1, K3] 18 times, P1, K1 -- 112 stitches.","section":"Diamond Brocade","note":""},{"row":220,"side":"WS","instructions":"[K1, P1] 2 times, [K1, P3, K1, P1] 17 times, K1, P3, K2.","section":"Diamond Brocade","note":""},{"row":221,"side":"RS","instructions":"Kfb, [K5, P1] 18 times, K3 -- 113 stitches.","section":"Diamond Brocade","note":""},{"row":222,"side":"WS","instructions":"[K1, P1] 2 times, [K1, P3, K1, P1] 17 times, K1, P3, K3.","section":"Diamond Brocade","note":""},{"row":223,"side":"RS","instructions":"Kfb, K2, [P1, K1, P1, K3] 18 times, P1, K1 -- 114 stitches.","section":"Diamond Brocade","note":""},{"row":224,"side":"WS","instructions":"[K1, P5] 18 times, K1, P3, K2.","section":"Diamond Brocade","note":""},{"row":225,"side":"RS","instructions":"Kfb, [K3, P1, K1, P1] 18 times, K3, P1, K1 -- 115 stitches.","section":"Diamond Brocade","note":""},{"row":226,"side":"WS","instructions":"[K1, P1] 2 times, [K1, P3, K1, P1] 18 times, K3.","section":"Diamond Brocade","note":""},{"row":227,"side":"RS","instructions":"Kfb, K2, [P1, K5] 18 times, P1, K3 -- 116 stitches.","section":"Diamond Brocade","note":""},{"row":228,"side":"WS","instructions":"[K1, P1] 2 times, [K1, P3, K1, P1] 18 times, K1, P1, K2.","section":"Diamond Brocade","note":""},{"row":229,"side":"RS","instructions":"Kfb, [K1, P1, K3, P1] 19 times, K1 -- 117 stitches.","section":"Diamond Brocade","note":""},{"row":230,"side":"WS","instructions":"[K1, P5] 19 times, K3.","section":"Diamond Brocade","note":""},{"row":231,"side":"RS","instructions":"Kfb, K116 -- 118 stitches.","section":"Final Garter","note":""},{"row":232,"side":"WS","instructions":"K118.","section":"Final Garter","note":""},{"row":233,"side":"RS","instructions":"Kfb, K117 -- 119 stitches.","section":"Final Garter","note":""},{"row":234,"side":"WS","instructions":"K119.","section":"Final Garter","note":"Bind off all stitches knitwise. Weave in all loose ends."}]
+;
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'peakserenity_state';
+let state = { index: 0 };
+
+try {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if (saved && typeof saved.index === 'number') state = saved;
+} catch (e) {}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function currentRow() {
+  return ROWS[state.index];
+}
+
+function stitchCountFor(idx) {
+  // Scan backward from idx to find the most recent explicit stitch count
+  for (let i = idx; i >= 0; i--) {
+    const m = ROWS[i].instructions.match(/--\s*(\d+)\s*stitches?\.?\s*$/);
+    if (m) return m[1];
+  }
+  return '2 (cast on)';
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  save();
+  const atEnd = state.index === ROWS.length - 1;
+  const row = currentRow();
+
+  document.getElementById('section-label').textContent = row.section;
+
+  const total = ROWS.length;
+  const pct = Math.round(((state.index + 1) / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `Row ${row.row} of ${total}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  document.getElementById('stitch-chip-value').textContent = stitchCountFor(state.index) + ' sts';
+
+  document.getElementById('row-display').textContent = 'Row ' + row.row;
+  const badge = document.getElementById('row-side-badge');
+  if (row.side && row.side.length > 0) {
+    badge.textContent = row.side;
+    badge.className = 'row-side show ' + row.side.toLowerCase();
+  } else {
+    badge.className = 'row-side';
+  }
+
+  document.getElementById('row-instructions').textContent = row.instructions;
+
+  const noteEl = document.getElementById('stitch-note');
+  if (row.note && row.note.length > 0) {
+    noteEl.classList.add('show');
+    noteEl.textContent = row.note;
+  } else {
+    noteEl.classList.remove('show');
+  }
+
+  document.getElementById('btn-prev').disabled = state.index === 0;
+  document.getElementById('btn-next').disabled = atEnd;
+  document.getElementById('btn-next').textContent = atEnd ? 'Finished \u2713' : 'Next \u2192';
+
+  document.getElementById('completion').classList.toggle('show', atEnd);
+  document.getElementById('row-card').style.display = atEnd ? 'none' : 'block';
+  document.querySelector('.section-chip').style.display = atEnd ? 'none' : 'inline-flex';
+  document.getElementById('progress-wrap').style.display = atEnd ? 'none' : 'block';
+  document.getElementById('stitch-chip-wrap').style.display = atEnd ? 'none' : 'block';
+}
+
+function navigateNext() {
+  if (state.index < ROWS.length - 1) {
+    state.index++;
+    render();
+  }
+}
+
+function navigatePrev() {
+  if (state.index > 0) {
+    state.index--;
+    render();
+  }
+}
+
+function jumpToRow() {
+  const val = parseInt(document.getElementById('jump-input').value, 10);
+  if (!isNaN(val) && val >= 1 && val <= ROWS.length) {
+    state.index = val - 1;
+    render();
+  }
+  document.getElementById('jump-input').value = '';
+}
+
+render();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+</body>
+</html>
