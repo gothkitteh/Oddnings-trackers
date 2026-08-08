@@ -352,6 +352,13 @@
   <span id="section-label">Loading...</span>
 </div>
 
+<div class="jump-row" style="display:flex; gap:0.5rem; margin: 0.75rem 0;">
+  <input type="text" id="jump-section" placeholder="e.g. Wave Section 3" style="flex:2; padding:0.6rem; border-radius:8px; border:1px solid #444; background:#1c1c22; color:#eee; font-size:0.85rem;">
+  <input type="text" id="jump-row" placeholder="Row (e.g. 1 or Rep 2 Row 3)" style="flex:2; padding:0.6rem; border-radius:8px; border:1px solid #444; background:#1c1c22; color:#eee; font-size:0.85rem;">
+  <button onclick="jumpToRow()" style="flex:1; padding:0.6rem; border-radius:8px; border:none; background:#5a4fcf; color:white; font-weight:600; font-size:0.85rem;">Go</button>
+</div>
+<div id="jump-feedback" style="font-size:0.8rem; color:#f0a; min-height:1.1em; margin-bottom:0.5rem;"></div>
+
 <div class="row-card" id="row-card">
   <div class="row-card-header">
     <span class="row-number" id="row-display">Row —</span>
@@ -602,6 +609,41 @@ function render() {
   document.getElementById('row-card').style.display = isLast ? 'none' : 'block';
   document.getElementById('wave-context').style.display = isLast ? 'none' : 'block';
   document.getElementById('stitch-count-display').style.display = isLast ? 'none' : 'flex';
+}
+
+function jumpToRow() {
+  var sectionInput = document.getElementById('jump-section').value.trim().toLowerCase();
+  var rowInput = document.getElementById('jump-row').value.trim().toLowerCase();
+  var feedback = document.getElementById('jump-feedback');
+
+  if (!sectionInput && !rowInput) {
+    feedback.textContent = 'Enter a section and/or row to jump to.';
+    return;
+  }
+
+  var candidates = PATTERN.map(function(r, i) { return { r: r, i: i }; });
+
+  if (sectionInput) {
+    candidates = candidates.filter(function(c) {
+      return c.r.section.toLowerCase().indexOf(sectionInput) !== -1;
+    });
+  }
+  if (rowInput) {
+    candidates = candidates.filter(function(c) {
+      return c.r.rowLabel.toLowerCase().indexOf(rowInput) !== -1;
+    });
+  }
+
+  if (candidates.length === 0) {
+    feedback.style.color = '#ff6b6b';
+    feedback.textContent = 'No matching row found. Try a shorter search, e.g. "Section 3" and "Row 1".';
+    return;
+  }
+
+  currentIndex = candidates[0].i;
+  render();
+  feedback.style.color = '#7fdc7f';
+  feedback.textContent = 'Jumped to ' + candidates[0].r.section + ' — ' + candidates[0].r.rowLabel + '.';
 }
 
 function navigate(dir) {
